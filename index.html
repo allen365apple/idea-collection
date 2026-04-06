@@ -209,16 +209,22 @@
     }
     .about-hero h2 .magic-text {
       display: inline;
-      background: linear-gradient(90deg, #1a1a1a 40%, #c9a96e 50%, #1a1a1a 60%);
-      background-size: 200% auto;
+      color: #1a1a1a;
+      -webkit-text-fill-color: #1a1a1a;
+    }
+    .about-hero h2 .magic-brand {
+      display: inline;
+      background: linear-gradient(135deg, #e8956d 0%, #d4628b 35%, #a968c7 65%, #6da3e8 100%);
+      background-size: 300% 300%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      animation: shimmer-gold 4s linear infinite;
+      animation: gradient-flow 5s ease infinite;
     }
-    @keyframes shimmer-gold {
-      from { background-position: -200% center; }
-      to { background-position: 200% center; }
+    @keyframes gradient-flow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
     .about-hero p { font-size: 0.95rem; color: #6b6b6b; }
 
@@ -375,7 +381,7 @@
     <div id="page-about" class="page">
 
       <div class="about-hero">
-        <h2>💡 <span class="magic-text">關於靈感蒐集狂魔</span></h2>
+        <h2>💡 <span class="magic-text">關於</span> <span class="magic-brand">只要有人靈感蒐集狂魔</span></h2>
         <p>在 Slack 看到好的創意靈感，按一個燈泡 💡 就能自動存進靈感倉庫，之後隨時用關鍵字搜尋出來。</p>
       </div>
 
