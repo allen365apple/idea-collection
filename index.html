@@ -597,16 +597,21 @@
 
   <script>
     // ===== 分頁切換 =====
-    function switchPage(pageName) {
+    function switchPage(pageName, updateHash) {
       document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
       document.getElementById('page-' + pageName).classList.add('active');
       document.querySelector('.nav-tab[data-page="' + pageName + '"]').classList.add('active');
       window.scrollTo(0, 0);
+      if (updateHash !== false) {
+        history.replaceState(null, '', pageName === 'search' ? '#' : '#about');
+      }
     }
     document.querySelectorAll('.nav-tab').forEach(function(tab) {
       tab.addEventListener('click', function() { switchPage(this.dataset.page); });
     });
+    // 根據 URL hash 決定初始頁面
+    if (window.location.hash === '#about') { switchPage('about', false); }
 
     // ===== 搜尋功能 =====
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbxBoTnssI6IuILd5NsvAs1lbTBuhQmYUVbCNAbwtq0PR5UHzQroL0RHAUmFnj3Mx-ol4Q/exec';
