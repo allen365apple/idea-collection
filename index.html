@@ -187,12 +187,20 @@
     }
     .card-tags .more-tags:hover .tooltip { display: block; }
 
-    .site-footer {
-      text-align: center; padding: 32px 0 0; margin-top: 24px;
-      border-top: 1px solid #e8e8e5; font-size: 0.8rem;
+    .sheets-cta {
+      text-align: center; padding: 28px 20px; margin-top: 24px;
+      border-top: 1px solid #e8e8e5;
     }
-    .site-footer a { color: #aaa; text-decoration: none; }
-    .site-footer a:hover { color: #888; text-decoration: underline; }
+    .sheets-cta p {
+      font-size: 0.8rem; color: #aaa; margin-bottom: 12px;
+    }
+    .sheets-cta a {
+      display: inline-block; padding: 9px 22px;
+      font-family: inherit; font-size: 0.85rem; font-weight: 500;
+      color: #fff; background: #1a1a1a; border-radius: 8px;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .sheets-cta a:hover { opacity: 0.85; }
 
     /* ===== About page ===== */
     .about-hero { margin-bottom: 48px; }
@@ -357,7 +365,8 @@
       <div id="status"></div>
       <div id="results"></div>
 
-      <div class="site-footer">
+      <div class="sheets-cta">
+        <p>所有靈感都存在 Google Sheets 資料庫中，也可以直接瀏覽</p>
         <a href="https://docs.google.com/spreadsheets/d/1eYHwf1ECW67B6iZi92uUHB-xDEKNERnPMGayKB7Mnjs/edit?usp=sharing" target="_blank" rel="noopener noreferrer">📋 開啟只要有人靈感倉庫</a>
       </div>
     </div>
@@ -574,10 +583,9 @@
       <hr class="about-divider">
 
       <!-- CTA -->
-      <div class="cta">
-        <h3>只要有人靈感倉庫</h3>
-        <p>想直接瀏覽所有蒐集過的靈感，可以到這裡</p>
-        <a href="https://docs.google.com/spreadsheets/d/1eYHwf1ECW67B6iZi92uUHB-xDEKNERnPMGayKB7Mnjs/edit?usp=sharing" target="_blank">開啟靈感倉庫 →</a>
+      <div class="sheets-cta" style="border-top: none; margin-top: 0;">
+        <p>所有靈感都存在 Google Sheets 資料庫中，也可以直接瀏覽</p>
+        <a href="https://docs.google.com/spreadsheets/d/1eYHwf1ECW67B6iZi92uUHB-xDEKNERnPMGayKB7Mnjs/edit?usp=sharing" target="_blank">📋 開啟只要有人靈感倉庫</a>
       </div>
 
       <div class="about-footer">
@@ -638,10 +646,8 @@
     }
 
     function showLatest() {
-      var sorted = allData.slice().sort(function(a, b) {
-        return (b.date || '').localeCompare(a.date || '');
-      });
-      var latest = sorted.slice(0, 6);
+      // 取最後 6 筆（Google Sheets 最下面的資料 = 最新的靈感），然後反轉讓最新的排最前面
+      var latest = allData.slice(-6).reverse();
       if (latest.length === 0) return;
       statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨</div>';
       var html = '';
