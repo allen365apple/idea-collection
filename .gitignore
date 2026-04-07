@@ -1,25 +1,5 @@
-.spectra/
-openspec/.vector-search.db*
-.DS_Store
-
-# 內部資料（簡報、圖片、文件）— 不可推到 public repo
-FB _ IG/
-Threads/
-idea-images/
-
-# 含 API Token 的程式碼
-google-apps-script.js
-
-# 本地工作檔案
-*.xlsx
-*.pptx
-*.pdf
-*.tmp
-*.skill
-*.txt
-.claude/
-
-# 筆記與草稿
-*.md
-!CLAUDE.md
-!README.md
+# 只有 HTML 和 robots.txt 會推到 GitHub，其他全部排除
+*
+!*.html
+!robots.txt
+!.gitignore
