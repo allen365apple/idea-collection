@@ -165,6 +165,14 @@
       white-space: pre-wrap; word-break: break-word;
       border-left: 3px solid #e0e0dc; padding-left: 14px; margin-left: 2px;
     }
+    .card-images { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .card-img {
+      max-width: 100%; height: auto; border-radius: 8px;
+      border: 1px solid #e8e8e5; object-fit: cover;
+    }
+    .card-images:has(.card-img + .card-img) .card-img {
+      max-width: calc(50% - 4px); max-height: 200px;
+    }
     .card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
     .card-btn {
       display: inline-flex; align-items: center; gap: 4px;
@@ -689,6 +697,19 @@
     function renderCard(item) {
       var card = '<div class="card">';
       card += '<div class="card-summary">' + escapeHtml(item.summary || '') + '</div>';
+
+      // 圖片顯示（K 欄，多張圖用換行隔開）
+      if (item.image) {
+        var imageUrls = item.image.split('\n').filter(function(u) { return u.trim(); });
+        if (imageUrls.length > 0) {
+          card += '<div class="card-images">';
+          for (var imgI = 0; imgI < imageUrls.length; imgI++) {
+            card += '<img class="card-img" src="' + escapeHtml(imageUrls[imgI].trim()) + '" alt="靈感圖片" loading="lazy">';
+          }
+          card += '</div>';
+        }
+      }
+
       var content = item.content || '';
       if (content) {
         var truncated = content.length > 150;
