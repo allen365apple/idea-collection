@@ -138,6 +138,67 @@
     }
     .search-bar button:hover { opacity: 0.85; }
     .search-bar button:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-random {
+      padding: 12px 24px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: 1px solid #b388ff;
+      border-radius: 8px;
+      background: #b388ff;
+      color: #ffffff;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .btn-random:hover { opacity: 0.85; }
+    .btn-random:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ===== Featured Random Card ===== */
+    @keyframes cardPop {
+      0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+      60% { transform: scale(1.02) translateY(-4px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .random-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0 0;
+    }
+    .random-card {
+      max-width: 480px;
+      width: 100%;
+      background: #ffffff;
+      border: 2px solid #e0d4f5;
+      border-radius: 16px;
+      padding: 28px;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(179, 136, 255, 0.12);
+      animation: cardPop 0.45s ease forwards;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .random-card:hover {
+      border-color: #b388ff;
+      box-shadow: 0 12px 40px rgba(179, 136, 255, 0.2);
+    }
+    .random-card .card-summary {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.7;
+      margin-bottom: 14px;
+      color: #1a1a1a;
+      -webkit-line-clamp: unset;
+    }
+    .random-card .card-images { margin-bottom: 14px; }
+    .random-card .card-img { max-height: 200px; border-radius: 8px; }
+    .random-card .card-footer { font-size: 0.78rem; }
+    .random-hint {
+      margin-top: 16px;
+      font-size: 0.82rem;
+      color: #b388ff;
+      font-weight: 500;
+    }
 
     .loading { text-align: center; padding: 40px 0; color: #999; font-size: 0.9rem; }
     .loading-spinner {
@@ -273,15 +334,17 @@
     .presentation-btn {
       display: inline-block;
       font-family: inherit;
-      font-size: 0.85rem;
+      font-size: 0.72rem;
       font-weight: 600;
       color: #4a7c96;
       background: #e8f4f8;
       border: 1px solid #c0d8e3;
-      border-radius: 8px;
-      padding: 8px 20px;
+      border-radius: 6px;
+      padding: 4px 12px;
       text-decoration: none;
       transition: all 0.15s;
+      white-space: nowrap;
+      vertical-align: middle;
     }
     .presentation-btn:hover {
       background: #d4ecf3;
@@ -292,6 +355,7 @@
     .about-hero { margin-bottom: 48px; }
     .about-hero h2 {
       font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px;
+      display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
     }
     .about-hero h2 .magic-text {
       display: inline;
@@ -449,12 +513,13 @@
 
     <!-- ===== 搜尋頁 ===== -->
     <div id="page-search" class="page active">
-      <h1>✨ 只要有人 Idea 靈感搜尋狂魔 🔮</h1>
+      <h1 style="cursor: pointer;" onclick="goHome()">✨ 只要有人 Idea 靈感搜尋狂魔 🔮</h1>
       <div id="ideaCount" class="idea-count"></div>
 
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋 Idea（多個關鍵字用空格分隔）" disabled>
         <button id="searchBtn" disabled>搜尋</button>
+        <button class="btn-random" id="randomBtn" disabled onclick="randomIdea()">🎲 抽點子</button>
       </div>
 
       <div id="status"></div>
@@ -469,12 +534,8 @@
     <!-- ===== 關於頁 ===== -->
     <div id="page-about" class="page">
 
-      <div style="text-align: center; margin-bottom: 20px;">
-        <a href="presentation.html" target="_blank" class="presentation-btn">📽️ 開啟簡報模式</a>
-      </div>
-
       <div class="about-hero">
-        <h2>💡 <span class="magic-text">關於</span> <span class="magic-brand">只要有人靈感蒐集狂魔</span></h2>
+        <h2>💡 <span class="magic-text">關於</span> <span class="magic-brand">只要有人靈感蒐集狂魔</span> <a href="presentation.html" target="_blank" class="presentation-btn">📽️ 以簡報檢視</a></h2>
         <p>在 Slack 看到好的創意靈感，按一個燈泡 💡 就能自動存進靈感倉庫，之後隨時用關鍵字搜尋出來。</p>
       </div>
 
@@ -517,13 +578,13 @@
             <div class="step-indicator"><div class="step-number">4</div></div>
             <div class="step-content">
               <h4>完成！✨</h4>
-              <p>系統會自動處理後面所有事情——抓原文、AI 分析、產生摘要和標籤，全部存進靈感倉庫。</p>
+              <p>系統會自動處理後面所有事情——抓原文、AI 分析、產生摘要和標籤，全部存進<a href="https://docs.google.com/spreadsheets/d/1eYHwf1ECW67B6iZi92uUHB-xDEKNERnPMGayKB7Mnjs/edit?gid=0#gid=0" target="_blank" style="color: #4a7c96; font-weight: 600;">靈感倉庫</a>。</p>
             </div>
           </div>
         </div>
 
         <div class="note note-warning" style="margin-top: 20px;">
-          <p>請先把 <strong>#idea-inbox</strong> 頻道加入，才能收到備註通知。</p>
+          <p>請先 <a href="https://thereyouare.slack.com/archives/C0AR9H4JU01" target="_blank" style="color: #4a7c96; font-weight: 600;">加入 #idea-inbox 頻道</a>，才能收到備註通知。</p>
         </div>
 
         <div class="note" style="margin-top: 10px;">
@@ -539,14 +600,20 @@
             <span class="channel-tag">#project_mcdonald_brand</span>
             <span class="channel-tag">#project_借勢話題小組</span>
             <span class="channel-tag">#zzzz_idea</span>
+            <span class="channel-tag">#project_自主專案</span>
           </div>
           <p style="margin-top: 8px;">如果需要在其他頻道也加入這個功能，請跟<strong>柏文</strong>說。</p>
         </div>
 
         <div class="note note-info" style="margin-top: 10px;">
           <p><strong>📸 支援的訊息類型</strong></p>
-          <p>支援<strong>純文字</strong>、<strong>帶有連結</strong>以及<strong>圖片附件</strong>的訊息。圖片會自動存到 Google Drive，並在搜尋結果中顯示。</p>
-          <p>另外，如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，系統會解析不出來。所以分享靈感的時候，請記得附帶一段簡短的文字來描述這個靈感是什麼。</p>
+          <p>支援<strong>純文字</strong>、<strong>帶有連結</strong>、<strong>圖片附件</strong>以及<strong>純圖片（沒有文字）</strong>的訊息。圖片會自動存到 Google Drive，AI 也能直接分析圖片內容並產生摘要和標籤。</p>
+          <p>另外，如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，目前系統會解析不出來。所以分享靈感的時候，請記得附帶一段簡短的文字來描述。連結自動解析的功能之後會再慢慢開發。</p>
+        </div>
+
+        <div class="note note-info" style="margin-top: 10px; background: linear-gradient(135deg, #f0f7fa 0%, #fdf8f0 100%); border-left: 4px solid #4a7c96;">
+          <p><strong>✨ 連純圖片都能分析！</strong></p>
+          <p>就算訊息只有一張圖、沒有任何文字，AI 也能自動辨識圖片內容並產生完整的摘要和標籤。不需要額外打字描述，直接丟圖就行！</p>
         </div>
 
         <div class="note note-warning" style="margin-top: 10px;">
@@ -562,26 +629,20 @@
       <div class="about-section">
         <p class="about-section-label">搜尋</p>
         <h3>怎麼搜尋？</h3>
-        <p style="margin-bottom: 16px;">有三種方式，搜尋結果一樣：</p>
+        <p style="margin-bottom: 16px;">有兩種方式，搜尋結果一樣：</p>
 
         <div class="two-col" style="margin-bottom: 12px;">
           <div class="about-card">
             <h4>🌐 網頁搜尋</h4>
-            <p>打開靈感搜尋狂魔網頁，直接在搜尋框輸入關鍵字，結果即時顯示。</p>
+            <p>打開靈感搜尋狂魔網頁，直接在搜尋框輸入關鍵字，結果即時顯示。還可以「🎲 抽點子」，隨機抽一個靈感給你！</p>
             <p style="margin-top: 8px;"><a href="#" onclick="switchPage('search'); return false;" style="font-size: 0.8rem; color: #4a7c96;">→ 前往搜尋</a></p>
           </div>
           <div class="about-card">
-            <h4>⚡ Slash Command</h4>
-            <p>在 Slack 頻道主訊息區輸入</p>
-            <div class="command-block">/idea 愚人節</div>
-            <p style="font-size: 0.72rem; color: #c0c0c0; margin-top: 4px;">⚠️ thread 裡用不了（Slack 限制）</p>
+            <h4>🤖 @ 機器人</h4>
+            <p>在 Slack 任何地方（包括 thread）</p>
+            <div class="command-block">@Idea Collection Bot 愚人節</div>
+            <p style="font-size: 0.72rem; color: #7a9e7e; margin-top: 4px;">✓ 到哪都能用</p>
           </div>
-        </div>
-        <div class="about-card" style="max-width: calc(50% - 6px);">
-          <h4>🤖 @ 機器人</h4>
-          <p>在任何地方（包括 thread）</p>
-          <div class="command-block">@Idea Collection Bot 愚人節</div>
-          <p style="font-size: 0.72rem; color: #7a9e7e; margin-top: 4px;">✓ 到哪都能用</p>
         </div>
 
         <div class="note note-info" style="margin-top: 16px;">
@@ -597,13 +658,13 @@
         <div style="margin-bottom: 16px;">
           <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">多關鍵字搜尋</h4>
           <p style="font-size: 0.85rem; color: #6b6b6b;">輸入多個關鍵字，找出同時包含所有關鍵字的結果</p>
-          <div class="command-block">/idea 麥當勞 愚人節</div>
+          <div class="command-block">@Idea Collection Bot 麥當勞 愚人節</div>
         </div>
 
         <div>
           <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">指定顯示筆數（Slack 限定）</h4>
           <p style="font-size: 0.85rem; color: #6b6b6b;">預設顯示最新 10 筆，想看更多可以用 #數字</p>
-          <div class="command-block">/idea #20 愚人節</div>
+          <div class="command-block">@Idea Collection Bot #20 愚人節</div>
         </div>
       </div>
 
@@ -660,9 +721,9 @@
             <div class="flow-track"><div class="flow-dot"></div><div class="flow-connector"></div></div>
             <div class="flow-card">
               <h4>接收搜尋請求</h4>
-              <p>透過網頁搜尋框、Slack /idea 指令或 @Idea Collection Bot 發起搜尋。</p>
+              <p>透過網頁搜尋框或 @Idea Collection Bot 發起搜尋。</p>
               <span class="tech-tag">GitHub Pages</span>
-              <span class="tech-tag">Slack Command</span>
+              <span class="tech-tag">Slack Bot</span>
             </div>
           </div>
           <div class="flow-item">
@@ -759,6 +820,7 @@
           ideaCountEl.innerHTML = '已收集 <strong>' + allData.length + '</strong> 個靈感點子';
           searchInput.disabled = false;
           searchBtn.disabled = false;
+          document.getElementById('randomBtn').disabled = false;
           searchInput.focus();
           showLatest();
         })
@@ -859,10 +921,10 @@
         }
       }
 
-      // 完整原文
+      // 完整原文（支援 Slack Markdown）
       var content = item.content || '';
       if (content) {
-        html += '<div class="modal-content">' + escapeHtml(content) + '</div>';
+        html += '<div class="modal-content">' + parseSlackMarkdown(content) + '</div>';
       }
 
       // 連結按鈕
@@ -932,6 +994,137 @@
       var div = document.createElement('div');
       div.appendChild(document.createTextNode(str));
       return div.innerHTML;
+    }
+
+    // ===== 回首頁 =====
+    function goHome() {
+      searchInput.value = '';
+      showLatest();
+      window.scrollTo(0, 0);
+    }
+
+    // ===== 抽點子 =====
+    function randomIdea() {
+      if (allData.length === 0) return;
+      var idx = Math.floor(Math.random() * allData.length);
+      var item = allData[idx];
+      statusEl.innerHTML = '<div class="section-heading">🎲 隨機抽到的點子</div>';
+
+      var html = '<div class="random-stage">';
+      html += '<div class="random-card" onclick="openModal(' + idx + ')">';
+      html += '<div class="card-summary">' + escapeHtml(item.summary || '') + '</div>';
+
+      if (item.image) {
+        var imageUrls = item.image.split('\n').filter(function(u) { return u.trim(); });
+        if (imageUrls.length > 0) {
+          var showCount = Math.min(imageUrls.length, 3);
+          html += '<div class="card-images">';
+          for (var i = 0; i < showCount; i++) {
+            html += '<img class="card-img" src="' + escapeHtml(imageUrls[i].trim()) + '" alt="靈感圖片" loading="lazy">';
+          }
+          if (imageUrls.length > 3) html += '<div class="card-images-more">+' + (imageUrls.length - 3) + '</div>';
+          html += '</div>';
+        }
+      }
+
+      html += '<div class="card-footer">';
+      if (item.author) html += '<span>' + escapeHtml(item.author) + '</span>';
+      if (item.date) html += '<span>' + escapeHtml(item.date) + '</span>';
+      if (item.tags) {
+        var tags = item.tags.split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
+        if (tags.length > 0) {
+          var visible = tags.slice(0, 5);
+          html += '<span class="card-tags">' + visible.map(function(t) { return '#' + escapeHtml(t); }).join('  ');
+          if (tags.length > 5) html += '  <span style="color:#ccc">+' + (tags.length - 5) + '</span>';
+          html += '</span>';
+        }
+      }
+      html += '</div></div>';
+      html += '<div class="random-hint">再按一次「🎲 抽點子」換下一個</div>';
+      html += '</div>';
+
+      resultsEl.innerHTML = html;
+      window.scrollTo(0, 0);
+    }
+
+    // ===== Slack Markdown → HTML =====
+    function parseSlackMarkdown(text) {
+      // 先處理 code block（避免內部被轉換）
+      var codeBlocks = [];
+      text = text.replace(/```([\s\S]*?)```/g, function(m, code) {
+        codeBlocks.push(code);
+        return '%%CODEBLOCK' + (codeBlocks.length - 1) + '%%';
+      });
+
+      // 逐行處理
+      var lines = text.split('\n');
+      var result = [];
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+
+        // 偵測 bullet 層級
+        var bulletMatch = line.match(/^(\s*)(•|◦|▪︎|▪)\s?(.*)/);
+        if (bulletMatch) {
+          var indent = bulletMatch[1].length;
+          var content = bulletMatch[3];
+          var level = 0;
+          if (indent >= 8 || bulletMatch[2] === '▪︎' || bulletMatch[2] === '▪') level = 2;
+          else if (indent >= 4 || bulletMatch[2] === '◦') level = 1;
+
+          var padLeft = (level === 0) ? 0 : (level === 1) ? 20 : 40;
+          var bullet = (level === 0) ? '•' : (level === 1) ? '◦' : '▪';
+          content = formatInline(escapeHtml(content));
+          result.push('<div style="padding-left:' + padLeft + 'px;margin:2px 0;line-height:1.7;">' + bullet + ' ' + content + '</div>');
+          continue;
+        }
+
+        // 一般行
+        line = escapeHtml(line);
+
+        // code block placeholder
+        var cbMatch = line.match(/%%CODEBLOCK(\d+)%%/);
+        if (cbMatch) {
+          result.push('<pre style="background:#f4f4f2;padding:10px 14px;border-radius:6px;overflow-x:auto;font-size:0.85em;margin:8px 0;white-space:pre-wrap;">' + escapeHtml(codeBlocks[parseInt(cbMatch[1])].trim()) + '</pre>');
+          continue;
+        }
+
+        line = formatInline(line);
+
+        // blockquote
+        if (line.match(/^&gt; /)) {
+          line = '<blockquote style="border-left:3px solid #ddd;padding-left:10px;color:#6b6b6b;margin:4px 0;">' + line.replace(/^&gt; ?/, '') + '</blockquote>';
+          result.push(line);
+          continue;
+        }
+
+        // 空行 → 間距
+        if (line.trim() === '') {
+          result.push('<div style="height:8px;"></div>');
+          continue;
+        }
+
+        result.push('<div style="margin:2px 0;line-height:1.7;">' + line + '</div>');
+      }
+
+      return result.join('');
+    }
+
+    function formatInline(html) {
+      // bold: *text*
+      html = html.replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>');
+      // italic: _text_ (not within words)
+      html = html.replace(/(^|[\s>])_([^_\n]+)_([\s<.,!?]|$)/g, '$1<em>$2</em>$3');
+      // strikethrough: ~text~
+      html = html.replace(/~([^~\n]+)~/g, '<del>$1</del>');
+      // inline code: `text`
+      html = html.replace(/`([^`\n]+)`/g, '<code style="background:#f4f4f2;padding:1px 5px;border-radius:3px;font-size:0.88em;">$1</code>');
+      // Slack links: <url|label> or <url>
+      html = html.replace(/&lt;(https?:\/\/[^|&]+)\|([^&]+)&gt;/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#4a7c96;">$2</a>');
+      html = html.replace(/&lt;(https?:\/\/[^&]+)&gt;/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#4a7c96;">$1</a>');
+      // bare URLs
+      html = html.replace(/(^|[\s>])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#4a7c96;">$2</a>');
+      return html;
     }
 
     searchBtn.addEventListener('click', doSearch);

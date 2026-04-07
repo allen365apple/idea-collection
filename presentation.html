@@ -7,7 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #fafaf8;
@@ -21,11 +21,11 @@
       --purple: #b388ff;
       --pink: #ff80ab;
       --gold: #ffd740;
-      --green: #7a9e7e;
+      --green: #4caf50;
       --green-bg: #f0f7f1;
-      --warm: #c9a96e;
+      --red: #e57373;
       --warm-bg: #fdf8f0;
-      --nav-height: 56px;
+      --nav-height: 60px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -57,10 +57,11 @@
       transition: opacity 0.5s ease, transform 0.5s ease;
       pointer-events: none;
       overflow-y: auto;
-      padding: 60px 48px 80px;
+      padding: 60px 60px 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
     }
 
     .slide.active {
@@ -75,129 +76,93 @@
     }
 
     .slide-inner {
-      max-width: 800px;
+      max-width: 900px;
       width: 100%;
     }
 
-    /* ===== Slide Animations ===== */
+    /* Slides with lots of content — top align */
+    .slide.top-align {
+      justify-content: flex-start;
+    }
+
+    /* ===== Animations ===== */
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .slide.active .animate {
-      animation: fadeInUp 0.45s ease forwards;
+      animation: fadeInUp 0.5s ease forwards;
       opacity: 0;
     }
     .slide.active .stagger-1 { animation-delay: 0.05s; }
-    .slide.active .stagger-2 { animation-delay: 0.12s; }
-    .slide.active .stagger-3 { animation-delay: 0.19s; }
-    .slide.active .stagger-4 { animation-delay: 0.26s; }
-    .slide.active .stagger-5 { animation-delay: 0.33s; }
-    .slide.active .stagger-6 { animation-delay: 0.40s; }
-    .slide.active .stagger-7 { animation-delay: 0.47s; }
+    .slide.active .stagger-2 { animation-delay: 0.15s; }
+    .slide.active .stagger-3 { animation-delay: 0.25s; }
+    .slide.active .stagger-4 { animation-delay: 0.35s; }
+    .slide.active .stagger-5 { animation-delay: 0.45s; }
+    .slide.active .stagger-6 { animation-delay: 0.55s; }
+    .slide.active .stagger-7 { animation-delay: 0.65s; }
 
     /* ===== Bottom Nav ===== */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: var(--nav-height);
       background: var(--card-bg);
       border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
+      padding: 0 32px;
       z-index: 100;
     }
 
     .nav-btn {
       font-family: inherit;
-      font-size: 0.85rem;
-      font-weight: 500;
+      font-size: 0.95rem;
+      font-weight: 600;
       color: var(--text);
       background: none;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 20px;
+      border-radius: 10px;
+      padding: 10px 24px;
       cursor: pointer;
       transition: all 0.15s;
-      min-width: 80px;
+      min-width: 100px;
     }
-    .nav-btn:hover:not(:disabled) {
-      background: var(--bg);
-      border-color: #ccc;
-    }
-    .nav-btn:disabled {
-      opacity: 0.3;
-      cursor: default;
-    }
+    .nav-btn:hover:not(:disabled) { background: var(--bg); border-color: #ccc; }
+    .nav-btn:disabled { opacity: 0.25; cursor: default; }
 
-    .nav-dots {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    .nav-dots { display: flex; gap: 10px; align-items: center; }
     .nav-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--border);
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      padding: 0;
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--border); border: none; cursor: pointer;
+      transition: all 0.2s; padding: 0;
     }
-    .nav-dot.active {
-      background: var(--accent);
-      transform: scale(1.2);
-    }
-    .nav-dot.visited {
-      background: #c0d8e3;
-    }
+    .nav-dot.active { background: var(--accent); transform: scale(1.3); }
+    .nav-dot.visited { background: #b3d4e0; }
 
     /* ===== Scroll Hint ===== */
     .scroll-hint {
       position: fixed;
-      bottom: 70px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.75rem;
-      color: var(--text-light);
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 14px;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-      z-index: 99;
+      bottom: 74px; left: 50%; transform: translateX(-50%);
+      font-size: 0.8rem; color: var(--text-light);
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 16px;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 99;
     }
     .scroll-hint.visible { opacity: 1; }
 
-    /* ===== Slide Title Page ===== */
-    .slide-title-page {
-      justify-content: center;
-      text-align: center;
-    }
-    .slide-title-page .slide-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    /* ==========================================================
+       TYPOGRAPHY — 層級化設計
+       ========================================================== */
 
-    .big-emoji {
-      font-size: 4rem;
-      margin-bottom: 20px;
-    }
-
-    .slide-title {
-      font-size: 2.2rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
+    /* 封面大標題 */
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
       background: linear-gradient(90deg, var(--purple), var(--pink), var(--gold), var(--purple));
       background-size: 200% auto;
       -webkit-background-clip: text;
@@ -207,385 +172,344 @@
     }
     @keyframes shimmer { to { background-position: 200% center; } }
 
-    .slide-subtitle {
-      font-size: 1.05rem;
+    /* L1：每頁核心重點 — 一句話看懂 */
+    .headline {
+      font-size: 2.4rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    /* L2：段落說明 */
+    .lead {
+      font-size: 1.2rem;
+      font-weight: 400;
       color: var(--text-muted);
-      font-weight: 300;
-      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 32px;
     }
 
-    .brand-tag {
-      display: inline-block;
-      margin-top: 24px;
-      font-size: 0.8rem;
-      color: var(--text-light);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 16px;
-    }
-
-    /* ===== Section Titles ===== */
-    .section-label {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-
-    .section-title {
-      font-size: 1.5rem;
+    /* L3：卡片標題 */
+    .card-title {
+      font-size: 1.1rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
-    .section-desc {
+    /* L4：卡片內文 */
+    .card-text {
       font-size: 0.95rem;
       color: var(--text-muted);
-      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .big-emoji { font-size: 5rem; margin-bottom: 24px; }
+    .brand-tag {
+      display: inline-block; margin-top: 28px;
+      font-size: 0.9rem; color: var(--text-light);
+      border: 1px solid var(--border); border-radius: 24px; padding: 6px 20px;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      max-width: 520px;
+      line-height: 1.7;
     }
 
     /* ===== Cards ===== */
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-top: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
     }
 
     .s-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: 14px;
+      padding: 28px;
       transition: box-shadow 0.15s;
     }
-    .s-card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    .s-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+    .s-card.clickable { cursor: pointer; }
+    .s-card.clickable:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-2px); transition: all 0.2s; }
+
+    /* ===== Example Modal ===== */
+    .ex-modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(3px);
+      justify-content: center; align-items: flex-start;
+      padding: 60px 20px; overflow-y: auto;
+    }
+    .ex-modal-overlay.active { display: flex; }
+    .ex-modal {
+      background: #fff; border-radius: 14px; max-width: 640px; width: 100%;
+      padding: 28px; position: relative; animation: exModalIn 0.2s ease;
+    }
+    @keyframes exModalIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .ex-modal-close {
+      position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: 8px;
+      border: none; background: #f5f5f3; color: #666;
+      font-size: 1.1rem; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; transition: background 0.15s;
+    }
+    .ex-modal-close:hover { background: #eee; }
+    .ex-modal-summary { font-size: 1.05rem; font-weight: 600; line-height: 1.7; margin-bottom: 16px; color: #1a1a1a; padding-right: 36px; }
+    .ex-modal-img { max-width: 100%; max-height: 400px; border-radius: 10px; border: 1px solid var(--border); object-fit: contain; margin-bottom: 16px; cursor: zoom-in; }
+    .ex-modal-content { font-size: 0.88rem; line-height: 1.8; color: #555; margin-bottom: 16px; white-space: pre-wrap; border-left: 3px solid #e0e0dc; padding-left: 14px; }
+    .ex-modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .ex-modal-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 7px 14px; font-family: inherit; font-size: 0.8rem;
+      color: var(--accent); background: var(--accent-light); border: 1px solid #d4e8f0;
+      border-radius: 6px; text-decoration: none; transition: background 0.15s;
+    }
+    .ex-modal-btn:hover { background: #e2eff5; }
+    .ex-modal-footer {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px;
+      font-size: 0.75rem; color: var(--text-light); padding-top: 14px; border-top: 1px solid #f0f0ed;
+    }
+    .ex-modal-tags { font-size: 0.72rem; color: #aaa; line-height: 1.8; width: 100%; }
+
+    /* ===== Lightbox ===== */
+    .ex-lightbox {
+      display: none; position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.85); cursor: zoom-out;
+      justify-content: center; align-items: center; padding: 20px;
+    }
+    .ex-lightbox.active { display: flex; }
+    .ex-lightbox img {
+      max-width: 95vw; max-height: 92vh; object-fit: contain;
+      border-radius: 4px; cursor: default;
     }
 
-    .s-card h4 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-    .s-card p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    /* ===== Step List ===== */
-    .step-list {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .step-item {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .step-num {
-      width: 36px;
-      height: 36px;
-      min-width: 36px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.85rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .step-body h4 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .step-body p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    /* ===== Flow ===== */
-    .flow-vertical {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .flow-node {
-      display: flex;
-      gap: 16px;
-      align-items: stretch;
-    }
-
-    .flow-track {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 20px;
-      min-width: 20px;
-    }
-
-    .flow-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--accent);
-      margin-top: 6px;
-      flex-shrink: 0;
-    }
-
-    .flow-line {
-      width: 2px;
-      flex: 1;
-      background: var(--border);
-      margin-top: 4px;
-    }
-
-    .flow-content {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin-bottom: 12px;
-      flex: 1;
-    }
-
-    .flow-content h4 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .flow-content p {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .tech-tag {
-      display: inline-block;
-      font-size: 0.68rem;
-      font-weight: 500;
-      color: var(--accent);
-      background: var(--accent-light);
-      border-radius: 4px;
-      padding: 2px 8px;
-      margin-top: 8px;
-      margin-right: 4px;
-    }
-
-    /* ===== Channel Tags ===== */
-    .channel-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    .channel-tag {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--accent);
-      background: var(--accent-light);
-      border-radius: 4px;
-      padding: 3px 10px;
-    }
-
-    /* ===== Stats ===== */
+    /* ===== Stat Cards ===== */
     .stat-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 8px;
+      gap: 20px;
     }
-
     .stat-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: 14px;
+      padding: 32px 24px;
       text-align: center;
     }
-    .stat-card .stat-icon {
-      font-size: 1.8rem;
-      margin-bottom: 8px;
+    .stat-card .stat-icon { font-size: 2.4rem; margin-bottom: 12px; }
+    .stat-card .stat-label { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+    .stat-card .stat-value { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ===== Steps ===== */
+    .step-list { display: flex; flex-direction: column; gap: 24px; }
+    .step-item { display: flex; gap: 20px; align-items: flex-start; }
+    .step-num {
+      width: 44px; height: 44px; min-width: 44px;
+      border-radius: 50%; background: var(--accent); color: #fff;
+      font-size: 1rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
     }
-    .stat-card .stat-label {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      font-weight: 500;
+    .step-body h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .step-body p { font-size: 0.95rem; color: var(--text-muted); }
+
+    /* ===== Flow ===== */
+    .flow-vertical { display: flex; flex-direction: column; }
+    .flow-node { display: flex; gap: 18px; align-items: stretch; }
+    .flow-track { display: flex; flex-direction: column; align-items: center; width: 22px; min-width: 22px; }
+    .flow-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); margin-top: 8px; flex-shrink: 0; }
+    .flow-line { width: 2px; flex: 1; background: var(--border); margin-top: 4px; }
+    .flow-content {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 14px; flex: 1;
     }
-    .stat-card .stat-value {
-      font-size: 0.78rem;
-      color: var(--text-light);
-      margin-top: 4px;
+    .flow-content h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+    .flow-content p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    .tech-tag {
+      display: inline-block; font-size: 0.75rem; font-weight: 600;
+      color: var(--accent); background: var(--accent-light);
+      border-radius: 5px; padding: 3px 10px; margin-top: 10px; margin-right: 5px;
     }
 
-    /* ===== Note Box ===== */
-    .note-box {
-      background: var(--warm-bg);
-      border: 1px solid #ecdec8;
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin-top: 20px;
-    }
-    .note-box p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .note-box-green {
-      background: var(--green-bg);
-      border-color: #c8dcc9;
+    /* ===== Channel Tags ===== */
+    .channel-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .channel-tag {
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--accent); background: var(--accent-light);
+      border-radius: 6px; padding: 4px 12px;
     }
 
     /* ===== Command Block ===== */
     .cmd {
       display: inline-block;
       font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.82rem;
-      background: #f4f4f2;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 4px 12px;
-      margin-top: 6px;
+      font-size: 0.95rem; font-weight: 500;
+      background: #f4f4f2; border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 16px; margin-top: 8px;
     }
 
     /* ===== Search Methods ===== */
     .method-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
     }
-
     .method-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
     }
-    .method-card h4 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 6px;
+    .method-card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .method-card p { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* ===== Note Box ===== */
+    .note-box {
+      background: var(--green-bg); border: 1px solid #c8dcc9;
+      border-radius: 12px; padding: 20px 24px; margin-top: 24px;
     }
-    .method-card p {
-      font-size: 0.82rem;
-      color: var(--text-muted);
+    .note-box p { font-size: 0.95rem; color: var(--text-muted); }
+    .note-box-warm { background: var(--warm-bg); border-color: #ecdec8; }
+
+    /* ===== Slack Mockup ===== */
+    .slack-mockup {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px 24px;
+      max-width: 520px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
+    .slack-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+    }
+    .slack-avatar {
+      width: 36px; height: 36px; border-radius: 6px;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .slack-name { font-size: 0.9rem; font-weight: 700; color: #1d1c1d; }
+    .slack-label { font-size: 0.72rem; color: #999; margin-left: 4px; }
+    .slack-time { font-size: 0.72rem; color: #999; }
+    .slack-body { font-size: 0.88rem; color: #1d1c1d; line-height: 1.6; margin-bottom: 14px; }
+    .slack-body strong { font-weight: 700; }
+    .slack-body a { color: #1264a3; text-decoration: none; }
+    .slack-bullets { list-style: none; padding: 0; margin: 8px 0; }
+    .slack-bullets li { font-size: 0.85rem; color: #1d1c1d; padding: 2px 0; }
+    .slack-bullets li::before { content: "•"; color: #999; margin-right: 8px; }
+    .slack-tip {
+      font-size: 0.82rem; color: #616061; margin-top: 12px;
+      padding-top: 10px; border-top: 1px solid #eee;
+    }
+    .slack-tip .emoji-hint { font-size: 0.9rem; }
+    .slack-buttons { display: flex; gap: 8px; margin-top: 14px; }
+    .slack-btn {
+      font-family: inherit; font-size: 0.82rem; font-weight: 700;
+      border: none; border-radius: 6px; padding: 8px 18px; cursor: default;
+      color: #fff;
+    }
+    .slack-btn-green { background: var(--green); }
+    .slack-btn-red { background: var(--red); }
 
     /* ===== CTA ===== */
-    .cta-section {
-      text-align: center;
-      margin-top: 32px;
-    }
-    .cta-section p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
+    .cta-section { text-align: center; margin-top: 36px; }
+    .cta-section p { font-size: 1rem; color: var(--text-muted); margin-bottom: 16px; }
     .cta-btn {
-      display: inline-block;
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #fff;
-      background: var(--accent);
-      border: none;
-      border-radius: 10px;
-      padding: 12px 32px;
-      cursor: pointer;
-      text-decoration: none;
+      display: inline-block; font-family: inherit;
+      font-size: 1.05rem; font-weight: 700; color: #fff;
+      background: var(--accent); border: none; border-radius: 12px;
+      padding: 14px 36px; cursor: pointer; text-decoration: none;
       transition: opacity 0.15s;
     }
     .cta-btn:hover { opacity: 0.85; }
-
     .back-link {
-      display: inline-block;
-      margin-top: 16px;
-      font-size: 0.8rem;
-      color: var(--text-light);
-      text-decoration: none;
+      display: inline-block; margin-top: 20px;
+      font-size: 0.9rem; color: var(--text-light); text-decoration: none;
     }
     .back-link:hover { color: var(--text); }
 
     /* ===== Responsive ===== */
     @media (max-width: 768px) {
-      .slide { padding: 36px 20px 70px; }
-      .slide-title { font-size: 1.6rem; }
-      .section-title { font-size: 1.2rem; }
-      .big-emoji { font-size: 3rem; }
-      .stat-grid { grid-template-columns: repeat(2, 1fr); }
-      .card-grid { grid-template-columns: 1fr; }
+      .slide { padding: 36px 24px 70px; }
+      .hero-title { font-size: 2.2rem; }
+      .headline { font-size: 1.7rem; }
+      .lead { font-size: 1.05rem; }
+      .big-emoji { font-size: 3.5rem; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
       .method-grid { grid-template-columns: 1fr; }
+      .card-grid { grid-template-columns: 1fr; }
+      .slack-mockup { max-width: 100%; }
     }
 
     @media (max-width: 480px) {
       .slide { padding: 24px 16px 60px; }
-      .slide-title { font-size: 1.3rem; }
-      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .hero-title { font-size: 1.8rem; }
+      .headline { font-size: 1.5rem; }
+      .stat-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ===== Slides ===== -->
   <div class="slide-deck" id="slideDeck">
 
-    <!-- Slide 0: Title -->
-    <div class="slide slide-title-page active" data-index="0">
-      <div class="slide-inner">
+    <!-- ====== Slide 0: Cover ====== -->
+    <div class="slide active" data-index="0" style="text-align: center;">
+      <div class="slide-inner" style="display: flex; flex-direction: column; align-items: center;">
         <div class="big-emoji animate stagger-1">💡</div>
-        <h1 class="slide-title animate stagger-2">Idea 靈感蒐集狂魔</h1>
-        <p class="slide-subtitle animate stagger-3">在 Slack 看到好的創意靈感，按一個燈泡就能自動存進靈感倉庫，之後隨時用關鍵字搜尋出來。</p>
+        <h1 class="hero-title animate stagger-2">只要有人 Idea 靈感蒐集狂魔</h1>
+        <p class="subtitle animate stagger-3">在 Slack 看到好的創意靈感，按一個燈泡就能自動存進靈感倉庫，之後隨時用關鍵字搜尋出來。</p>
         <span class="brand-tag animate stagger-4">只要有人社群顧問</span>
       </div>
     </div>
 
-    <!-- Slide 1: Why -->
+    <!-- ====== Slide 1: Problem ====== -->
     <div class="slide" data-index="1">
       <div class="slide-inner">
         <p class="section-label animate stagger-1">痛點</p>
-        <h2 class="section-title animate stagger-2">為什麼需要這個工具？</h2>
-        <p class="section-desc animate stagger-3">我們平常在 Slack 分享了很多很棒的創意案例、社群靈感、競品觀察，但這些訊息很快就被洗掉、找不到。</p>
+        <h2 class="headline animate stagger-2">好靈感分享了，<br>卻再也找不到</h2>
+        <p class="lead animate stagger-3">Slack 訊息很快就被洗掉，等到提案的時候只能靠記憶去翻，或重新上網找。</p>
 
         <div class="stat-grid animate stagger-4">
           <div class="stat-card">
             <div class="stat-icon">💬</div>
-            <div class="stat-label">Slack 訊息洗掉</div>
-            <div class="stat-value">好靈感轉眼消失</div>
+            <div class="stat-label">訊息被洗掉</div>
+            <div class="stat-value">好靈感轉眼就消失</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">🔍</div>
-            <div class="stat-label">提案前翻不到</div>
+            <div class="stat-label">提案翻不到</div>
             <div class="stat-value">只能靠記憶找</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">✨</div>
             <div class="stat-label">靈感蒐集狂魔</div>
-            <div class="stat-value">好點子不會消失</div>
+            <div class="stat-value">讓好點子不再消失</div>
           </div>
-        </div>
-
-        <div class="note-box-green note-box animate stagger-5">
-          <p><strong>Idea 靈感蒐集狂魔</strong>讓好點子不會消失，而且隨時搜得到。</p>
         </div>
       </div>
     </div>
 
-    <!-- Slide 2: How to collect -->
+    <!-- ====== Slide 2: How to collect ====== -->
     <div class="slide" data-index="2">
       <div class="slide-inner">
         <p class="section-label animate stagger-1">蒐集</p>
-        <h2 class="section-title animate stagger-2">怎麼蒐集靈感？</h2>
-        <p class="section-desc animate stagger-3">只要四步，一切全自動。</p>
+        <h2 class="headline animate stagger-2">按一個 💡 就完成蒐集</h2>
+        <p class="lead animate stagger-3">只要四步，剩下的系統全自動處理。</p>
 
         <div class="step-list">
           <div class="step-item animate stagger-3">
@@ -598,134 +522,230 @@
           <div class="step-item animate stagger-4">
             <div class="step-num">2</div>
             <div class="step-body">
-              <h4>按下燈泡 Emoji 💡</h4>
-              <p>對那則訊息按下 💡，系統就會開始自動蒐集</p>
+              <h4>按下 💡 Emoji</h4>
+              <p>對那則訊息按下燈泡，系統就會自動開始蒐集</p>
             </div>
           </div>
           <div class="step-item animate stagger-5">
             <div class="step-num">3</div>
             <div class="step-body">
-              <h4>到 #idea-inbox 加個備註（非必要）</h4>
-              <p>系統會在 #idea-inbox 頻道發通知並標記你，直接在底下回覆備註。例如：「母親節可以用」「這個手法適合麥當勞」</p>
+              <h4>加個備註（非必要）</h4>
+              <p>系統會在 #idea-inbox 通知你，可以回覆備註來幫助 AI 分析</p>
             </div>
           </div>
           <div class="step-item animate stagger-6">
             <div class="step-num">4</div>
             <div class="step-body">
-              <h4>完成！ ✨</h4>
-              <p>系統自動處理——抓原文、AI 分析、產生摘要和標籤，全部存進靈感倉庫</p>
+              <h4>完成 ✨</h4>
+              <p>自動抓原文、AI 分析、產生摘要和標籤，全部存進<a href="https://docs.google.com/spreadsheets/d/1eYHwf1ECW67B6iZi92uUHB-xDEKNERnPMGayKB7Mnjs/edit?gid=0#gid=0" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 600;">靈感倉庫</a></p>
             </div>
           </div>
         </div>
+
+        <div class="note-box note-box-warm animate stagger-7" style="margin-top: 28px;">
+          <p><strong>⚠️ AI 每日上限</strong>：摘要和標籤由 Gemini AI 自動產生，每天額度有限。<strong>請一天不超過 20 個點子</strong>，超過的不會消失，會延到隔天處理。</p>
+        </div>
       </div>
     </div>
 
-    <!-- Slide 3: Supported channels & types -->
+    <!-- ====== Slide 3: Slack Notification Demo ====== -->
     <div class="slide" data-index="3">
+      <div class="slide-inner" style="display: flex; flex-direction: column; align-items: center;">
+        <p class="section-label animate stagger-1">蒐集</p>
+        <h2 class="headline animate stagger-2" style="text-align: center;">按完 💡 之後會發生什麼？</h2>
+        <p class="lead animate stagger-3" style="text-align: center; max-width: 600px;">系統會在 #idea-inbox 發出通知，你可以按綠色按鈕寫備註，或按紅色按鈕搜尋靈感。</p>
+        <div class="animate stagger-3" style="margin-bottom: 20px;">
+          <a href="https://thereyouare.slack.com/archives/C0AR9H4JU01" target="_blank" style="display: inline-block; font-size: 0.9rem; font-weight: 600; color: #fff; background: var(--accent); border-radius: 8px; padding: 8px 20px; text-decoration: none;">👉 加入 #idea-inbox 頻道</a>
+          <span style="font-size: 0.82rem; color: var(--text-light); margin-left: 8px;">先加入才能收到通知</span>
+        </div>
+
+        <div class="slack-mockup animate stagger-4">
+          <div class="slack-header">
+            <div class="slack-avatar">🐷</div>
+            <div>
+              <span class="slack-name">Idea 靈感蒐集狂魔</span>
+              <span class="slack-label">工作流程</span>
+              <span class="slack-time">晚上 7:47</span>
+            </div>
+          </div>
+          <div class="slack-body">
+            <strong>新點子進來了（要寫備註請 5 分鐘內點綠色按鈕）</strong>
+            <ul class="slack-bullets">
+              <li>撰寫者：柏文 Allen Wang</li>
+              <li>蒐集者：@柏文 Allen Wang</li>
+              <li>來源：<a href="#">https://thereyouare.slack.com/archives/...</a></li>
+              <li>點子會存到：<a href="#">這個靈感倉庫 Google Sheets</a></li>
+            </ul>
+          </div>
+          <div class="slack-tip">
+            <span class="emoji-hint">👆</span> 按綠按鈕寫備註幫 AI 理解點子，或按紅按鈕搜尋靈感
+          </div>
+          <div class="slack-buttons">
+            <span class="slack-btn slack-btn-green">寫備註</span>
+            <span class="slack-btn slack-btn-red">搜靈感</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== Slide 4: Supported channels & types ====== -->
+    <div class="slide top-align" data-index="4">
       <div class="slide-inner">
         <p class="section-label animate stagger-1">支援範圍</p>
-        <h2 class="section-title animate stagger-2">支援的頻道與訊息類型</h2>
+        <h2 class="headline animate stagger-2">哪些格式 / 頻道可以用？</h2>
 
-        <div class="s-card animate stagger-3" style="margin-bottom: 20px;">
-          <h4>💡 目前支援的頻道</h4>
-          <p>按燈泡收集靈感的功能目前僅限於以下頻道：</p>
-          <div class="channel-list" style="margin-top: 10px;">
-            <span class="channel-tag">#discuss_account</span>
-            <span class="channel-tag">#zzzz_general</span>
-            <span class="channel-tag">#creative-team</span>
-            <span class="channel-tag">#project_mcdonald_ig經營</span>
-            <span class="channel-tag">#zzzz_random</span>
-            <span class="channel-tag">#idea-inbox</span>
-            <span class="channel-tag">#project_mcdonald_brand</span>
-            <span class="channel-tag">#project_借勢話題小組</span>
-            <span class="channel-tag">#zzzz_idea</span>
+        <p class="card-text animate stagger-3" style="font-weight: 700; color: var(--text); margin-bottom: 10px; font-size: 1rem;">📨 支援的訊息格式</p>
+        <div class="card-grid animate stagger-3" style="margin-bottom: 28px;">
+          <div class="s-card">
+            <div class="card-title">📝 文字 + 連結</div>
+            <p class="card-text">純文字、帶連結的訊息都能自動蒐集</p>
           </div>
-          <p style="margin-top: 10px; font-size: 0.82rem; color: var(--text-light);">如果需要在其他頻道也加入此功能，請跟柏文說。</p>
+          <div class="s-card">
+            <div class="card-title">📸 圖片附件</div>
+            <p class="card-text">圖片自動存到 Google Drive，AI 也能分析圖片內容</p>
+          </div>
+          <div class="s-card">
+            <div class="card-title">🖼️ 純圖片</div>
+            <p class="card-text">就算沒有文字、只傳一張圖，也能自動分析產生摘要</p>
+          </div>
         </div>
 
-        <div class="s-card animate stagger-4" style="margin-bottom: 20px;">
-          <h4>📸 支援的訊息類型</h4>
-          <p>支援<strong>純文字</strong>、<strong>帶有連結</strong>以及<strong>圖片附件</strong>的訊息。<br>圖片會自動存到 Google Drive，並在搜尋結果中顯示。</p>
+        <p class="card-text animate stagger-4" style="font-weight: 700; color: var(--text); margin-bottom: 10px; font-size: 1rem;">📡 支援的頻道</p>
+        <div class="channel-list animate stagger-4" style="margin-bottom: 16px;">
+          <span class="channel-tag">#discuss_account</span>
+          <span class="channel-tag">#zzzz_general</span>
+          <span class="channel-tag">#creative-team</span>
+          <span class="channel-tag">#project_mcdonald_ig經營</span>
+          <span class="channel-tag">#zzzz_random</span>
+          <span class="channel-tag">#idea-inbox</span>
+          <span class="channel-tag">#project_mcdonald_brand</span>
+          <span class="channel-tag">#project_借勢話題小組</span>
+          <span class="channel-tag">#zzzz_idea</span>
+          <span class="channel-tag">#project_自主專案</span>
         </div>
+        <p class="card-text animate stagger-5" style="color: var(--text-light);">需要在其他頻道加入此功能？請跟柏文說。</p>
 
-        <div class="note-box animate stagger-5">
-          <p>⚠️ 如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，系統會解析不出來。分享靈感的時候，請附帶一段文字描述。</p>
+        <div class="note-box note-box-warm animate stagger-5" style="margin-top: 16px;">
+          <p>⚠️ 如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，目前系統會解析不出來，請附帶一段文字描述。連結自動解析的功能之後會再慢慢開發。</p>
         </div>
       </div>
     </div>
 
-    <!-- Slide 4: How to search -->
-    <div class="slide" data-index="4">
+    <!-- ====== Slide 5: Image Analysis Showcase ====== -->
+    <div class="slide" data-index="5">
+      <div class="slide-inner" style="display: flex; flex-direction: column; align-items: center;">
+        <p class="section-label animate stagger-1">新功能</p>
+        <h2 class="headline animate stagger-2" style="text-align: center;">連純圖片都能分析！</h2>
+        <p class="lead animate stagger-3" style="text-align: center; max-width: 580px;">就算訊息只有一張圖、沒有任何文字，AI 也能自動辨識圖片內容並產生摘要和標籤。</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 700px;" class="animate stagger-4">
+          <!-- Card 1: 健身房 -->
+          <div class="s-card clickable" style="text-align: center;" onclick="openExampleModal(0)">
+            <img src="https://drive.google.com/thumbnail?id=1lxf01DM42iicVfEx9CeHkIjbNjdCP8yc&sz=w800" alt="健身房毒舌語錄" style="width: 100%; border-radius: 10px; margin-bottom: 12px; max-height: 220px; object-fit: cover;">
+            <p class="card-text" style="font-weight: 600; color: var(--text); font-size: 0.9rem;">在健身房貼上「就像當初她放棄你一樣」的毒舌語錄，用失戀的痛來激勵大家不要偷懶！</p>
+            <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 8px;">柏文 Allen Wang · 2026-04-07</p>
+          </div>
+          <!-- Card 2: 透明膠帶 -->
+          <div class="s-card clickable" style="text-align: center;" onclick="openExampleModal(1)">
+            <img src="https://drive.google.com/thumbnail?id=1xVdM8yQUbROPv5S5HTRWrgDjkLzDkPB-&sz=w800" alt="透明膠帶迷因" style="width: 100%; border-radius: 10px; margin-bottom: 12px; max-height: 220px; object-fit: cover;">
+            <p class="card-text" style="font-weight: 600; color: var(--text); font-size: 0.9rem;">用擬人化的對話，幽默呈現大家找透明膠帶開頭時一直找不到的崩潰日常。</p>
+            <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 8px;">Ping_柯平 · 2026-04-07</p>
+          </div>
+        </div>
+
+        <div class="note-box animate stagger-5" style="max-width: 700px; width: 100%; margin-top: 20px;">
+          <p>✨ 以上兩則都是<strong>只傳了一張圖片、沒有任何文字</strong>，AI 就自動產生了完整的摘要和標籤。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== Slide 6: Search ====== -->
+    <div class="slide" data-index="6">
+
       <div class="slide-inner">
         <p class="section-label animate stagger-1">搜尋</p>
-        <h2 class="section-title animate stagger-2">怎麼搜尋靈感？</h2>
-        <p class="section-desc animate stagger-3">三種方式，搜尋結果一樣。</p>
+        <h2 class="headline animate stagger-2">兩種方式搜尋靈感</h2>
+        <p class="lead animate stagger-3">網頁或機器人，資料來源都一樣。</p>
 
         <div class="method-grid animate stagger-4">
           <div class="method-card">
             <h4>🌐 網頁搜尋</h4>
-            <p>打開靈感搜尋狂魔網頁，在搜尋框輸入關鍵字，結果即時顯示。</p>
-          </div>
-          <div class="method-card">
-            <h4>⚡ Slash Command</h4>
-            <p>在 Slack 頻道主訊息區輸入</p>
-            <div class="cmd">/idea 愚人節</div>
-            <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 4px;">⚠️ thread 裡用不了（Slack 限制）</p>
+            <p>打開靈感搜尋狂魔網頁，輸入關鍵字，結果即時顯示。還可以「🎲 抽點子」，隨機抽一個靈感給你！</p>
           </div>
           <div class="method-card">
             <h4>🤖 @ 機器人</h4>
-            <p>在任何地方（包括 thread）</p>
+            <p>在 Slack 任何地方（包括 thread）</p>
             <div class="cmd">@Idea Collection Bot 愚人節</div>
-            <p style="font-size: 0.72rem; color: var(--green); margin-top: 4px;">✓ 到哪都能用</p>
+            <p style="font-size: 0.78rem; color: var(--green); margin-top: 6px;">✓ 到哪都能用</p>
           </div>
-        </div>
-
-        <div class="note-box-green note-box animate stagger-5">
-          <p>💡 <strong>網頁版</strong>可以瀏覽卡片式結果、看原文摘要和圖片；<strong>Slack 搜尋</strong>方便在工作中快速查找。兩邊資料來源一樣。</p>
         </div>
       </div>
     </div>
 
-    <!-- Slide 5: Tips -->
-    <div class="slide" data-index="5">
+    <!-- ====== Slide 7: Tips ====== -->
+    <div class="slide top-align" data-index="7">
       <div class="slide-inner">
         <p class="section-label animate stagger-1">小技巧</p>
-        <h2 class="section-title animate stagger-2">搜尋進階用法</h2>
+        <h2 class="headline animate stagger-2">搜尋進階用法</h2>
 
-        <div class="card-grid" style="margin-top: 20px;">
-          <div class="s-card animate stagger-3">
-            <h4>多關鍵字搜尋</h4>
-            <p>輸入多個關鍵字，找出同時包含所有關鍵字的結果</p>
-            <div class="cmd" style="margin-top: 10px;">/idea 麥當勞 愚人節</div>
+        <div class="card-grid animate stagger-3" style="margin-top: 20px; margin-bottom: 28px;">
+          <div class="s-card">
+            <div class="card-title">多關鍵字搜尋</div>
+            <p class="card-text">輸入多個關鍵字，找出同時包含的結果</p>
+            <div class="cmd">@Idea Collection Bot 麥當勞 愚人節</div>
           </div>
-          <div class="s-card animate stagger-4">
-            <h4>指定顯示筆數（Slack 限定）</h4>
-            <p>預設顯示最新 10 筆，想看更多可以用 #數字</p>
-            <div class="cmd" style="margin-top: 10px;">/idea #20 愚人節</div>
+          <div class="s-card">
+            <div class="card-title">指定顯示筆數</div>
+            <p class="card-text">預設 10 筆，想看更多加 #數字</p>
+            <div class="cmd">@Idea Collection Bot #20 愚人節</div>
           </div>
         </div>
 
-        <div class="note-box animate stagger-5" style="margin-top: 24px;">
-          <p>⚠️ <strong>AI 分析與每日上限</strong>：所有靈感的摘要和標籤都是由 Gemini AI 自動分析產生的。每天的 AI 分析額度有限，<strong>請一天不要提供超過 20 個點子</strong>。超過額度的靈感不會消失，會延到隔天處理。</p>
+        <p class="card-text animate stagger-4" style="margin-bottom: 12px; font-weight: 600; color: var(--text);">搜尋結果長這樣 👇</p>
+        <div class="slack-mockup animate stagger-5" style="max-width: 100%;">
+          <div class="slack-header">
+            <div class="slack-avatar">🐷</div>
+            <div>
+              <span class="slack-name">Idea Collection Bot</span>
+              <span class="slack-label">應用程式</span>
+            </div>
+          </div>
+          <div class="slack-body">
+            <strong>🔍 找到 6 筆符合「坎城」的 Idea（顯示最新 2 筆）</strong>
+            <p style="font-size: 0.82rem; color: #616061; margin-top: 4px;">以下是資料庫中最新的 2 筆 Idea：</p>
+            <div style="border-left: 3px solid #ddd; padding: 8px 12px; margin: 10px 0; background: #fafafa; border-radius: 0 6px 6px 0;">
+              <p style="font-size: 0.85rem; margin-bottom: 4px;"><strong>1.</strong> 直接把歌詞裡有提到百威啤酒的歌當成廣告播，讓你在聽 Spotify 時不會覺得被廣告打斷！</p>
+              <p style="font-size: 0.72rem; color: #888;">關鍵字：#音樂  #廣告投放  #科技  #聲音  #廣播  #駭入</p>
+              <p style="font-size: 0.72rem; color: #888;">【柏文的坎城案例整理 20240802】</p>
+              <p style="font-size: 0.72rem;"><a href="#" onclick="return false;" style="color: #1264a3; text-decoration: none;">→ 點此看完整原文</a></p>
+            </div>
+            <div style="border-left: 3px solid #ddd; padding: 8px 12px; margin: 10px 0; background: #fafafa; border-radius: 0 6px 6px 0;">
+              <p style="font-size: 0.85rem; margin-bottom: 4px;"><strong>2.</strong> 用看起來很可愛的兒童繪本講述恐怖的校園槍擊案，讓政治家看清槍枝暴力的真相。</p>
+              <p style="font-size: 0.72rem; color: #888;">關鍵字：#暴力  #童書  #社會議題</p>
+              <p style="font-size: 0.72rem;"><a href="#" onclick="return false;" style="color: #1264a3; text-decoration: none;">→ 點此看完整原文</a></p>
+            </div>
+            <p style="font-size: 0.82rem; color: #616061; margin-top: 8px;">還有 4 筆結果。輸入 <span class="cmd" style="font-size: 0.78rem; padding: 2px 8px; margin: 0;">@Idea Collection Bot #6 坎城</span> 可以看全部。</p>
+          </div>
+          <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+            <p style="font-size: 0.78rem; color: #616061;">👀 看更多請點此進入 <a href="#" onclick="return false;" style="color: #1264a3; text-decoration: none;">只要有人靈感倉庫</a></p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Slide 6: Architecture -->
-    <div class="slide" data-index="6">
+    <!-- ====== Slide 8: Architecture — Collect ====== -->
+    <div class="slide top-align" data-index="8">
       <div class="slide-inner">
         <p class="section-label animate stagger-1">技術架構</p>
-        <h2 class="section-title animate stagger-2">背後怎麼運作的？</h2>
-        <p class="section-desc animate stagger-3">整個流程全自動，不需要手動整理。</p>
-
-        <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 12px;" class="animate stagger-3">💡 蒐集流程</h4>
+        <h2 class="headline animate stagger-2">蒐集流程全自動</h2>
+        <p class="lead animate stagger-3">不需要手動整理，從蒐集到分析一條龍完成。</p>
 
         <div class="flow-vertical">
           <div class="flow-node animate stagger-3">
             <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
             <div class="flow-content">
               <h4>觸發蒐集</h4>
-              <p>在 Slack 按下 💡 → Slack Workflow 自動把訊息轉發到 #idea-inbox，同步記錄到 Google Sheets</p>
+              <p>按下 💡 → Slack Workflow 自動轉發到 #idea-inbox，同步記錄到 Google Sheets</p>
               <span class="tech-tag">Slack Workflow</span>
             </div>
           </div>
@@ -733,7 +753,7 @@
             <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
             <div class="flow-content">
               <h4>自動抓取原文</h4>
-              <p>Google Apps Script 每小時自動執行，透過 Slack API 抓取完整原文、發布日期、撰寫者</p>
+              <p>每小時自動執行，透過 Slack API 抓取完整原文、發布日期、撰寫者</p>
               <span class="tech-tag">Google Apps Script</span>
               <span class="tech-tag">Slack API</span>
             </div>
@@ -742,7 +762,7 @@
             <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
             <div class="flow-content">
               <h4>圖片處理 & AI 分析</h4>
-              <p>圖片自動存到 Google Drive；原文和圖片送給 Gemini AI，產生摘要與多維度標籤</p>
+              <p>圖片存到 Google Drive；原文和圖片送給 Gemini AI 產生摘要與標籤</p>
               <span class="tech-tag">Google Drive</span>
               <span class="tech-tag">Gemini AI</span>
             </div>
@@ -751,7 +771,7 @@
             <div class="flow-track"><div class="flow-dot"></div></div>
             <div class="flow-content">
               <h4>寫回資料庫</h4>
-              <p>所有資料自動寫回 Google Sheets「只要有人靈感倉庫」</p>
+              <p>全部自動寫回 Google Sheets「只要有人靈感倉庫」</p>
               <span class="tech-tag">Google Sheets</span>
             </div>
           </div>
@@ -759,28 +779,28 @@
       </div>
     </div>
 
-    <!-- Slide 7: Search flow -->
-    <div class="slide" data-index="7">
+    <!-- ====== Slide 9: Architecture — Search ====== -->
+    <div class="slide" data-index="9">
       <div class="slide-inner">
         <p class="section-label animate stagger-1">技術架構</p>
-        <h2 class="section-title animate stagger-2">搜尋流程</h2>
-        <p class="section-desc animate stagger-3">從搜尋到結果，全程自動。</p>
+        <h2 class="headline animate stagger-2">搜尋流程</h2>
+        <p class="lead animate stagger-3">從輸入關鍵字到看到結果，全程自動。</p>
 
         <div class="flow-vertical">
           <div class="flow-node animate stagger-3">
             <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
             <div class="flow-content">
               <h4>接收搜尋請求</h4>
-              <p>透過網頁搜尋框、Slack /idea 指令或 @Idea Collection Bot 發起搜尋</p>
+              <p>透過網頁搜尋框或 @Idea Collection Bot 發起搜尋</p>
               <span class="tech-tag">GitHub Pages</span>
-              <span class="tech-tag">Slack Command</span>
+              <span class="tech-tag">Slack Bot</span>
             </div>
           </div>
           <div class="flow-node animate stagger-4">
             <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
             <div class="flow-content">
               <h4>搜尋比對</h4>
-              <p>在 Google Sheets 中搜尋摘要、標籤等欄位，結果按蒐集日期由新到舊排序</p>
+              <p>在 Google Sheets 中比對摘要、標籤，結果按日期由新到舊排序</p>
               <span class="tech-tag">Google Apps Script</span>
             </div>
           </div>
@@ -788,7 +808,7 @@
             <div class="flow-track"><div class="flow-dot"></div></div>
             <div class="flow-content">
               <h4>回傳結果</h4>
-              <p>網頁版以卡片式呈現完整結果（含圖片）；Slack 版直接在對話中回傳摘要和原文連結</p>
+              <p>網頁版以卡片顯示完整結果（含圖片）；Slack 版回傳摘要和連結</p>
               <span class="tech-tag">Web App</span>
               <span class="tech-tag">Slack API</span>
             </div>
@@ -797,20 +817,20 @@
       </div>
     </div>
 
-    <!-- Slide 8: End -->
-    <div class="slide slide-title-page" data-index="8">
-      <div class="slide-inner">
+    <!-- ====== Slide 10: End ====== -->
+    <div class="slide" data-index="10" style="text-align: center;">
+      <div class="slide-inner" style="display: flex; flex-direction: column; align-items: center;">
         <div class="big-emoji animate stagger-1">🚀</div>
-        <h2 class="slide-title animate stagger-2">開始使用吧！</h2>
-        <p class="slide-subtitle animate stagger-3">看到好靈感，就按 💡 蒐集起來。<br>需要靈感的時候，搜尋就對了。</p>
+        <h2 class="hero-title animate stagger-2" style="font-size: 2.8rem;">開始使用吧！</h2>
+        <p class="subtitle animate stagger-3">看到好靈感，就按 💡 蒐集起來。<br>需要靈感的時候，搜尋就對了。</p>
 
         <div class="cta-section animate stagger-4">
-          <p>所有靈感都存在 Google Sheets 資料庫中</p>
-          <a class="cta-btn" href="https://docs.google.com/spreadsheets/d/1eYHwf1ECW67B6iZi92uUHB-xDEKNERnPMGayKB7Mnjs/edit?usp=sharing" target="_blank">📋 開啟靈感倉庫</a>
+          <a class="cta-btn" href="index.html#search">🔍 開啟靈感搜尋狂魔</a>
+          <p style="margin-top: 16px;"><a href="https://docs.google.com/spreadsheets/d/1eYHwf1ECW67B6iZi92uUHB-xDEKNERnPMGayKB7Mnjs/edit?usp=sharing" target="_blank" style="font-size: 0.9rem; color: var(--accent); text-decoration: none;">📋 或直接瀏覽 Google Sheets 靈感倉庫 →</a></p>
         </div>
 
         <a class="back-link animate stagger-5" href="index.html#about">← 回到關於頁面</a>
-        <p class="animate stagger-6" style="margin-top: 32px; font-size: 0.8rem; color: var(--text-light);">只要有人社群顧問 × Idea 靈感蒐集狂魔 ✨</p>
+        <p class="animate stagger-6" style="margin-top: 36px; font-size: 0.85rem; color: var(--text-light);">只要有人社群顧問 × Idea 靈感蒐集狂魔 ✨</p>
       </div>
     </div>
 
@@ -826,7 +846,87 @@
     <button class="nav-btn" id="btnNext" onclick="goSlide(current + 1)">下一頁 →</button>
   </div>
 
+  <!-- Lightbox -->
+  <div class="ex-lightbox" id="exLightbox" onclick="closeExLightbox()">
+    <img id="exLightboxImg" src="" alt="">
+  </div>
+
+  <!-- Example Modal -->
+  <div class="ex-modal-overlay" id="exModalOverlay" onclick="closeExampleModal()">
+    <div class="ex-modal" onclick="event.stopPropagation()">
+      <button class="ex-modal-close" onclick="closeExampleModal()">&times;</button>
+      <div id="exModalBody"></div>
+    </div>
+  </div>
+
   <script>
+    // ===== Example Card Data (hardcoded) =====
+    var exampleCards = [
+      {
+        summary: '在健身房貼上「就像當初她放棄你一樣」的毒舌語錄，用失戀的痛來激勵大家不要偷懶！',
+        image: 'https://drive.google.com/thumbnail?id=1lxf01DM42iicVfEx9CeHkIjbNjdCP8yc&sz=w800',
+        content: '（此訊息僅含圖片，無文字內容）',
+        source: 'https://thereyouare.slack.com/archives/C11JCU2QJ/p1748844521660439',
+        author: '柏文 Allen Wang',
+        date: '2026-04-07',
+        tags: '健身房, 運動, 毒舌, 失戀, 激勵語錄'
+      },
+      {
+        summary: '用擬人化的對話，幽默呈現大家找透明膠帶開頭時一直找不到的崩潰日常。',
+        image: 'https://drive.google.com/thumbnail?id=1xVdM8yQUbROPv5S5HTRWrgDjkLzDkPB-&sz=w800',
+        content: '（此訊息僅含圖片，無文字內容）',
+        source: 'https://thereyouare.slack.com/archives/C11JCU2QJ/p1748857076196369',
+        author: 'Ping_柯平',
+        date: '2026-04-07',
+        tags: '膠帶, 迷因, 幽默, 日常, 擬人化'
+      }
+    ];
+
+    function openExampleModal(idx) {
+      var card = exampleCards[idx];
+      if (!card) return;
+      var html = '';
+      html += '<div class="ex-modal-summary">' + card.summary + '</div>';
+      html += '<img class="ex-modal-img" src="' + card.image + '" alt="靈感圖片" onclick="openExLightbox(this.src)">';
+      if (card.content) {
+        html += '<div class="ex-modal-content">' + card.content + '</div>';
+      }
+      html += '<div class="ex-modal-actions">';
+      html += '<a class="ex-modal-btn" href="' + card.source + '" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">💬 Slack 原文</a>';
+      html += '</div>';
+      html += '<div class="ex-modal-footer">';
+      html += '<span>' + card.author + '</span>';
+      html += '<span>' + card.date + '</span>';
+      if (card.tags) {
+        var tags = card.tags.split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
+        html += '<div class="ex-modal-tags">' + tags.map(function(t) { return '#' + t; }).join('  ') + '</div>';
+      }
+      html += '</div>';
+      document.getElementById('exModalBody').innerHTML = html;
+      document.getElementById('exModalOverlay').classList.add('active');
+    }
+
+    function closeExampleModal() {
+      document.getElementById('exModalOverlay').classList.remove('active');
+    }
+
+    function openExLightbox(src) {
+      document.getElementById('exLightboxImg').src = src;
+      document.getElementById('exLightbox').classList.add('active');
+    }
+    function closeExLightbox() {
+      document.getElementById('exLightbox').classList.remove('active');
+      document.getElementById('exLightboxImg').src = '';
+    }
+
+    // Close modal/lightbox on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (document.getElementById('exLightbox').classList.contains('active')) closeExLightbox();
+        else closeExampleModal();
+      }
+    });
+
     var slides = document.querySelectorAll('.slide');
     var total = slides.length;
     var current = 0;
@@ -846,24 +946,14 @@
     function goSlide(index) {
       if (index < 0 || index >= total || index === current) return;
 
-      var direction = index > current ? 'down' : 'up';
-
-      // Remove classes from current
       slides[current].classList.remove('active');
-      if (direction === 'down') {
-        slides[current].classList.add('exit-up');
-      }
+      if (index > current) slides[current].classList.add('exit-up');
 
-      // Clean up exit class after transition
       var prev = current;
-      setTimeout(function() {
-        slides[prev].classList.remove('exit-up');
-      }, 500);
+      setTimeout(function() { slides[prev].classList.remove('exit-up'); }, 500);
 
       current = index;
       visited[current] = true;
-
-      // Activate new slide
       slides[current].classList.add('active');
       slides[current].scrollTop = 0;
 
@@ -874,15 +964,11 @@
     function updateNav() {
       document.getElementById('btnPrev').disabled = (current === 0);
       document.getElementById('btnNext').disabled = (current === total - 1);
-
       var dots = document.querySelectorAll('.nav-dot');
       for (var i = 0; i < dots.length; i++) {
         dots[i].classList.remove('active', 'visited');
-        if (i === current) {
-          dots[i].classList.add('active');
-        } else if (visited[i]) {
-          dots[i].classList.add('visited');
-        }
+        if (i === current) dots[i].classList.add('active');
+        else if (visited[i]) dots[i].classList.add('visited');
       }
     }
 
@@ -896,28 +982,18 @@
       }
     }
 
-    // Scroll listener for active slide
-    document.addEventListener('scroll', function() {
-      checkScrollHint();
-    }, true);
+    document.addEventListener('scroll', function() { checkScrollHint(); }, true);
 
-    // Keyboard navigation
+    // Keyboard
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        goSlide(current + 1);
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        goSlide(current - 1);
-      } else if (e.key === ' ') {
-        e.preventDefault();
-        goSlide(current + 1);
-      }
+      if (document.getElementById('exModalOverlay').classList.contains('active')) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goSlide(current + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goSlide(current - 1); }
+      else if (e.key === ' ') { e.preventDefault(); goSlide(current + 1); }
     });
 
     // Touch swipe
-    var touchStartX = 0;
-    var touchStartY = 0;
+    var touchStartX = 0, touchStartY = 0;
     document.addEventListener('touchstart', function(e) {
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
@@ -926,12 +1002,10 @@
       var dx = e.changedTouches[0].screenX - touchStartX;
       var dy = e.changedTouches[0].screenY - touchStartY;
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
-        if (dx < 0) goSlide(current + 1);
-        else goSlide(current - 1);
+        if (dx < 0) goSlide(current + 1); else goSlide(current - 1);
       }
     });
 
-    // Initial check
     checkScrollHint();
   </script>
 
