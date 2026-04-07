@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea 靈感蒐集狂魔 — 簡報</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafaf8;
+      --card-bg: #ffffff;
+      --border: #e8e8e5;
+      --text: #1a1a1a;
+      --text-muted: #6b6b6b;
+      --text-light: #999;
+      --accent: #4a7c96;
+      --accent-light: #e8f4f8;
+      --purple: #b388ff;
+      --pink: #ff80ab;
+      --gold: #ffd740;
+      --green: #7a9e7e;
+      --green-bg: #f0f7f1;
+      --warm: #c9a96e;
+      --warm-bg: #fdf8f0;
+      --nav-height: 56px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ===== Slide System ===== */
+    .slide-deck {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - var(--nav-height));
+    }
+
+    .slide {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+      overflow-y: auto;
+      padding: 60px 48px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .slide.exit-up {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+
+    .slide-inner {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    /* ===== Slide Animations ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide.active .animate {
+      animation: fadeInUp 0.45s ease forwards;
+      opacity: 0;
+    }
+    .slide.active .stagger-1 { animation-delay: 0.05s; }
+    .slide.active .stagger-2 { animation-delay: 0.12s; }
+    .slide.active .stagger-3 { animation-delay: 0.19s; }
+    .slide.active .stagger-4 { animation-delay: 0.26s; }
+    .slide.active .stagger-5 { animation-delay: 0.33s; }
+    .slide.active .stagger-6 { animation-delay: 0.40s; }
+    .slide.active .stagger-7 { animation-delay: 0.47s; }
+
+    /* ===== Bottom Nav ===== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      min-width: 80px;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: #ccc;
+    }
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .nav-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .nav-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 0;
+    }
+    .nav-dot.active {
+      background: var(--accent);
+      transform: scale(1.2);
+    }
+    .nav-dot.visited {
+      background: #c0d8e3;
+    }
+
+    /* ===== Scroll Hint ===== */
+    .scroll-hint {
+      position: fixed;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      color: var(--text-light);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 99;
+    }
+    .scroll-hint.visible { opacity: 1; }
+
+    /* ===== Slide Title Page ===== */
+    .slide-title-page {
+      justify-content: center;
+      text-align: center;
+    }
+    .slide-title-page .slide-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .big-emoji {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .slide-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      background: linear-gradient(90deg, var(--purple), var(--pink), var(--gold), var(--purple));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+
+    .slide-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      max-width: 480px;
+    }
+
+    .brand-tag {
+      display: inline-block;
+      margin-top: 24px;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 16px;
+    }
+
+    /* ===== Section Titles ===== */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .section-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    /* ===== Cards ===== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .s-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: box-shadow 0.15s;
+    }
+    .s-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .s-card h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .s-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ===== Step List ===== */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-body h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .step-body p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== Flow ===== */
+    .flow-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .flow-node {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .flow-track {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 20px;
+      min-width: 20px;
+    }
+
+    .flow-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .flow-line {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      margin-top: 4px;
+    }
+
+    .flow-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      flex: 1;
+    }
+
+    .flow-content h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .flow-content p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .tech-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-light);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-top: 8px;
+      margin-right: 4px;
+    }
+
+    /* ===== Channel Tags ===== */
+    .channel-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .channel-tag {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-light);
+      border-radius: 4px;
+      padding: 3px 10px;
+    }
+
+    /* ===== Stats ===== */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    .stat-card .stat-icon {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+    .stat-card .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .stat-card .stat-value {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* ===== Note Box ===== */
+    .note-box {
+      background: var(--warm-bg);
+      border: 1px solid #ecdec8;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 20px;
+    }
+    .note-box p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .note-box-green {
+      background: var(--green-bg);
+      border-color: #c8dcc9;
+    }
+
+    /* ===== Command Block ===== */
+    .cmd {
+      display: inline-block;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      background: #f4f4f2;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      margin-top: 6px;
+    }
+
+    /* ===== Search Methods ===== */
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .method-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .method-card h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .method-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      text-align: center;
+      margin-top: 32px;
+    }
+    .cta-section p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .cta-btn {
+      display: inline-block;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 32px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .cta-btn:hover { opacity: 0.85; }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      text-decoration: none;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      .slide { padding: 36px 20px 70px; }
+      .slide-title { font-size: 1.6rem; }
+      .section-title { font-size: 1.2rem; }
+      .big-emoji { font-size: 3rem; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .card-grid { grid-template-columns: 1fr; }
+      .method-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .slide { padding: 24px 16px 60px; }
+      .slide-title { font-size: 1.3rem; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Slides ===== -->
+  <div class="slide-deck" id="slideDeck">
+
+    <!-- Slide 0: Title -->
+    <div class="slide slide-title-page active" data-index="0">
+      <div class="slide-inner">
+        <div class="big-emoji animate stagger-1">💡</div>
+        <h1 class="slide-title animate stagger-2">Idea 靈感蒐集狂魔</h1>
+        <p class="slide-subtitle animate stagger-3">在 Slack 看到好的創意靈感，按一個燈泡就能自動存進靈感倉庫，之後隨時用關鍵字搜尋出來。</p>
+        <span class="brand-tag animate stagger-4">只要有人社群顧問</span>
+      </div>
+    </div>
+
+    <!-- Slide 1: Why -->
+    <div class="slide" data-index="1">
+      <div class="slide-inner">
+        <p class="section-label animate stagger-1">痛點</p>
+        <h2 class="section-title animate stagger-2">為什麼需要這個工具？</h2>
+        <p class="section-desc animate stagger-3">我們平常在 Slack 分享了很多很棒的創意案例、社群靈感、競品觀察，但這些訊息很快就被洗掉、找不到。</p>
+
+        <div class="stat-grid animate stagger-4">
+          <div class="stat-card">
+            <div class="stat-icon">💬</div>
+            <div class="stat-label">Slack 訊息洗掉</div>
+            <div class="stat-value">好靈感轉眼消失</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔍</div>
+            <div class="stat-label">提案前翻不到</div>
+            <div class="stat-value">只能靠記憶找</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✨</div>
+            <div class="stat-label">靈感蒐集狂魔</div>
+            <div class="stat-value">好點子不會消失</div>
+          </div>
+        </div>
+
+        <div class="note-box-green note-box animate stagger-5">
+          <p><strong>Idea 靈感蒐集狂魔</strong>讓好點子不會消失，而且隨時搜得到。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: How to collect -->
+    <div class="slide" data-index="2">
+      <div class="slide-inner">
+        <p class="section-label animate stagger-1">蒐集</p>
+        <h2 class="section-title animate stagger-2">怎麼蒐集靈感？</h2>
+        <p class="section-desc animate stagger-3">只要四步，一切全自動。</p>
+
+        <div class="step-list">
+          <div class="step-item animate stagger-3">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>看到好東西</h4>
+              <p>在 Slack 頻道看到值得收藏的創意靈感</p>
+            </div>
+          </div>
+          <div class="step-item animate stagger-4">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>按下燈泡 Emoji 💡</h4>
+              <p>對那則訊息按下 💡，系統就會開始自動蒐集</p>
+            </div>
+          </div>
+          <div class="step-item animate stagger-5">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>到 #idea-inbox 加個備註（非必要）</h4>
+              <p>系統會在 #idea-inbox 頻道發通知並標記你，直接在底下回覆備註。例如：「母親節可以用」「這個手法適合麥當勞」</p>
+            </div>
+          </div>
+          <div class="step-item animate stagger-6">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h4>完成！ ✨</h4>
+              <p>系統自動處理——抓原文、AI 分析、產生摘要和標籤，全部存進靈感倉庫</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Supported channels & types -->
+    <div class="slide" data-index="3">
+      <div class="slide-inner">
+        <p class="section-label animate stagger-1">支援範圍</p>
+        <h2 class="section-title animate stagger-2">支援的頻道與訊息類型</h2>
+
+        <div class="s-card animate stagger-3" style="margin-bottom: 20px;">
+          <h4>💡 目前支援的頻道</h4>
+          <p>按燈泡收集靈感的功能目前僅限於以下頻道：</p>
+          <div class="channel-list" style="margin-top: 10px;">
+            <span class="channel-tag">#discuss_account</span>
+            <span class="channel-tag">#zzzz_general</span>
+            <span class="channel-tag">#creative-team</span>
+            <span class="channel-tag">#project_mcdonald_ig經營</span>
+            <span class="channel-tag">#zzzz_random</span>
+            <span class="channel-tag">#idea-inbox</span>
+            <span class="channel-tag">#project_mcdonald_brand</span>
+            <span class="channel-tag">#project_借勢話題小組</span>
+            <span class="channel-tag">#zzzz_idea</span>
+          </div>
+          <p style="margin-top: 10px; font-size: 0.82rem; color: var(--text-light);">如果需要在其他頻道也加入此功能，請跟柏文說。</p>
+        </div>
+
+        <div class="s-card animate stagger-4" style="margin-bottom: 20px;">
+          <h4>📸 支援的訊息類型</h4>
+          <p>支援<strong>純文字</strong>、<strong>帶有連結</strong>以及<strong>圖片附件</strong>的訊息。<br>圖片會自動存到 Google Drive，並在搜尋結果中顯示。</p>
+        </div>
+
+        <div class="note-box animate stagger-5">
+          <p>⚠️ 如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，系統會解析不出來。分享靈感的時候，請附帶一段文字描述。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: How to search -->
+    <div class="slide" data-index="4">
+      <div class="slide-inner">
+        <p class="section-label animate stagger-1">搜尋</p>
+        <h2 class="section-title animate stagger-2">怎麼搜尋靈感？</h2>
+        <p class="section-desc animate stagger-3">三種方式，搜尋結果一樣。</p>
+
+        <div class="method-grid animate stagger-4">
+          <div class="method-card">
+            <h4>🌐 網頁搜尋</h4>
+            <p>打開靈感搜尋狂魔網頁，在搜尋框輸入關鍵字，結果即時顯示。</p>
+          </div>
+          <div class="method-card">
+            <h4>⚡ Slash Command</h4>
+            <p>在 Slack 頻道主訊息區輸入</p>
+            <div class="cmd">/idea 愚人節</div>
+            <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 4px;">⚠️ thread 裡用不了（Slack 限制）</p>
+          </div>
+          <div class="method-card">
+            <h4>🤖 @ 機器人</h4>
+            <p>在任何地方（包括 thread）</p>
+            <div class="cmd">@Idea Collection Bot 愚人節</div>
+            <p style="font-size: 0.72rem; color: var(--green); margin-top: 4px;">✓ 到哪都能用</p>
+          </div>
+        </div>
+
+        <div class="note-box-green note-box animate stagger-5">
+          <p>💡 <strong>網頁版</strong>可以瀏覽卡片式結果、看原文摘要和圖片；<strong>Slack 搜尋</strong>方便在工作中快速查找。兩邊資料來源一樣。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Tips -->
+    <div class="slide" data-index="5">
+      <div class="slide-inner">
+        <p class="section-label animate stagger-1">小技巧</p>
+        <h2 class="section-title animate stagger-2">搜尋進階用法</h2>
+
+        <div class="card-grid" style="margin-top: 20px;">
+          <div class="s-card animate stagger-3">
+            <h4>多關鍵字搜尋</h4>
+            <p>輸入多個關鍵字，找出同時包含所有關鍵字的結果</p>
+            <div class="cmd" style="margin-top: 10px;">/idea 麥當勞 愚人節</div>
+          </div>
+          <div class="s-card animate stagger-4">
+            <h4>指定顯示筆數（Slack 限定）</h4>
+            <p>預設顯示最新 10 筆，想看更多可以用 #數字</p>
+            <div class="cmd" style="margin-top: 10px;">/idea #20 愚人節</div>
+          </div>
+        </div>
+
+        <div class="note-box animate stagger-5" style="margin-top: 24px;">
+          <p>⚠️ <strong>AI 分析與每日上限</strong>：所有靈感的摘要和標籤都是由 Gemini AI 自動分析產生的。每天的 AI 分析額度有限，<strong>請一天不要提供超過 20 個點子</strong>。超過額度的靈感不會消失，會延到隔天處理。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Architecture -->
+    <div class="slide" data-index="6">
+      <div class="slide-inner">
+        <p class="section-label animate stagger-1">技術架構</p>
+        <h2 class="section-title animate stagger-2">背後怎麼運作的？</h2>
+        <p class="section-desc animate stagger-3">整個流程全自動，不需要手動整理。</p>
+
+        <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 12px;" class="animate stagger-3">💡 蒐集流程</h4>
+
+        <div class="flow-vertical">
+          <div class="flow-node animate stagger-3">
+            <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>觸發蒐集</h4>
+              <p>在 Slack 按下 💡 → Slack Workflow 自動把訊息轉發到 #idea-inbox，同步記錄到 Google Sheets</p>
+              <span class="tech-tag">Slack Workflow</span>
+            </div>
+          </div>
+          <div class="flow-node animate stagger-4">
+            <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>自動抓取原文</h4>
+              <p>Google Apps Script 每小時自動執行，透過 Slack API 抓取完整原文、發布日期、撰寫者</p>
+              <span class="tech-tag">Google Apps Script</span>
+              <span class="tech-tag">Slack API</span>
+            </div>
+          </div>
+          <div class="flow-node animate stagger-5">
+            <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>圖片處理 & AI 分析</h4>
+              <p>圖片自動存到 Google Drive；原文和圖片送給 Gemini AI，產生摘要與多維度標籤</p>
+              <span class="tech-tag">Google Drive</span>
+              <span class="tech-tag">Gemini AI</span>
+            </div>
+          </div>
+          <div class="flow-node animate stagger-6">
+            <div class="flow-track"><div class="flow-dot"></div></div>
+            <div class="flow-content">
+              <h4>寫回資料庫</h4>
+              <p>所有資料自動寫回 Google Sheets「只要有人靈感倉庫」</p>
+              <span class="tech-tag">Google Sheets</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Search flow -->
+    <div class="slide" data-index="7">
+      <div class="slide-inner">
+        <p class="section-label animate stagger-1">技術架構</p>
+        <h2 class="section-title animate stagger-2">搜尋流程</h2>
+        <p class="section-desc animate stagger-3">從搜尋到結果，全程自動。</p>
+
+        <div class="flow-vertical">
+          <div class="flow-node animate stagger-3">
+            <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>接收搜尋請求</h4>
+              <p>透過網頁搜尋框、Slack /idea 指令或 @Idea Collection Bot 發起搜尋</p>
+              <span class="tech-tag">GitHub Pages</span>
+              <span class="tech-tag">Slack Command</span>
+            </div>
+          </div>
+          <div class="flow-node animate stagger-4">
+            <div class="flow-track"><div class="flow-dot"></div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>搜尋比對</h4>
+              <p>在 Google Sheets 中搜尋摘要、標籤等欄位，結果按蒐集日期由新到舊排序</p>
+              <span class="tech-tag">Google Apps Script</span>
+            </div>
+          </div>
+          <div class="flow-node animate stagger-5">
+            <div class="flow-track"><div class="flow-dot"></div></div>
+            <div class="flow-content">
+              <h4>回傳結果</h4>
+              <p>網頁版以卡片式呈現完整結果（含圖片）；Slack 版直接在對話中回傳摘要和原文連結</p>
+              <span class="tech-tag">Web App</span>
+              <span class="tech-tag">Slack API</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: End -->
+    <div class="slide slide-title-page" data-index="8">
+      <div class="slide-inner">
+        <div class="big-emoji animate stagger-1">🚀</div>
+        <h2 class="slide-title animate stagger-2">開始使用吧！</h2>
+        <p class="slide-subtitle animate stagger-3">看到好靈感，就按 💡 蒐集起來。<br>需要靈感的時候，搜尋就對了。</p>
+
+        <div class="cta-section animate stagger-4">
+          <p>所有靈感都存在 Google Sheets 資料庫中</p>
+          <a class="cta-btn" href="https://docs.google.com/spreadsheets/d/1eYHwf1ECW67B6iZi92uUHB-xDEKNERnPMGayKB7Mnjs/edit?usp=sharing" target="_blank">📋 開啟靈感倉庫</a>
+        </div>
+
+        <a class="back-link animate stagger-5" href="index.html#about">← 回到關於頁面</a>
+        <p class="animate stagger-6" style="margin-top: 32px; font-size: 0.8rem; color: var(--text-light);">只要有人社群顧問 × Idea 靈感蒐集狂魔 ✨</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scroll Hint -->
+  <div class="scroll-hint" id="scrollHint">↓ 向下捲動看更多</div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-btn" id="btnPrev" onclick="goSlide(current - 1)" disabled>← 上一頁</button>
+    <div class="nav-dots" id="navDots"></div>
+    <button class="nav-btn" id="btnNext" onclick="goSlide(current + 1)">下一頁 →</button>
+  </div>
+
+  <script>
+    var slides = document.querySelectorAll('.slide');
+    var total = slides.length;
+    var current = 0;
+    var visited = {};
+    visited[0] = true;
+
+    // Build dots
+    var dotsContainer = document.getElementById('navDots');
+    for (var i = 0; i < total; i++) {
+      var dot = document.createElement('button');
+      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('data-index', i);
+      dot.onclick = (function(idx) { return function() { goSlide(idx); }; })(i);
+      dotsContainer.appendChild(dot);
+    }
+
+    function goSlide(index) {
+      if (index < 0 || index >= total || index === current) return;
+
+      var direction = index > current ? 'down' : 'up';
+
+      // Remove classes from current
+      slides[current].classList.remove('active');
+      if (direction === 'down') {
+        slides[current].classList.add('exit-up');
+      }
+
+      // Clean up exit class after transition
+      var prev = current;
+      setTimeout(function() {
+        slides[prev].classList.remove('exit-up');
+      }, 500);
+
+      current = index;
+      visited[current] = true;
+
+      // Activate new slide
+      slides[current].classList.add('active');
+      slides[current].scrollTop = 0;
+
+      updateNav();
+      checkScrollHint();
+    }
+
+    function updateNav() {
+      document.getElementById('btnPrev').disabled = (current === 0);
+      document.getElementById('btnNext').disabled = (current === total - 1);
+
+      var dots = document.querySelectorAll('.nav-dot');
+      for (var i = 0; i < dots.length; i++) {
+        dots[i].classList.remove('active', 'visited');
+        if (i === current) {
+          dots[i].classList.add('active');
+        } else if (visited[i]) {
+          dots[i].classList.add('visited');
+        }
+      }
+    }
+
+    function checkScrollHint() {
+      var slide = slides[current];
+      var hint = document.getElementById('scrollHint');
+      if (slide.scrollHeight > slide.clientHeight + 10 && slide.scrollTop < 10) {
+        hint.classList.add('visible');
+      } else {
+        hint.classList.remove('visible');
+      }
+    }
+
+    // Scroll listener for active slide
+    document.addEventListener('scroll', function() {
+      checkScrollHint();
+    }, true);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        goSlide(current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        goSlide(current - 1);
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        goSlide(current + 1);
+      }
+    });
+
+    // Touch swipe
+    var touchStartX = 0;
+    var touchStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    });
+    document.addEventListener('touchend', function(e) {
+      var dx = e.changedTouches[0].screenX - touchStartX;
+      var dy = e.changedTouches[0].screenY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        if (dx < 0) goSlide(current + 1);
+        else goSlide(current - 1);
+      }
+    });
+
+    // Initial check
+    checkScrollHint();
+  </script>
+
+</body>
+</html>

@@ -269,6 +269,25 @@
     }
     .sheets-cta a:hover { opacity: 0.85; }
 
+    /* ===== Presentation Button ===== */
+    .presentation-btn {
+      display: inline-block;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a7c96;
+      background: #e8f4f8;
+      border: 1px solid #c0d8e3;
+      border-radius: 8px;
+      padding: 8px 20px;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .presentation-btn:hover {
+      background: #d4ecf3;
+      border-color: #a0c8d8;
+    }
+
     /* ===== About page ===== */
     .about-hero { margin-bottom: 48px; }
     .about-hero h2 {
@@ -450,6 +469,10 @@
     <!-- ===== 關於頁 ===== -->
     <div id="page-about" class="page">
 
+      <div style="text-align: center; margin-bottom: 20px;">
+        <a href="presentation.html" target="_blank" class="presentation-btn">📽️ 開啟簡報模式</a>
+      </div>
+
       <div class="about-hero">
         <h2>💡 <span class="magic-text">關於</span> <span class="magic-brand">只要有人靈感蒐集狂魔</span></h2>
         <p>在 Slack 看到好的創意靈感，按一個燈泡 💡 就能自動存進靈感倉庫，之後隨時用關鍵字搜尋出來。</p>
@@ -524,6 +547,12 @@
           <p><strong>📸 支援的訊息類型</strong></p>
           <p>支援<strong>純文字</strong>、<strong>帶有連結</strong>以及<strong>圖片附件</strong>的訊息。圖片會自動存到 Google Drive，並在搜尋結果中顯示。</p>
           <p>另外，如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，系統會解析不出來。所以分享靈感的時候，請記得附帶一段簡短的文字來描述這個靈感是什麼。</p>
+        </div>
+
+        <div class="note note-warning" style="margin-top: 10px;">
+          <p><strong>⚠️ AI 分析與每日上限</strong></p>
+          <p>所有靈感的摘要和標籤都是由 <strong>Gemini AI</strong> 自動分析產生的（連結柏文公司帳戶的免費 Gemini API）。由於每天的 AI 分析額度有限，<strong>請大家一天不要提供超過 20 個點子</strong>，避免額度用完後當天剩下的靈感無法處理。</p>
+          <p>放心，超過額度的靈感不會消失，只是會延到隔天才由 AI 分析完成。</p>
         </div>
       </div>
 
