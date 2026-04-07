@@ -28,7 +28,7 @@
       border-bottom: 1px solid #e8e8e5;
     }
     .nav-inner {
-      max-width: 720px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 0 20px;
       display: flex;
@@ -68,10 +68,12 @@
 
     /* ===== Container ===== */
     .container {
-      max-width: 720px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 40px 20px 40px;
     }
+    /* 關於頁維持窄版 */
+    #page-about { max-width: 720px; margin: 0 auto; }
 
     /* ===== Page visibility ===== */
     .page { display: none; }
@@ -155,45 +157,102 @@
     .empty-state { text-align: center; padding: 40px 0; color: #999; font-size: 0.9rem; }
     .section-heading { font-size: 0.85rem; color: #999; margin-bottom: 16px; }
 
+    /* ===== Card Grid ===== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
     .card {
       background: #ffffff; border: 1px solid #e8e8e5;
-      border-radius: 10px; padding: 20px; margin-bottom: 12px;
+      border-radius: 10px; padding: 16px; cursor: pointer;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column;
     }
-    .card-summary { font-size: 0.95rem; font-weight: 500; line-height: 1.7; margin-bottom: 10px; color: #1a1a1a; }
-    .card-content {
-      font-size: 0.85rem; line-height: 1.7; color: #555; margin-bottom: 12px;
+    .card:hover { border-color: #d0d0cc; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card-summary {
+      font-size: 0.9rem; font-weight: 500; line-height: 1.7; margin-bottom: 10px; color: #1a1a1a;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-images { display: flex; gap: 6px; margin-bottom: 10px; }
+    .card-img {
+      flex: 1; min-width: 0; height: 120px; border-radius: 6px;
+      border: 1px solid #e8e8e5; object-fit: cover;
+    }
+    .card-images-more {
+      flex: 0 0 40px; height: 120px; border-radius: 6px;
+      background: rgba(0,0,0,0.04); border: 1px solid #e8e8e5;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; color: #999; font-weight: 500;
+    }
+    .card-footer {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px;
+      font-size: 0.72rem; color: #aaa; padding-top: 10px; border-top: 1px solid #f0f0ed;
+      margin-top: auto;
+    }
+    .card-tags { font-size: 0.68rem; color: #bbb; line-height: 1.6; }
+
+    /* ===== Modal ===== */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+      justify-content: center; align-items: flex-start;
+      padding: 40px 20px; overflow-y: auto;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #fff; border-radius: 12px; max-width: 680px; width: 100%;
+      padding: 28px; position: relative; animation: modalIn 0.2s ease;
+    }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-close {
+      position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: 8px;
+      border: none; background: #f5f5f3; color: #666;
+      font-size: 1.1rem; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; transition: background 0.15s;
+    }
+    .modal-close:hover { background: #eee; }
+    .modal-summary { font-size: 1.05rem; font-weight: 600; line-height: 1.7; margin-bottom: 16px; color: #1a1a1a; padding-right: 36px; }
+    .modal-images { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .modal-img {
+      max-width: 100%; max-height: 360px; border-radius: 8px;
+      border: 1px solid #e8e8e5; object-fit: contain; cursor: zoom-in;
+    }
+    .modal-images:has(.modal-img + .modal-img) .modal-img {
+      max-width: calc(50% - 4px); max-height: 240px; object-fit: cover;
+    }
+    .modal-content {
+      font-size: 0.88rem; line-height: 1.8; color: #555; margin-bottom: 16px;
       white-space: pre-wrap; word-break: break-word;
       border-left: 3px solid #e0e0dc; padding-left: 14px; margin-left: 2px;
     }
-    .card-images { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-    .card-img {
-      max-width: 100%; height: auto; border-radius: 8px;
-      border: 1px solid #e8e8e5; object-fit: cover;
-    }
-    .card-images:has(.card-img + .card-img) .card-img {
-      max-width: calc(50% - 4px); max-height: 200px;
-    }
-    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-    .card-btn {
+    .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .modal-btn {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 5px 12px; font-family: inherit; font-size: 0.75rem;
+      padding: 7px 14px; font-family: inherit; font-size: 0.8rem;
       color: #4a7c96; background: #f0f7fa; border: 1px solid #d4e8f0;
       border-radius: 6px; text-decoration: none; transition: background 0.15s;
     }
-    .card-btn:hover { background: #e2eff5; }
-    .card-footer {
+    .modal-btn:hover { background: #e2eff5; }
+    .modal-footer {
       display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px;
-      font-size: 0.75rem; color: #aaa; padding-top: 12px; border-top: 1px solid #f0f0ed;
+      font-size: 0.75rem; color: #aaa; padding-top: 14px; border-top: 1px solid #f0f0ed;
     }
-    .card-tags { font-size: 0.7rem; color: #aaa; line-height: 1.8; }
-    .card-tags .more-tags { cursor: default; position: relative; color: #bbb; }
-    .card-tags .more-tags .tooltip {
-      display: none; position: absolute; bottom: 100%; left: 50%;
-      transform: translateX(-50%); background: #333; color: #fff;
-      font-size: 0.7rem; padding: 6px 10px; border-radius: 6px;
-      max-width: 300px; white-space: normal; z-index: 10; margin-bottom: 4px;
+    .modal-tags { font-size: 0.72rem; color: #aaa; line-height: 1.8; }
+
+    /* ===== Lightbox ===== */
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.85); cursor: zoom-out;
+      justify-content: center; align-items: center; padding: 20px;
     }
-    .card-tags .more-tags:hover .tooltip { display: block; }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 95vw; max-height: 92vh; object-fit: contain;
+      border-radius: 4px; cursor: default;
+    }
 
     .sheets-cta {
       text-align: center; padding: 28px 20px; margin-top: 24px;
@@ -342,12 +401,15 @@
 
     .about-footer { text-align: center; padding: 32px 0 0; font-size: 0.75rem; color: #c0c0c0; }
 
-    @media (max-width: 480px) {
+    @media (max-width: 640px) {
       .container { padding: 32px 16px 32px; }
       h1 { font-size: 1.3rem; margin-bottom: 24px; }
-      .card { padding: 16px; }
+      .card-grid { grid-template-columns: 1fr; }
+      .card { padding: 14px; }
       .two-col { grid-template-columns: 1fr; }
       .about-hero h2 { font-size: 1.25rem; }
+      .modal { padding: 20px; }
+      .modal-overlay { padding: 20px 12px; }
     }
   </style>
 </head>
@@ -458,9 +520,9 @@
           <p style="margin-top: 8px;">如果需要在其他頻道也加入這個功能，請跟<strong>柏文</strong>說。</p>
         </div>
 
-        <div class="note note-warning" style="margin-top: 10px;">
-          <p><strong>⚠️ 目前支援的訊息類型</strong></p>
-          <p>目前只適用於<strong>純文字</strong>以及<strong>帶有連結</strong>的訊息。圖片目前沒辦法加入，但這個功能會盡速開發。</p>
+        <div class="note note-info" style="margin-top: 10px;">
+          <p><strong>📸 支援的訊息類型</strong></p>
+          <p>支援<strong>純文字</strong>、<strong>帶有連結</strong>以及<strong>圖片附件</strong>的訊息。圖片會自動存到 Google Drive，並在搜尋結果中顯示。</p>
           <p>另外，如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，系統會解析不出來。所以分享靈感的時候，請記得附帶一段簡短的文字來描述這個靈感是什麼。</p>
         </div>
       </div>
@@ -609,6 +671,19 @@
     </div>
   </div>
 
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" id="modalContent" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
   <script>
     // ===== 分頁切換 =====
     function switchPage(pageName, updateHash) {
@@ -665,12 +740,12 @@
     }
 
     function showLatest() {
-      // 取最後 6 筆（Google Sheets 最下面的資料 = 最新的靈感），然後反轉讓最新的排最前面
-      var latest = allData.slice(-6).reverse();
+      var latest = allData.slice(-9).reverse();
       if (latest.length === 0) return;
       statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨</div>';
-      var html = '';
-      for (var i = 0; i < latest.length; i++) { html += renderCard(latest[i]); }
+      var html = '<div class="card-grid">';
+      for (var i = 0; i < latest.length; i++) { html += renderCard(latest[i], allData.length - latest.length + (latest.length - 1 - i)); }
+      html += '</div>';
       resultsEl.innerHTML = html;
     }
 
@@ -678,52 +753,48 @@
       var query = searchInput.value.trim();
       if (!query) { showLatest(); return; }
       var keywords = query.toLowerCase().split(/\s+/);
-      var matched = allData.filter(function(item) {
-        var text = ((item.summary || '') + ' ' + (item.tags || '')).toLowerCase();
-        return keywords.every(function(kw) { return text.indexOf(kw) !== -1; });
-      });
-      matched.sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
+      // 記住原始 index 方便 modal 查詢
+      var matched = [];
+      for (var i = 0; i < allData.length; i++) {
+        var text = ((allData[i].summary || '') + ' ' + (allData[i].tags || '')).toLowerCase();
+        if (keywords.every(function(kw) { return text.indexOf(kw) !== -1; })) {
+          matched.push({ item: allData[i], idx: i });
+        }
+      }
+      matched.sort(function(a, b) { return (b.item.date || '').localeCompare(a.item.date || ''); });
       if (matched.length === 0) {
         statusEl.innerHTML = '';
         resultsEl.innerHTML = '<div class="empty-state">找不到符合「' + escapeHtml(query) + '」的結果</div>';
         return;
       }
       statusEl.innerHTML = '<div class="section-heading">找到 ' + matched.length + ' 筆結果</div>';
-      var html = '';
-      for (var i = 0; i < matched.length; i++) { html += renderCard(matched[i]); }
+      var html = '<div class="card-grid">';
+      for (var i = 0; i < matched.length; i++) { html += renderCard(matched[i].item, matched[i].idx); }
+      html += '</div>';
       resultsEl.innerHTML = html;
     }
 
-    function renderCard(item) {
-      var card = '<div class="card">';
+    // ===== 精簡卡片（Grid 用）=====
+    function renderCard(item, dataIndex) {
+      var card = '<div class="card" onclick="openModal(' + dataIndex + ')">';
       card += '<div class="card-summary">' + escapeHtml(item.summary || '') + '</div>';
 
-      // 圖片顯示（K 欄，多張圖用換行隔開）
+      // 圖片：最多顯示 3 張
       if (item.image) {
         var imageUrls = item.image.split('\n').filter(function(u) { return u.trim(); });
         if (imageUrls.length > 0) {
+          var showCount = Math.min(imageUrls.length, 3);
           card += '<div class="card-images">';
-          for (var imgI = 0; imgI < imageUrls.length; imgI++) {
+          for (var imgI = 0; imgI < showCount; imgI++) {
             card += '<img class="card-img" src="' + escapeHtml(imageUrls[imgI].trim()) + '" alt="靈感圖片" loading="lazy">';
+          }
+          if (imageUrls.length > 3) {
+            card += '<div class="card-images-more">+' + (imageUrls.length - 3) + '</div>';
           }
           card += '</div>';
         }
       }
 
-      var content = item.content || '';
-      if (content) {
-        var truncated = content.length > 150;
-        var displayContent = truncated ? content.substring(0, 150) + '...' : content;
-        card += '<div class="card-content">' + escapeHtml(displayContent) + '</div>';
-      }
-      var hasSource = item.source;
-      var hasUrl = item.url && item.url !== item.source;
-      if (hasSource || hasUrl) {
-        card += '<div class="card-actions">';
-        if (hasSource) card += '<a class="card-btn" href="' + escapeHtml(item.source) + '" target="_blank" rel="noopener noreferrer">💬 Slack 原文</a>';
-        if (hasUrl) card += '<a class="card-btn" href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer">🔗 參考連結</a>';
-        card += '</div>';
-      }
       card += '<div class="card-footer">';
       if (item.author) card += '<span>' + escapeHtml(item.author) + '</span>';
       if (item.date) card += '<span>' + escapeHtml(item.date) + '</span>';
@@ -731,20 +802,102 @@
         var tags = item.tags.split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
         if (tags.length > 0) {
           var visible = tags.slice(0, 3);
-          var hidden = tags.slice(3);
-          var tagsHtml = '<span class="card-tags">';
-          tagsHtml += visible.map(function(t) { return '#' + escapeHtml(t); }).join('  ');
-          if (hidden.length > 0) {
-            tagsHtml += '  <span class="more-tags">... +' + hidden.length +
-              '<span class="tooltip">' + hidden.map(function(t) { return '#' + escapeHtml(t); }).join('  ') + '</span></span>';
-          }
-          tagsHtml += '</span>';
-          card += tagsHtml;
+          card += '<span class="card-tags">' + visible.map(function(t) { return '#' + escapeHtml(t); }).join('  ');
+          if (tags.length > 3) card += '  <span style="color:#ccc">+' + (tags.length - 3) + '</span>';
+          card += '</span>';
         }
       }
       card += '</div></div>';
       return card;
     }
+
+    // ===== Modal：展開完整內容 =====
+    function openModal(dataIndex) {
+      var item = allData[dataIndex];
+      if (!item) return;
+      var html = '';
+      html += '<div class="modal-summary">' + escapeHtml(item.summary || '') + '</div>';
+
+      // 所有圖片
+      if (item.image) {
+        var imageUrls = item.image.split('\n').filter(function(u) { return u.trim(); });
+        if (imageUrls.length > 0) {
+          html += '<div class="modal-images">';
+          for (var i = 0; i < imageUrls.length; i++) {
+            html += '<img class="modal-img" src="' + escapeHtml(imageUrls[i].trim()) + '" alt="靈感圖片" loading="lazy" onclick="openLightbox(this.src)">';
+          }
+          html += '</div>';
+        }
+      }
+
+      // 完整原文
+      var content = item.content || '';
+      if (content) {
+        html += '<div class="modal-content">' + escapeHtml(content) + '</div>';
+      }
+
+      // 連結按鈕
+      var hasSource = item.source;
+      var hasUrl = item.url && item.url !== item.source;
+      if (hasSource || hasUrl) {
+        html += '<div class="modal-actions">';
+        if (hasSource) html += '<a class="modal-btn" href="' + escapeHtml(item.source) + '" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">💬 Slack 原文</a>';
+        if (hasUrl) {
+          var urls = item.url.split('\n').filter(function(u) { return u.trim(); });
+          for (var u = 0; u < urls.length; u++) {
+            html += '<a class="modal-btn" href="' + escapeHtml(urls[u].trim()) + '" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">🔗 參考連結</a>';
+          }
+        }
+        html += '</div>';
+      }
+
+      // Footer
+      html += '<div class="modal-footer">';
+      if (item.author) html += '<span>' + escapeHtml(item.author) + '</span>';
+      if (item.collector && item.collector !== item.author) html += '<span>蒐集：' + escapeHtml(item.collector) + '</span>';
+      if (item.date) html += '<span>' + escapeHtml(item.date) + '</span>';
+      if (item.tags) {
+        var tags = item.tags.split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
+        if (tags.length > 0) {
+          html += '<div class="modal-tags" style="width:100%">' + tags.map(function(t) { return '#' + escapeHtml(t); }).join('  ') + '</div>';
+        }
+      }
+      html += '</div>';
+
+      document.getElementById('modalBody').innerHTML = html;
+      document.getElementById('modalOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(e) {
+      if (e && e.target !== document.getElementById('modalOverlay')) return;
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // ===== Lightbox =====
+    function openLightbox(src) {
+      event.stopPropagation();
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightbox').classList.add('active');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.getElementById('lightboxImg').src = '';
+    }
+
+    // ESC 關閉
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (document.getElementById('lightbox').classList.contains('active')) {
+          closeLightbox();
+        } else if (document.getElementById('modalOverlay').classList.contains('active')) {
+          closeModal();
+          document.getElementById('modalOverlay').classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+    });
 
     function escapeHtml(str) {
       var div = document.createElement('div');
