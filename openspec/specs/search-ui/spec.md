@@ -117,7 +117,7 @@ code:
   - FB _ IG/貼文大賞投稿_貼文創意組_E-lin_01.pptx
   - FB _ IG/貼文大賞投稿_貼文創意組_安安_02.pptx
   - idea-search-brief.md
-  - apps-script-search.js
+  - google-apps-script.js
   - Threads/貼文大賞投稿_Threads 神回覆組_育玫_03.pptx
   - idea-images/fbig_034.png
   - Threads/.~lock.貼文大賞投稿_Threads 神回覆組_柏文_01.pdf#
@@ -352,7 +352,7 @@ code:
   - FB _ IG/貼文大賞投稿_貼文創意組_E-lin_01.pptx
   - FB _ IG/貼文大賞投稿_貼文創意組_安安_02.pptx
   - idea-search-brief.md
-  - apps-script-search.js
+  - google-apps-script.js
   - Threads/貼文大賞投稿_Threads 神回覆組_育玫_03.pptx
   - idea-images/fbig_034.png
   - Threads/.~lock.貼文大賞投稿_Threads 神回覆組_柏文_01.pdf#
@@ -587,7 +587,7 @@ code:
   - FB _ IG/貼文大賞投稿_貼文創意組_E-lin_01.pptx
   - FB _ IG/貼文大賞投稿_貼文創意組_安安_02.pptx
   - idea-search-brief.md
-  - apps-script-search.js
+  - google-apps-script.js
   - Threads/貼文大賞投稿_Threads 神回覆組_育玫_03.pptx
   - idea-images/fbig_034.png
   - Threads/.~lock.貼文大賞投稿_Threads 神回覆組_柏文_01.pdf#
@@ -827,7 +827,7 @@ code:
   - FB _ IG/貼文大賞投稿_貼文創意組_E-lin_01.pptx
   - FB _ IG/貼文大賞投稿_貼文創意組_安安_02.pptx
   - idea-search-brief.md
-  - apps-script-search.js
+  - google-apps-script.js
   - Threads/貼文大賞投稿_Threads 神回覆組_育玫_03.pptx
   - idea-images/fbig_034.png
   - Threads/.~lock.貼文大賞投稿_Threads 神回覆組_柏文_01.pdf#
@@ -1066,7 +1066,7 @@ code:
   - FB _ IG/貼文大賞投稿_貼文創意組_E-lin_01.pptx
   - FB _ IG/貼文大賞投稿_貼文創意組_安安_02.pptx
   - idea-search-brief.md
-  - apps-script-search.js
+  - google-apps-script.js
   - Threads/貼文大賞投稿_Threads 神回覆組_育玫_03.pptx
   - idea-images/fbig_034.png
   - Threads/.~lock.貼文大賞投稿_Threads 神回覆組_柏文_01.pdf#

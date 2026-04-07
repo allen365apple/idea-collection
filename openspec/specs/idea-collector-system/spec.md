@@ -12,8 +12,7 @@ The system collects creative inspiration from Slack messages, stores them in Goo
 
 | Component | File | Runtime | Role |
 |-----------|------|---------|------|
-| Collection & Analysis Engine | `google-apps-script.js` | Google Apps Script | Handles Slack events, collects ideas, runs AI analysis, manages images |
-| Search API | `apps-script-search.js` | Google Apps Script | Serves idea data as JSON for the web frontend |
+| Collection, Analysis & Search Engine | `google-apps-script.js` | Google Apps Script | Handles Slack events, collects ideas, runs AI analysis, manages images, serves search API |
 | Web Frontend | `index.html` | GitHub Pages | Search page, about page, random idea feature |
 | Presentation | `presentation.html` | GitHub Pages | Fullscreen slideshow explaining the system |
 | Data Store | Google Sheets | Google Cloud | Central database (Sheet1) with 11 columns A-K |
@@ -111,7 +110,7 @@ Free Gemini API quota limits processing to ~20 ideas per day. Excess ideas are q
 ## Search System
 
 ### Web Search (`index.html`)
-- Loads all data from `apps-script-search.js` API on page load
+- Loads all data from `google-apps-script.js` search API (`doGet`) on page load
 - Client-side search: matches keywords against H (summary) and I (tags) columns
 - Supports multi-keyword AND logic
 - Card-based results sorted by date (newest first)
