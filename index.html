@@ -218,6 +218,28 @@
 
     .empty-state { text-align: center; padding: 40px 0; color: #999; font-size: 0.9rem; }
     .section-heading { font-size: 0.85rem; color: #999; margin-bottom: 16px; }
+    .section-heading strong { color: #7f7f78; font-weight: 600; }
+    .load-more-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 22px;
+    }
+    .btn-load-more {
+      padding: 11px 22px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #7d5ac4;
+      background: #f6f0ff;
+      border: 1px solid #dcccf8;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-load-more:hover {
+      background: #efe4ff;
+      border-color: #cbb0f4;
+    }
 
     /* ===== Card Grid ===== */
     .card-grid {
@@ -808,6 +830,9 @@
     var statusEl = document.getElementById('status');
     var resultsEl = document.getElementById('results');
     var ideaCountEl = document.getElementById('ideaCount');
+    var LATEST_INITIAL_COUNT = 10;
+    var LATEST_BATCH_SIZE = 10;
+    var latestVisibleCount = LATEST_INITIAL_COUNT;
 
     function loadData() {
       statusEl.innerHTML =
@@ -829,7 +854,7 @@
           searchBtn.disabled = false;
           document.getElementById('randomBtn').disabled = false;
           searchInput.focus();
-          showLatest();
+          showLatest(true);
         })
         .catch(function() {
           statusEl.innerHTML =
@@ -837,19 +862,46 @@
         });
     }
 
-    function showLatest() {
-      var latest = allData.slice(-9).reverse();
-      if (latest.length === 0) return;
-      statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨</div>';
+    function getLatestEntries() {
+      var entries = [];
+      for (var i = 0; i < allData.length; i++) {
+        entries.push({ item: allData[i], idx: i });
+      }
+      entries.sort(function(a, b) {
+        return (b.item.date || '').localeCompare(a.item.date || '');
+      });
+      return entries;
+    }
+
+    function showLatest(resetCount) {
+      if (resetCount !== false) latestVisibleCount = LATEST_INITIAL_COUNT;
+      var latestEntries = getLatestEntries();
+      if (latestEntries.length === 0) {
+        statusEl.innerHTML = '';
+        resultsEl.innerHTML = '<div class="empty-state">目前還沒有任何靈感點子</div>';
+        return;
+      }
+      var visibleEntries = latestEntries.slice(0, latestVisibleCount);
+      statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨ <strong>已顯示 ' + visibleEntries.length + ' / ' + latestEntries.length + '</strong></div>';
       var html = '<div class="card-grid">';
-      for (var i = 0; i < latest.length; i++) { html += renderCard(latest[i], allData.length - latest.length + (latest.length - 1 - i)); }
+      for (var i = 0; i < visibleEntries.length; i++) {
+        html += renderCard(visibleEntries[i].item, visibleEntries[i].idx);
+      }
       html += '</div>';
+      if (visibleEntries.length < latestEntries.length) {
+        html += '<div class="load-more-wrap"><button class="btn-load-more" onclick="loadMoreLatest()">看更多</button></div>';
+      }
       resultsEl.innerHTML = html;
+    }
+
+    function loadMoreLatest() {
+      latestVisibleCount += LATEST_BATCH_SIZE;
+      showLatest(false);
     }
 
     function doSearch() {
       var query = searchInput.value.trim();
-      if (!query) { showLatest(); return; }
+      if (!query) { showLatest(true); return; }
       var keywords = query.toLowerCase().split(/\s+/);
       // 記住原始 index 方便 modal 查詢
       var matched = [];
@@ -1006,7 +1058,7 @@
     // ===== 回首頁 =====
     function goHome() {
       searchInput.value = '';
-      showLatest();
+      showLatest(true);
       window.scrollTo(0, 0);
     }
 
