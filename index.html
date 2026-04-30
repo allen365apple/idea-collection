@@ -110,6 +110,72 @@
     }
     .idea-count strong { color: #999; font-weight: 600; }
 
+    .search-hint {
+      text-align: center;
+      color: #9b9b95;
+      font-size: 0.8rem;
+      margin: -4px auto 18px;
+      max-width: 720px;
+      line-height: 1.6;
+    }
+    .semantic-notice {
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #fff8ec;
+      border: 1px solid #f2dec2;
+      color: #7b5b2d;
+      font-size: 0.84rem;
+      line-height: 1.65;
+    }
+    .semantic-notice strong {
+      color: #5d431d;
+    }
+    .result-section {
+      margin-top: 26px;
+    }
+    .result-section:first-child {
+      margin-top: 0;
+    }
+    .result-section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1f1f1b;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    .result-section-copy {
+      color: #8b8b83;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      margin-bottom: 14px;
+      max-width: 760px;
+    }
+    .semantic-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border-radius: 10px;
+      border: 1px solid #e3d4b7;
+      background: #fff8ec;
+      color: #6f5427;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .semantic-cta:hover {
+      background: #fdf1dd;
+      border-color: #d8c19a;
+    }
+    .semantic-cta:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
     .search-bar {
       display: flex;
       gap: 8px;
@@ -668,6 +734,7 @@
     <div id="page-search" class="page active">
       <h1 style="cursor: pointer;" onclick="goHome()">✨ 只要有人 Idea 靈感搜尋狂魔 🔮</h1>
       <div id="ideaCount" class="idea-count"></div>
+      <div id="searchHint" class="search-hint">先顯示關鍵字比對結果，再額外推薦一些概念接近的點子給你參考。</div>
 
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋 Idea（多個關鍵字用空格分隔）" disabled>
@@ -949,21 +1016,30 @@
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbxBoTnssI6IuILd5NsvAs1lbTBuhQmYUVbCNAbwtq0PR5UHzQroL0RHAUmFnj3Mx-ol4Q/exec';
 
     var allData = [];
+    var currentResults = [];
     var searchInput = document.getElementById('searchInput');
     var searchBtn = document.getElementById('searchBtn');
     var statusEl = document.getElementById('status');
     var resultsEl = document.getElementById('results');
     var ideaCountEl = document.getElementById('ideaCount');
+    var searchHintEl = document.getElementById('searchHint');
     var LATEST_INITIAL_COUNT = 10;
     var LATEST_BATCH_SIZE = 10;
     var latestVisibleCount = LATEST_INITIAL_COUNT;
+    var activeSearchToken = 0;
+    var latestSearchQuery = '';
+    var latestKeywordMatches = [];
+
+    function setSearchDisabled(disabled) {
+      searchInput.disabled = disabled;
+      searchBtn.disabled = disabled;
+    }
 
     function loadData() {
       statusEl.innerHTML =
         '<div class="loading"><div class="loading-spinner"></div><div>資料庫更新中，請稍候...</div></div>';
       resultsEl.innerHTML = '';
-      searchInput.disabled = true;
-      searchBtn.disabled = true;
+      setSearchDisabled(true);
 
       fetch(GAS_URL)
         .then(function(res) {
@@ -974,9 +1050,10 @@
           allData = data;
           statusEl.innerHTML = '';
           ideaCountEl.innerHTML = '已收集 <strong>' + allData.length + '</strong> 個靈感點子';
-          searchInput.disabled = false;
-          searchBtn.disabled = false;
+          setSearchDisabled(false);
           document.getElementById('randomBtn').disabled = false;
+          searchInput.placeholder = '輸入關鍵字或需求，例如：愚人節、互動推廣、健康建築 教育感';
+          searchHintEl.textContent = '先顯示關鍵字比對結果，再額外推薦一些概念接近的點子給你參考。';
           searchInput.focus();
           showLatest(true);
         })
@@ -994,10 +1071,81 @@
       entries.sort(function(a, b) {
         var dateCompare = (b.item.date || '').localeCompare(a.item.date || '');
         if (dateCompare !== 0) return dateCompare;
-        // 同一天時，保留 Google Sheets 較新的列優先
         return b.idx - a.idx;
       });
       return entries;
+    }
+
+    function buildKeywordSearchPool(item) {
+      return [
+        item.summary || '',
+        item.tags || '',
+        item.note || '',
+        item.content || ''
+      ].join(' ').toLowerCase();
+    }
+
+    function renderCards(items) {
+      currentResults = items.slice();
+      var html = '<div class="card-grid">';
+      for (var i = 0; i < currentResults.length; i++) {
+        html += renderCard(currentResults[i], i);
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function renderSemanticNotice(title, body) {
+      return '<div class="semantic-notice"><strong>' + escapeHtml(title) + '</strong><br>' + escapeHtml(body) + '</div>';
+    }
+
+    function getItemIdentity(item) {
+      return (item.source || '') + '||' + (item.summary || '') + '||' + (item.author || '');
+    }
+
+    function buildSemanticItems(keywordMatches, semanticPayload) {
+      var semanticItems = [];
+      var notices = [];
+
+      if (semanticPayload) {
+        if (semanticPayload.fallbackUsed) {
+          notices.push(renderSemanticNotice('語意推薦暫時不可用', semanticPayload.message || '這次先只顯示關鍵字比對結果。'));
+        } else if (semanticPayload.results && semanticPayload.results.length > 0) {
+          var keywordIds = {};
+          for (var k = 0; k < keywordMatches.length; k++) {
+            keywordIds[getItemIdentity(keywordMatches[k])] = true;
+          }
+          for (var s = 0; s < semanticPayload.results.length; s++) {
+            var semanticItem = semanticPayload.results[s];
+            if (!keywordIds[getItemIdentity(semanticItem)]) {
+              semanticItems.push(semanticItem);
+            }
+          }
+        }
+      }
+
+      return {
+        items: semanticItems,
+        notices: notices
+      };
+    }
+
+    function renderResultSection(config) {
+      var title = config.title || '';
+      var copy = config.copy || '';
+      var items = config.items || [];
+      var startIndex = currentResults.length;
+      currentResults = currentResults.concat(items);
+
+      var html = '<section class="result-section">';
+      if (title) html += '<div class="result-section-title">' + escapeHtml(title) + '</div>';
+      if (copy) html += '<div class="result-section-copy">' + escapeHtml(copy) + '</div>';
+      html += '<div class="card-grid">';
+      for (var i = 0; i < items.length; i++) {
+        html += renderCard(items[i], startIndex + i);
+      }
+      html += '</div></section>';
+      return html;
     }
 
     function showLatest(resetCount) {
@@ -1005,17 +1153,18 @@
       var latestEntries = getLatestEntries();
       if (latestEntries.length === 0) {
         statusEl.innerHTML = '';
+        currentResults = [];
         resultsEl.innerHTML = '<div class="empty-state">目前還沒有任何靈感點子</div>';
         return;
       }
       var visibleEntries = latestEntries.slice(0, latestVisibleCount);
-      statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨ <strong>已顯示 ' + visibleEntries.length + ' / ' + latestEntries.length + '</strong></div>';
-      var html = '<div class="card-grid">';
-      for (var i = 0; i < visibleEntries.length; i++) {
-        html += renderCard(visibleEntries[i].item, visibleEntries[i].idx);
-      }
-      html += '</div>';
-      if (visibleEntries.length < latestEntries.length) {
+      var visibleItems = visibleEntries.map(function(entry) { return entry.item; });
+      currentResults = [];
+      statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨ <strong>已顯示 ' + visibleItems.length + ' / ' + latestEntries.length + '</strong></div>';
+      var html = renderResultSection({
+        items: visibleItems
+      });
+      if (visibleItems.length < latestEntries.length) {
         html += '<div class="load-more-wrap"><button class="btn-load-more" onclick="loadMoreLatest()">看更多</button></div>';
       }
       resultsEl.innerHTML = html;
@@ -1026,34 +1175,125 @@
       showLatest(false);
     }
 
-    function doSearch() {
-      var query = searchInput.value.trim();
-      if (!query) { showLatest(true); return; }
-      var keywords = query.toLowerCase().split(/\s+/);
-      // 記住原始 index 方便 modal 查詢
+    function getKeywordMatches(query) {
+      var keywords = query.toLowerCase().split(/\s+/).filter(Boolean);
       var matched = [];
       for (var i = 0; i < allData.length; i++) {
-        var text = ((allData[i].summary || '') + ' ' + (allData[i].tags || '')).toLowerCase();
+        var text = buildKeywordSearchPool(allData[i]);
         if (keywords.every(function(kw) { return text.indexOf(kw) !== -1; })) {
-          matched.push({ item: allData[i], idx: i });
+          matched.push(allData[i]);
         }
       }
-      matched.sort(function(a, b) { return (b.item.date || '').localeCompare(a.item.date || ''); });
-      if (matched.length === 0) {
-        statusEl.innerHTML = '';
-        resultsEl.innerHTML = '<div class="empty-state">找不到符合「' + escapeHtml(query) + '」的結果</div>';
-        return;
+      matched.sort(function(a, b) {
+        return (b.date || '').localeCompare(a.date || '');
+      });
+      return matched;
+    }
+
+    function renderInitialSearchResults(query, keywordMatches) {
+      currentResults = [];
+      latestSearchQuery = query;
+      latestKeywordMatches = keywordMatches.slice();
+      statusEl.innerHTML = '<div class="section-heading">搜尋「' + escapeHtml(query) + '」</div>';
+      var html = '';
+      if (keywordMatches.length > 0) {
+        html += renderResultSection({
+          title: '關鍵字比對結果',
+          copy: '這一區是直接根據你輸入的字詞，在摘要、標籤、備註與原始內容中找出明確命中的點子。',
+          items: keywordMatches
+        });
+      } else {
+        html += '<div class="empty-state">找不到符合「' + escapeHtml(query) + '」的關鍵字結果</div>';
       }
-      statusEl.innerHTML = '<div class="section-heading">找到 ' + matched.length + ' 筆結果</div>';
-      var html = '<div class="card-grid">';
-      for (var i = 0; i < matched.length; i++) { html += renderCard(matched[i].item, matched[i].idx); }
-      html += '</div>';
+
+      html += '<section class="result-section" id="semanticSection">'
+        + '<div class="result-section-title">或你可能想看這些</div>'
+        + '<div class="result-section-copy">這些推薦會額外使用 Gemini 語意搜尋。想看概念接近的點子時，再手動載入就好。</div>'
+        + '<button class="semantic-cta" id="semanticLoadBtn" type="button" onclick="loadSemanticRecommendations()">✨ 看語意推薦</button>'
+        + '</section>';
       resultsEl.innerHTML = html;
     }
 
+    function renderSemanticRecommendations(query, keywordMatches, semanticPayload) {
+      var semanticSection = document.getElementById('semanticSection');
+      if (!semanticSection) return;
+
+      var normalized = buildSemanticItems(keywordMatches, semanticPayload);
+      var semanticItems = normalized.items.slice(0, 5);
+      var notices = normalized.notices;
+
+      if (notices.length > 0) {
+        statusEl.innerHTML = notices.join('') + '<div class="section-heading">搜尋「' + escapeHtml(query) + '」</div>';
+      }
+
+      var sectionHtml = '<div class="result-section-title">或你可能想看這些</div>';
+      if (semanticItems.length > 0) {
+        var startIndex = currentResults.length;
+        currentResults = currentResults.concat(semanticItems);
+        sectionHtml += '<div class="result-section-copy">這些結果不一定用了相同字詞，但概念上和你的需求接近，例如互動感、教育性、工具型體驗或策略方向相似。</div>';
+        sectionHtml += '<div class="card-grid">';
+        for (var i = 0; i < semanticItems.length; i++) {
+          sectionHtml += renderCard(semanticItems[i], startIndex + i);
+        }
+        sectionHtml += '</div>';
+      } else if (semanticPayload && semanticPayload.semanticStatus === 'NO_RESULTS') {
+        sectionHtml += '<div class="result-section-copy">這次語意搜尋沒有找到足夠接近的推薦結果，所以先保留關鍵字比對結果。</div>';
+      } else {
+        sectionHtml += '<div class="result-section-copy">這次暫時沒有額外的語意推薦結果。</div>';
+      }
+
+      semanticSection.innerHTML = sectionHtml;
+    }
+
+    function setSemanticSectionLoading() {
+      var semanticSection = document.getElementById('semanticSection');
+      if (!semanticSection) return;
+      semanticSection.innerHTML =
+        '<div class="result-section-title">或你可能想看這些</div>'
+        + '<div class="result-section-copy">正在整理概念接近的點子推薦...</div>'
+        + '<div class="loading" style="padding: 16px 0 0;"><div class="loading-spinner"></div><div>語意推薦載入中</div></div>';
+    }
+
+    function loadSemanticRecommendations() {
+      if (!latestSearchQuery) return;
+      activeSearchToken++;
+      var searchToken = activeSearchToken;
+      setSemanticSectionLoading();
+
+      fetch(GAS_URL + '?action=semantic-search&q=' + encodeURIComponent(latestSearchQuery) + '&limit=10')
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(payload) {
+          if (searchToken !== activeSearchToken) return;
+          renderSemanticRecommendations(latestSearchQuery, latestKeywordMatches, payload || null);
+        })
+        .catch(function() {
+          if (searchToken !== activeSearchToken) return;
+          renderSemanticRecommendations(latestSearchQuery, latestKeywordMatches, {
+            fallbackUsed: true,
+            message: '語意搜尋目前不可用，可能是 Gemini API 額度暫時用完，或語意索引尚未就緒。'
+          });
+        });
+    }
+
+    function doSearch() {
+      var query = searchInput.value.trim();
+      if (!query) {
+        activeSearchToken++;
+        showLatest(true);
+        return;
+      }
+
+      activeSearchToken++;
+      var keywordMatches = getKeywordMatches(query);
+      renderInitialSearchResults(query, keywordMatches);
+    }
+
     // ===== 精簡卡片（Grid 用）=====
-    function renderCard(item, dataIndex) {
-      var card = '<div class="card" onclick="openModal(' + dataIndex + ')">';
+    function renderCard(item, viewIndex) {
+      var card = '<div class="card" onclick="openModal(' + viewIndex + ')">';
       card += '<div class="card-summary">' + escapeHtml(item.summary || '') + '</div>';
 
       // 圖片：最多顯示 3 張
@@ -1089,11 +1329,15 @@
     }
 
     // ===== Modal：展開完整內容 =====
-    function openModal(dataIndex) {
-      var item = allData[dataIndex];
+    function openModal(viewIndex) {
+      var item = currentResults[viewIndex];
       if (!item) return;
       var html = '';
       html += '<div class="modal-summary">' + escapeHtml(item.summary || '') + '</div>';
+
+      if (item._semantic && typeof item._semantic.score === 'number') {
+        html += '<div class="semantic-notice" style="margin-top:0;"><strong>語意搜尋命中</strong><br>相似度參考分數：' + escapeHtml(String(item._semantic.score)) + '</div>';
+      }
 
       // 所有圖片
       if (item.image) {
@@ -1189,6 +1433,9 @@
 
     // ===== 回首頁 =====
     function goHome() {
+      activeSearchToken++;
+      latestSearchQuery = '';
+      latestKeywordMatches = [];
       searchInput.value = '';
       showLatest(true);
       window.scrollTo(0, 0);
@@ -1199,10 +1446,11 @@
       if (allData.length === 0) return;
       var idx = Math.floor(Math.random() * allData.length);
       var item = allData[idx];
+      currentResults = [item];
       statusEl.innerHTML = '<div class="section-heading">🎲 隨機抽到的點子</div>';
 
       var html = '<div class="random-stage">';
-      html += '<div class="random-card" onclick="openModal(' + idx + ')">';
+      html += '<div class="random-card" onclick="openModal(0)">';
       html += '<div class="card-summary">' + escapeHtml(item.summary || '') + '</div>';
 
       if (item.image) {
