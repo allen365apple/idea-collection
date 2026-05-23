@@ -712,7 +712,171 @@
         max-width: 100%;
         max-height: 220px;
       }
+
+      /* List view RWD: 隱藏次要欄位，filter input 全寬 */
+      .col-tags, .col-source { display: none; }
+      .filter-input { width: 100%; }
+      .filter-box { flex: 1; min-width: 0; }
+      .view-toolbar { gap: 8px; }
     }
+
+    /* ===== View toolbar（卡片 / 列表共用） ===== */
+    .view-toolbar {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 18px; flex-wrap: wrap;
+    }
+    .view-toolbar .result-count {
+      font-size: 0.85rem; color: #6b6b6b;
+    }
+    .view-toolbar .spacer { flex: 1; }
+
+    /* Filter input（標籤篩選） */
+    .filter-box { position: relative; }
+    .filter-input {
+      padding: 8px 32px 8px 32px;
+      font-family: inherit; font-size: 0.85rem;
+      background: #fff; border: 1px solid #e8e8e5; border-radius: 8px;
+      color: #1a1a1a; outline: none; width: 220px;
+      transition: border-color 0.15s;
+    }
+    .filter-input:focus { border-color: #b6a0e8; }
+    .filter-icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: #aaa; pointer-events: none; font-size: 0.85rem;
+    }
+    .filter-clear {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px; border: none; background: #eee; color: #888;
+      border-radius: 50%; cursor: pointer; font-size: 0.7rem;
+      display: none; align-items: center; justify-content: center; padding: 0;
+    }
+    .filter-clear.show { display: inline-flex; }
+
+    /* Active filter chip */
+    .active-filter {
+      display: none; align-items: center; gap: 6px;
+      font-size: 0.75rem; color: #7d5ac4;
+      background: #f6f0ff; border: 1px solid #ece1ff;
+      padding: 3px 4px 3px 10px; border-radius: 999px;
+    }
+    .active-filter.show { display: inline-flex; }
+    .active-filter button {
+      border: none; background: rgba(125,90,196,0.15); color: #7d5ac4;
+      width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
+      font-size: 0.7rem; padding: 0;
+    }
+
+    /* View toggle (segmented control) */
+    .view-toggle {
+      display: inline-flex; gap: 2px; padding: 3px;
+      background: #f0eee8; border-radius: 10px;
+    }
+    .view-toggle button {
+      padding: 6px 14px; font-family: inherit; font-size: 0.82rem; font-weight: 500;
+      color: #777; background: transparent; border: none; border-radius: 7px;
+      cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .view-toggle button:hover { color: #444; }
+    .view-toggle button.active {
+      color: #1a1a1a; background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .view-toggle svg { width: 14px; height: 14px; }
+
+    /* ===== List view 表格 ===== */
+    .list-wrap {
+      background: #fff; border: 1px solid #e8e8e5; border-radius: 12px;
+      overflow: hidden;
+    }
+    .list-table {
+      width: 100%; border-collapse: collapse; font-size: 0.85rem;
+      table-layout: fixed;
+    }
+    .list-table thead {
+      background: #f7f5f0;
+      border-bottom: 1px solid #e8e8e5;
+    }
+    .list-table th {
+      text-align: left; padding: 12px 16px;
+      font-size: 0.72rem; font-weight: 600; color: #888;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .list-table th.sortable {
+      cursor: pointer; user-select: none; transition: color 0.12s;
+    }
+    .list-table th.sortable:hover { color: #555; }
+    .list-table th .sort-arrow {
+      display: inline-block; margin-left: 4px; opacity: 0.3;
+      font-size: 0.7rem;
+    }
+    .list-table th.sort-asc .sort-arrow,
+    .list-table th.sort-desc .sort-arrow { opacity: 1; color: #7d5ac4; }
+    .list-table tbody tr {
+      border-bottom: 1px solid #f0eee8;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .list-table tbody tr:last-child { border-bottom: none; }
+    .list-table tbody tr:hover { background: #faf8f3; }
+    .list-table td {
+      padding: 14px 16px; vertical-align: top; line-height: 1.55;
+      color: #2a2a2a;
+    }
+    .col-date { width: 110px; white-space: nowrap; color: #888; font-size: 0.78rem; vertical-align: top; }
+    .col-source { width: 320px; color: #555; font-size: 0.82rem; }
+    .col-summary { font-weight: 500; color: #1a1a1a; }
+    .col-tags { width: 240px; }
+
+    /* line-clamp 套在 div 上，不能直接套 td（會破壞 table 排版） */
+    .clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    /* Tag chip（列表內可點擊） */
+    .tag-chip {
+      display: inline-block; font-size: 0.7rem; color: #7d5ac4;
+      background: #f6f0ff; border: 1px solid #ece1ff;
+      padding: 2px 8px; border-radius: 999px; margin: 2px 4px 2px 0;
+      white-space: nowrap;
+    }
+    .tag-chip.clickable {
+      cursor: pointer; transition: all 0.15s;
+    }
+    .tag-chip.clickable:hover {
+      background: #ece1ff; border-color: #d8c0ff;
+    }
+    .tag-chip.match {
+      background: #ffe9b0; border-color: #f4d375; color: #8a6300;
+    }
+    .tag-chip-more {
+      color: #aaa; background: #f5f5f3; border-color: #e8e8e5;
+      cursor: default;
+    }
+
+    /* List 空狀態 */
+    .list-empty-state {
+      padding: 60px 20px; text-align: center; color: #999; font-size: 0.9rem;
+    }
+    .list-empty-state .empty-emoji { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+    /* List 載入更多 / 顯示全部按鈕區塊 */
+    .list-load-controls {
+      display: flex; justify-content: center; align-items: center; gap: 10px;
+      margin-top: 20px;
+    }
+    .btn-show-all {
+      padding: 9px 18px; font-family: inherit;
+      font-size: 0.85rem; font-weight: 500; color: #888;
+      background: transparent; border: 1px solid #e0e0dc;
+      border-radius: 999px; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-show-all:hover { color: #555; border-color: #c0c0bc; }
   </style>
 </head>
 <body>
@@ -1030,6 +1194,61 @@
     var latestSearchQuery = '';
     var latestKeywordMatches = [];
 
+    // ===== View mode state（卡片 / 列表）=====
+    var VIEW_MODE_STORAGE_KEY = 'idea-view-mode';
+    var viewMode = (function() {
+      try {
+        var stored = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+        return (stored === 'list') ? 'list' : 'card';
+      } catch (e) { return 'card'; }
+    })();
+    var LIST_PAGE_SIZE = 12;
+    var listVisibleCount = LIST_PAGE_SIZE;
+    var listSortField = 'date';   // 'date' | 'summary'
+    var listSortDir = 'desc';     // 'asc' | 'desc'
+    var listTagFilter = '';
+    // 用來在切換模式時知道該重新渲染什麼
+    var latestSemanticPayload = null;
+
+    function setViewMode(mode) {
+      if (mode !== 'card' && mode !== 'list') return;
+      if (mode === viewMode) return;
+      viewMode = mode;
+      try { localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode); } catch (e) {}
+      // 切換模式時重設列表的可見筆數
+      listVisibleCount = LIST_PAGE_SIZE;
+      rerenderCurrentView();
+    }
+
+    function rerenderCurrentView() {
+      // 在 re-render 前保存 filter input 的焦點與游標位置（避免 input 因 innerHTML 重設失焦）
+      var focusInfo = null;
+      var active = document.activeElement;
+      if (active && active.id === 'tagFilterInput') {
+        focusInfo = { caret: active.selectionEnd };
+      }
+
+      if (latestSearchQuery) {
+        renderInitialSearchResults(latestSearchQuery, latestKeywordMatches);
+        if (latestSemanticPayload) {
+          renderSemanticRecommendations(latestSearchQuery, latestKeywordMatches, latestSemanticPayload);
+        }
+      } else {
+        showLatest(false);
+      }
+
+      if (focusInfo) {
+        var newInput = document.getElementById('tagFilterInput');
+        if (newInput) {
+          newInput.focus();
+          try {
+            var pos = focusInfo.caret != null ? focusInfo.caret : newInput.value.length;
+            newInput.setSelectionRange(pos, pos);
+          } catch (e) {}
+        }
+      }
+    }
+
     function setSearchDisabled(disabled) {
       searchInput.disabled = disabled;
       searchBtn.disabled = disabled;
@@ -1083,6 +1302,190 @@
         item.note || '',
         item.content || ''
       ].join(' ').toLowerCase();
+    }
+
+    // ========== List view 渲染 ==========
+    function getFilteredSortedSliced(items) {
+      var arr = items.slice();
+      // 過濾：listTagFilter 子字串比對（case-insensitive）
+      if (listTagFilter) {
+        var q = listTagFilter.toLowerCase();
+        arr = arr.filter(function(it) {
+          var tags = (it.tags || '').split(/[,、，]+/)
+            .map(function(t) { return t.trim().toLowerCase(); })
+            .filter(Boolean);
+          for (var i = 0; i < tags.length; i++) {
+            if (tags[i].indexOf(q) !== -1) return true;
+          }
+          return false;
+        });
+      }
+      // 排序
+      arr.sort(function(a, b) {
+        var va, vb;
+        if (listSortField === 'summary') {
+          va = (a.summary || '');
+          vb = (b.summary || '');
+        } else {
+          va = (a.date || '');
+          vb = (b.date || '');
+        }
+        if (va < vb) return listSortDir === 'asc' ? -1 : 1;
+        if (va > vb) return listSortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+      var filtered = arr;
+      var visible = arr.slice(0, listVisibleCount);
+      return { filtered: filtered, visible: visible };
+    }
+
+    function renderViewToggleHtml() {
+      var cardActive = viewMode === 'card' ? ' active' : '';
+      var listActive = viewMode === 'list' ? ' active' : '';
+      var html = '<div class="view-toggle" role="tablist">';
+      html += '<button type="button" class="' + cardActive.trim() + '" onclick="setViewMode(\'card\')" aria-label="卡片檢視">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
+      html += '卡片</button>';
+      html += '<button type="button" class="' + listActive.trim() + '" onclick="setViewMode(\'list\')" aria-label="列表檢視">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>';
+      html += '列表</button>';
+      html += '</div>';
+      return html;
+    }
+
+    function renderListToolbar(filteredTotal) {
+      var html = '<div class="view-toolbar">';
+      html += '<span class="result-count">共 ' + filteredTotal + ' 則' + (listTagFilter ? '（已篩選）' : '') + '</span>';
+      html += '<div class="filter-box">';
+      html += '<span class="filter-icon">🔍</span>';
+      html += '<input class="filter-input" id="tagFilterInput" type="text" placeholder="篩選標籤... 例如：品牌" value="' + escapeHtml(listTagFilter) + '" oninput="onTagFilterInput(this.value)">';
+      html += '<button type="button" class="filter-clear ' + (listTagFilter ? 'show' : '') + '" onclick="clearTagFilter()" aria-label="清除篩選">✕</button>';
+      html += '</div>';
+      if (listTagFilter) {
+        html += '<span class="active-filter show">標籤含「' + escapeHtml(listTagFilter) + '」<button type="button" onclick="clearTagFilter()" aria-label="移除篩選">✕</button></span>';
+      }
+      html += '<div class="spacer"></div>';
+      html += renderViewToggleHtml();
+      html += '</div>';
+      return html;
+    }
+
+    function renderListThead() {
+      function arrow(field) {
+        if (listSortField !== field) return '';
+        return listSortDir === 'asc' ? '▲' : '▼';
+      }
+      function thClass(field, baseClass) {
+        var classes = ['sortable'];
+        if (baseClass) classes.push(baseClass);
+        if (listSortField === field) classes.push(listSortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+        return classes.join(' ');
+      }
+      var html = '<thead><tr>';
+      html += '<th class="' + thClass('date', 'col-date') + '" onclick="toggleListSort(\'date\')">原文日期<span class="sort-arrow">' + arrow('date') + '</span></th>';
+      html += '<th class="col-source">原始內容</th>';
+      html += '<th class="' + thClass('summary', '') + '" onclick="toggleListSort(\'summary\')">Idea 摘要<span class="sort-arrow">' + arrow('summary') + '</span></th>';
+      html += '<th class="col-tags">標籤</th>';
+      html += '</tr></thead>';
+      return html;
+    }
+
+    function renderListRow(item, realIndex) {
+      var tags = (item.tags || '').split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
+      var filterLower = listTagFilter ? listTagFilter.toLowerCase() : '';
+      // 篩選中時顯示全部 tag（使用者正在挑），無篩選時截到 LIST_MAX_VISIBLE_TAGS 並用「+N」chip 顯示溢出
+      var LIST_MAX_VISIBLE_TAGS = 8;
+      var visibleTags = (filterLower || tags.length <= LIST_MAX_VISIBLE_TAGS) ? tags : tags.slice(0, LIST_MAX_VISIBLE_TAGS);
+      var overflow = (filterLower) ? 0 : Math.max(0, tags.length - LIST_MAX_VISIBLE_TAGS);
+      var tagsHtml = visibleTags.map(function(t) {
+        var matchClass = (filterLower && t.toLowerCase().indexOf(filterLower) !== -1) ? ' match' : '';
+        var safeTagAttr = escapeHtml(t).replace(/'/g, '&#39;');
+        return '<span class="tag-chip clickable' + matchClass + '" onclick="event.stopPropagation(); applyTagFilter(\'' + safeTagAttr + '\')">' + escapeHtml(t) + '</span>';
+      }).join('');
+      if (overflow > 0) {
+        tagsHtml += '<span class="tag-chip tag-chip-more" title="還有 ' + overflow + ' 個標籤，點列開啟詳細頁可看全部">+' + overflow + '</span>';
+      }
+      var html = '<tr onclick="onListRowClick(event, ' + realIndex + ')">';
+      html += '<td class="col-date">' + escapeHtml(item.date || '') + '</td>';
+      html += '<td class="col-source"><div class="clamp-2">' + escapeHtml(item.content || '') + '</div></td>';
+      html += '<td><div class="clamp-2 col-summary">' + escapeHtml(item.summary || '') + '</div></td>';
+      html += '<td class="col-tags">' + tagsHtml + '</td>';
+      html += '</tr>';
+      return html;
+    }
+
+    function renderListView(items) {
+      // items 為當前要顯示的全部資料集（已存進 currentResults）；本函式做 filter+sort+slice
+      var processed = getFilteredSortedSliced(items);
+      var filteredTotal = processed.filtered.length;
+      var visible = processed.visible;
+
+      var html = '';
+      html += renderListToolbar(filteredTotal);
+
+      if (filteredTotal === 0) {
+        html += '<div class="list-wrap"><div class="list-empty-state"><span class="empty-emoji">🔍</span>沒有符合的點子，試試別的關鍵字</div></div>';
+        return html;
+      }
+
+      html += '<div class="list-wrap"><table class="list-table">';
+      html += renderListThead();
+      html += '<tbody>';
+      for (var i = 0; i < visible.length; i++) {
+        var item = visible[i];
+        var realIndex = items.indexOf(item);
+        html += renderListRow(item, realIndex);
+      }
+      html += '</tbody></table></div>';
+
+      var remaining = filteredTotal - visible.length;
+      if (remaining > 0) {
+        html += '<div class="list-load-controls">';
+        html += '<button type="button" class="btn-load-more" onclick="listLoadMore()">查看更多 (剩 ' + remaining + ' 則)</button>';
+        html += '<button type="button" class="btn-show-all" onclick="listShowAll()">顯示全部</button>';
+        html += '</div>';
+      }
+      return html;
+    }
+
+    // ========== List view 互動 ==========
+    function onListRowClick(e, realIndex) {
+      if (e.target && e.target.classList && e.target.classList.contains('tag-chip')) return;
+      openModal(realIndex);
+    }
+    function toggleListSort(field) {
+      if (field !== 'date' && field !== 'summary') return;
+      if (listSortField === field) {
+        listSortDir = listSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        listSortField = field;
+        listSortDir = (field === 'date') ? 'desc' : 'asc';
+      }
+      listVisibleCount = LIST_PAGE_SIZE;
+      rerenderCurrentView();
+    }
+    function onTagFilterInput(value) {
+      listTagFilter = (value || '').trim();
+      listVisibleCount = LIST_PAGE_SIZE;
+      rerenderCurrentView();
+    }
+    function applyTagFilter(text) {
+      listTagFilter = (text || '').trim();
+      listVisibleCount = LIST_PAGE_SIZE;
+      rerenderCurrentView();
+    }
+    function clearTagFilter() {
+      listTagFilter = '';
+      listVisibleCount = LIST_PAGE_SIZE;
+      rerenderCurrentView();
+    }
+    function listLoadMore() {
+      listVisibleCount += LIST_PAGE_SIZE;
+      rerenderCurrentView();
+    }
+    function listShowAll() {
+      listVisibleCount = (currentResults && currentResults.length) ? currentResults.length : Number.MAX_SAFE_INTEGER;
+      rerenderCurrentView();
     }
 
     function renderCards(items) {
@@ -1149,7 +1552,12 @@
     }
 
     function showLatest(resetCount) {
-      if (resetCount !== false) latestVisibleCount = LATEST_INITIAL_COUNT;
+      if (resetCount !== false) {
+        latestVisibleCount = LATEST_INITIAL_COUNT;
+        // 回到首頁狀態時清除搜尋上下文
+        latestSearchQuery = '';
+        latestSemanticPayload = null;
+      }
       var latestEntries = getLatestEntries();
       if (latestEntries.length === 0) {
         statusEl.innerHTML = '';
@@ -1157,17 +1565,34 @@
         resultsEl.innerHTML = '<div class="empty-state">目前還沒有任何靈感點子</div>';
         return;
       }
+
+      // ===== List mode =====
+      if (viewMode === 'list') {
+        var allItems = latestEntries.map(function(entry) { return entry.item; });
+        currentResults = allItems.slice();
+        statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨</div>';
+        resultsEl.innerHTML = renderListView(currentResults);
+        return;
+      }
+
+      // ===== Card mode (既有行為) =====
       var visibleEntries = latestEntries.slice(0, latestVisibleCount);
       var visibleItems = visibleEntries.map(function(entry) { return entry.item; });
       currentResults = [];
       statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨ <strong>已顯示 ' + visibleItems.length + ' / ' + latestEntries.length + '</strong></div>';
-      var html = renderResultSection({
+      var html = renderViewToggleToolbar();
+      html += renderResultSection({
         items: visibleItems
       });
       if (visibleItems.length < latestEntries.length) {
         html += '<div class="load-more-wrap"><button class="btn-load-more" onclick="loadMoreLatest()">看更多</button></div>';
       }
       resultsEl.innerHTML = html;
+    }
+
+    // 卡片模式下也要有切換按鈕：簡易版 toolbar（只有 toggle）
+    function renderViewToggleToolbar() {
+      return '<div class="view-toolbar"><div class="spacer"></div>' + renderViewToggleHtml() + '</div>';
     }
 
     function loadMoreLatest() {
@@ -1195,7 +1620,28 @@
       latestSearchQuery = query;
       latestKeywordMatches = keywordMatches.slice();
       statusEl.innerHTML = '<div class="section-heading">搜尋「' + escapeHtml(query) + '」</div>';
-      var html = '';
+
+      // ===== List mode =====
+      if (viewMode === 'list') {
+        currentResults = keywordMatches.slice();
+        var listHtml = '';
+        if (keywordMatches.length === 0) {
+          // 沒有關鍵字結果：仍顯示 toolbar（讓使用者能切回卡片或調篩選），但 body 顯示空提示
+          listHtml += renderListView(currentResults); // 空時內部會走 empty state
+        } else {
+          listHtml += renderListView(currentResults);
+        }
+        listHtml += '<section class="result-section" id="semanticSection">'
+          + '<div class="result-section-title">或你可能想看這些</div>'
+          + '<div class="result-section-copy">這些推薦會額外使用 Gemini 語意搜尋。想看概念接近的點子時，再手動載入就好。</div>'
+          + '<button class="semantic-cta" id="semanticLoadBtn" type="button" onclick="loadSemanticRecommendations()">✨ 看語意推薦</button>'
+          + '</section>';
+        resultsEl.innerHTML = listHtml;
+        return;
+      }
+
+      // ===== Card mode (既有行為，外加 toolbar) =====
+      var html = renderViewToggleToolbar();
       if (keywordMatches.length > 0) {
         html += renderResultSection({
           title: '關鍵字比對結果',
@@ -1215,8 +1661,8 @@
     }
 
     function renderSemanticRecommendations(query, keywordMatches, semanticPayload) {
-      var semanticSection = document.getElementById('semanticSection');
-      if (!semanticSection) return;
+      // 記住 payload 以便切換模式時可重新渲染
+      latestSemanticPayload = semanticPayload;
 
       var normalized = buildSemanticItems(keywordMatches, semanticPayload);
       var semanticItems = normalized.items.slice(0, 5);
@@ -1226,6 +1672,31 @@
         statusEl.innerHTML = notices.join('') + '<div class="section-heading">搜尋「' + escapeHtml(query) + '」</div>';
       }
 
+      // ===== List mode =====
+      if (viewMode === 'list') {
+        // 將 semantic 結果合併進 currentResults（以 keyword 為基底）
+        var combined = keywordMatches.slice();
+        for (var s = 0; s < semanticItems.length; s++) combined.push(semanticItems[s]);
+        currentResults = combined;
+
+        var listHtml = renderListView(currentResults);
+        // Semantic 區塊 — 顯示載入狀態文字（不再顯示按鈕，因為已載入）
+        var ctaHtml = '<div class="result-section-title">或你可能想看這些</div>';
+        if (semanticItems.length > 0) {
+          ctaHtml += '<div class="result-section-copy">語意推薦的 ' + semanticItems.length + ' 則點子已合併到上方列表。</div>';
+        } else if (semanticPayload && semanticPayload.semanticStatus === 'NO_RESULTS') {
+          ctaHtml += '<div class="result-section-copy">這次語意搜尋沒有找到足夠接近的推薦結果，所以先保留關鍵字比對結果。</div>';
+        } else {
+          ctaHtml += '<div class="result-section-copy">這次暫時沒有額外的語意推薦結果。</div>';
+        }
+        listHtml += '<section class="result-section" id="semanticSection">' + ctaHtml + '</section>';
+        resultsEl.innerHTML = listHtml;
+        return;
+      }
+
+      // ===== Card mode (既有行為) =====
+      var semanticSection = document.getElementById('semanticSection');
+      if (!semanticSection) return;
       var sectionHtml = '<div class="result-section-title">或你可能想看這些</div>';
       if (semanticItems.length > 0) {
         var startIndex = currentResults.length;
@@ -1241,7 +1712,6 @@
       } else {
         sectionHtml += '<div class="result-section-copy">這次暫時沒有額外的語意推薦結果。</div>';
       }
-
       semanticSection.innerHTML = sectionHtml;
     }
 
