@@ -877,6 +877,116 @@
       border-radius: 999px; cursor: pointer; transition: all 0.15s;
     }
     .btn-show-all:hover { color: #555; border-color: #c0c0bc; }
+
+    /* ===== Web-write：密碼 modal、編輯/新增 form modal、toast ===== */
+    .write-modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 110;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+      justify-content: center; align-items: flex-start;
+      padding: 60px 20px 40px; overflow-y: auto;
+    }
+    .write-modal-overlay.active { display: flex; }
+    .write-modal {
+      background: #fff; border-radius: 12px; max-width: 520px; width: 100%;
+      padding: 24px 26px; position: relative;
+      animation: modalIn 0.2s ease;
+    }
+    .write-modal-title {
+      font-size: 1.05rem; font-weight: 600; margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+    .write-modal-hint {
+      font-size: 0.8rem; color: #8a6300; background: #fff8e0;
+      border: 1px solid #f0d877; border-radius: 8px; padding: 8px 12px;
+      margin-bottom: 14px; line-height: 1.5;
+    }
+    .write-modal-field { margin-bottom: 14px; }
+    .write-modal-field label {
+      display: block; font-size: 0.78rem; font-weight: 500;
+      color: #555; margin-bottom: 4px;
+    }
+    .write-modal-field .req { color: #c0392b; }
+    .write-modal input[type="text"],
+    .write-modal input[type="password"],
+    .write-modal textarea {
+      width: 100%; font-family: inherit; font-size: 0.9rem;
+      padding: 9px 12px; border: 1px solid #d8d8d3;
+      border-radius: 8px; background: #fff; color: #1a1a1a;
+      outline: none; transition: border-color 0.15s;
+    }
+    .write-modal input[type="text"]:focus,
+    .write-modal input[type="password"]:focus,
+    .write-modal textarea:focus { border-color: #b6a0e8; }
+    .write-modal textarea { resize: vertical; min-height: 72px; line-height: 1.55; }
+    .write-modal textarea.tall { min-height: 140px; }
+    .write-modal-error {
+      font-size: 0.82rem; color: #c0392b; background: #fdecea;
+      border: 1px solid #f5b7b1; border-radius: 6px;
+      padding: 8px 10px; margin: 8px 0 0; display: none;
+    }
+    .write-modal-error.show { display: block; }
+    .write-modal-actions {
+      display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;
+    }
+    .write-btn-primary {
+      padding: 9px 22px; font-family: inherit; font-size: 0.88rem; font-weight: 600;
+      color: #fff; background: #7d5ac4; border: 1px solid #7d5ac4;
+      border-radius: 8px; cursor: pointer; transition: background 0.15s;
+    }
+    .write-btn-primary:hover { background: #6a4cad; }
+    .write-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .write-btn-secondary {
+      padding: 9px 18px; font-family: inherit; font-size: 0.88rem; font-weight: 500;
+      color: #555; background: #f5f5f3; border: 1px solid #e0e0dc;
+      border-radius: 8px; cursor: pointer;
+    }
+    .write-btn-secondary:hover { background: #ebebe7; }
+    .write-modal-required-mark { color: #c0392b; font-size: 0.75rem; margin-left: 4px; }
+    .write-modal .form-row { display: flex; gap: 10px; }
+    .write-modal .form-row > .write-modal-field { flex: 1; }
+
+    /* Modal 內的「✏️ 編輯」按鈕（放在 modal-close 旁） */
+    .modal-edit {
+      position: absolute; top: 12px; right: 52px;
+      height: 32px; padding: 0 12px; border-radius: 8px;
+      border: 1px solid #dcccf8; background: #f6f0ff; color: #7d5ac4;
+      font-family: inherit; font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .modal-edit:hover { background: #efe4ff; border-color: #cbb0f4; }
+
+    /* Toolbar 的「➕ 新增點子」按鈕 */
+    .btn-toolbar-add {
+      padding: 6px 14px; font-family: inherit;
+      font-size: 0.82rem; font-weight: 600; color: #7d5ac4;
+      background: #f6f0ff; border: 1px solid #dcccf8;
+      border-radius: 8px; cursor: pointer; transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn-toolbar-add:hover { background: #efe4ff; border-color: #cbb0f4; }
+
+    /* Toast */
+    .toast-stack {
+      position: fixed; right: 20px; bottom: 20px; z-index: 200;
+      display: flex; flex-direction: column; gap: 8px; max-width: 360px;
+    }
+    .toast {
+      background: #1a1a1a; color: #fafaf8;
+      padding: 12px 18px; border-radius: 10px;
+      font-size: 0.88rem; line-height: 1.5;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      animation: toastIn 0.2s ease;
+    }
+    .toast.error { background: #c0392b; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 640px) {
+      .write-modal { padding: 20px; }
+      .write-modal .form-row { flex-direction: column; }
+      .modal-edit { right: 50px; padding: 0 10px; font-size: 0.72rem; }
+      .toast-stack { left: 16px; right: 16px; max-width: none; }
+    }
   </style>
 </head>
 <body>
@@ -1365,6 +1475,7 @@
         html += '<span class="active-filter show">標籤含「' + escapeHtml(listTagFilter) + '」<button type="button" onclick="clearTagFilter()" aria-label="移除篩選">✕</button></span>';
       }
       html += '<div class="spacer"></div>';
+      html += '<button type="button" class="btn-toolbar-add" onclick="onAddClick()" aria-label="新增點子">➕ 新增點子</button>';
       html += renderViewToggleHtml();
       html += '</div>';
       return html;
@@ -1592,7 +1703,10 @@
 
     // 卡片模式下也要有切換按鈕：簡易版 toolbar（只有 toggle）
     function renderViewToggleToolbar() {
-      return '<div class="view-toolbar"><div class="spacer"></div>' + renderViewToggleHtml() + '</div>';
+      return '<div class="view-toolbar"><div class="spacer"></div>'
+        + '<button type="button" class="btn-toolbar-add" onclick="onAddClick()" aria-label="新增點子">➕ 新增點子</button>'
+        + renderViewToggleHtml()
+        + '</div>';
     }
 
     function loadMoreLatest() {
@@ -1803,6 +1917,10 @@
       var item = currentResults[viewIndex];
       if (!item) return;
       var html = '';
+      // ✏️ 編輯按鈕：只有 item 帶 _sheet_row（從 doGet 來的真實資料）才顯示，避免在抽點子等情境顯示
+      if (item._sheet_row) {
+        html += '<button type="button" class="modal-edit" onclick="onEditClick(' + viewIndex + ')" aria-label="編輯">✏️ 編輯</button>';
+      }
       html += '<div class="modal-summary">' + escapeHtml(item.summary || '') + '</div>';
 
       if (item._semantic && typeof item._semantic.score === 'number') {
@@ -2049,6 +2167,362 @@
     searchBtn.addEventListener('click', doSearch);
     searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
     loadData();
+  </script>
+
+  <!-- ===== Web-write modals + toast ===== -->
+  <div class="write-modal-overlay" id="passwordModal" onclick="if(event.target===this) closePasswordModal()">
+    <div class="write-modal" role="dialog" aria-label="密碼驗證">
+      <div class="write-modal-title">🔑 輸入編輯密碼</div>
+      <div class="write-modal-hint">請輸入編輯密碼（公司 Wi-Fi 密碼）</div>
+      <div class="write-modal-field">
+        <input type="password" id="passwordInput" placeholder="輸入密碼" autocomplete="current-password">
+        <div class="write-modal-error" id="passwordError"></div>
+      </div>
+      <div class="write-modal-actions">
+        <button type="button" class="write-btn-secondary" onclick="closePasswordModal()">取消</button>
+        <button type="button" class="write-btn-primary" onclick="submitPassword()">送出</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="write-modal-overlay" id="editModal" onclick="if(event.target===this) closeEditModal()">
+    <div class="write-modal" role="dialog" aria-label="編輯點子">
+      <div class="write-modal-title">✏️ 編輯點子</div>
+      <div class="write-modal-field">
+        <label for="editContentInput">原始內容 <span class="req">*</span></label>
+        <textarea id="editContentInput" class="tall"></textarea>
+      </div>
+      <div class="write-modal-field">
+        <label for="editImageInput">圖片連結（每行一個 URL）</label>
+        <textarea id="editImageInput"></textarea>
+      </div>
+      <div class="write-modal-field">
+        <label for="editNoteInput">蒐集者備註</label>
+        <textarea id="editNoteInput"></textarea>
+      </div>
+      <div class="write-modal-error" id="editError"></div>
+      <div class="write-modal-actions">
+        <button type="button" class="write-btn-secondary" onclick="closeEditModal()">取消</button>
+        <button type="button" class="write-btn-primary" onclick="submitEdit()">送出</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="write-modal-overlay" id="addModal" onclick="if(event.target===this) closeAddModal()">
+    <div class="write-modal" role="dialog" aria-label="新增點子">
+      <div class="write-modal-title">➕ 新增點子</div>
+      <div class="write-modal-field">
+        <label for="addContentInput">原始內容 <span class="req">*</span></label>
+        <textarea id="addContentInput" class="tall" placeholder="貼上靈感來源、想法、文章重點…"></textarea>
+      </div>
+      <div class="write-modal-field">
+        <label for="addImageInput">圖片連結（每行一個 URL）</label>
+        <textarea id="addImageInput"></textarea>
+      </div>
+      <div class="write-modal-field">
+        <label for="addUrlInput">參考網址</label>
+        <input type="text" id="addUrlInput" placeholder="https://...">
+      </div>
+      <div class="form-row">
+        <div class="write-modal-field">
+          <label for="addAuthorInput">撰寫者</label>
+          <input type="text" id="addAuthorInput" placeholder="原作者">
+        </div>
+        <div class="write-modal-field">
+          <label for="addCollectorInput">蒐集者</label>
+          <input type="text" id="addCollectorInput" placeholder="留空 = 網頁匯入">
+        </div>
+      </div>
+      <div class="write-modal-field">
+        <label for="addNoteInput">蒐集者備註</label>
+        <textarea id="addNoteInput"></textarea>
+      </div>
+      <div class="write-modal-error" id="addError"></div>
+      <div class="write-modal-actions">
+        <button type="button" class="write-btn-secondary" onclick="closeAddModal()">取消</button>
+        <button type="button" class="write-btn-primary" onclick="submitAdd()">送出</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script>
+    // ====================================================
+    // Web-write 前端模組：密碼驗證、編輯、新增、token 管理
+    // 密碼本體永不出現在此檔；只送使用者輸入給 GAS 比對
+    // ====================================================
+    var WRITE_TOKEN_STORAGE_KEY = 'edit-token';
+    var pendingWriteThen = null;  // 密碼驗證成功後要執行的 callback
+    var currentEditingItem = null; // 編輯中的 idea 物件
+
+    function getValidWriteToken() {
+      try {
+        var raw = localStorage.getItem(WRITE_TOKEN_STORAGE_KEY);
+        if (!raw) return null;
+        var obj = JSON.parse(raw);
+        if (!obj || !obj.token || !obj.exp) return null;
+        if (obj.exp <= Math.floor(Date.now() / 1000)) {
+          localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
+          return null;
+        }
+        return obj.token;
+      } catch (e) { return null; }
+    }
+    function storeWriteToken(token, exp) {
+      try { localStorage.setItem(WRITE_TOKEN_STORAGE_KEY, JSON.stringify({ token: token, exp: exp })); } catch (e) {}
+    }
+    function clearWriteToken() {
+      try { localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY); } catch (e) {}
+    }
+
+    // 送 JSON 到 GAS 寫入端點。用 text/plain 避開 CORS preflight。
+    function gasWriteRequest(payload) {
+      return fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        redirect: 'follow'
+      }).then(function(res) { return res.json(); });
+    }
+
+    // ===== Password modal =====
+    function openPasswordModal(opts) {
+      pendingWriteThen = (opts && opts.then) ? opts.then : null;
+      var errEl = document.getElementById('passwordError');
+      errEl.classList.remove('show');
+      errEl.textContent = '';
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('passwordModal').classList.add('active');
+      setTimeout(function() { document.getElementById('passwordInput').focus(); }, 50);
+    }
+    function closePasswordModal() {
+      document.getElementById('passwordModal').classList.remove('active');
+      pendingWriteThen = null;
+    }
+    function submitPassword() {
+      var input = document.getElementById('passwordInput');
+      var errEl = document.getElementById('passwordError');
+      var pwd = input.value;
+      if (!pwd) {
+        errEl.textContent = '請輸入密碼';
+        errEl.classList.add('show');
+        return;
+      }
+      errEl.classList.remove('show');
+      gasWriteRequest({ action: 'verify-password', password: pwd })
+        .then(function(r) {
+          if (r && r.ok) {
+            storeWriteToken(r.token, r.exp);
+            var then = pendingWriteThen;
+            pendingWriteThen = null;
+            document.getElementById('passwordModal').classList.remove('active');
+            if (typeof then === 'function') then();
+          } else {
+            errEl.textContent = (r && r.message) ? r.message : '密碼錯誤';
+            errEl.classList.add('show');
+          }
+        })
+        .catch(function(err) {
+          errEl.textContent = '網路錯誤：' + (err && err.message ? err.message : err);
+          errEl.classList.add('show');
+        });
+    }
+
+    // ===== Toast =====
+    function showToast(text, kind) {
+      var stack = document.getElementById('toastStack');
+      var el = document.createElement('div');
+      el.className = 'toast' + (kind === 'error' ? ' error' : '');
+      el.textContent = text;
+      stack.appendChild(el);
+      setTimeout(function() {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.3s';
+        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 320);
+      }, 3500);
+    }
+
+    // ===== 共用：寫入錯誤處理（含 token 過期重試）=====
+    function handleWriteError(serverResult, retryFn, formErrEl) {
+      var code = serverResult && serverResult.error;
+      var message = (serverResult && serverResult.message) ? serverResult.message : '送出失敗';
+      if (code === 'TOKEN_EXPIRED' || code === 'TOKEN_INVALID') {
+        clearWriteToken();
+        // 開密碼 modal，驗證成功後重新呼叫 retryFn（formData 已保留在 modal 內 textarea）
+        openPasswordModal({ then: retryFn });
+        if (formErrEl) {
+          formErrEl.textContent = 'Token 已失效，請重新輸入密碼';
+          formErrEl.classList.add('show');
+        }
+        return;
+      }
+      if (formErrEl) {
+        formErrEl.textContent = message;
+        formErrEl.classList.add('show');
+      } else {
+        showToast(message, 'error');
+      }
+    }
+
+    // ===== 編輯 modal =====
+    function onEditClick(viewIndex) {
+      var item = currentResults[viewIndex];
+      if (!item) return;
+      currentEditingItem = item;
+      var token = getValidWriteToken();
+      if (token) {
+        openEditModal(item);
+      } else {
+        openPasswordModal({ then: function() { openEditModal(item); } });
+      }
+    }
+    function openEditModal(item) {
+      currentEditingItem = item;
+      document.getElementById('editContentInput').value = item.content || '';
+      document.getElementById('editImageInput').value = item.image || '';
+      document.getElementById('editNoteInput').value = item.note || '';
+      var err = document.getElementById('editError');
+      err.classList.remove('show');
+      err.textContent = '';
+      document.getElementById('editModal').classList.add('active');
+    }
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+      currentEditingItem = null;
+    }
+    function submitEdit() {
+      if (!currentEditingItem) return;
+      var token = getValidWriteToken();
+      if (!token) {
+        openPasswordModal({ then: function() { submitEdit(); } });
+        return;
+      }
+      var item = currentEditingItem;
+      var sheetRow = item._sheet_row;
+      if (!sheetRow) {
+        var err = document.getElementById('editError');
+        err.textContent = '無法定位這筆資料的列號，請重新整理頁面再試';
+        err.classList.add('show');
+        return;
+      }
+      // 只送有變動的欄位
+      var newContent = document.getElementById('editContentInput').value;
+      var newImage   = document.getElementById('editImageInput').value;
+      var newNote    = document.getElementById('editNoteInput').value;
+      var fields = {};
+      if (newContent !== (item.content || '')) fields.content = newContent;
+      if (newImage   !== (item.image   || '')) fields.image   = newImage;
+      if (newNote    !== (item.note    || '')) fields.note    = newNote;
+
+      var errEl = document.getElementById('editError');
+      errEl.classList.remove('show');
+
+      if (Object.keys(fields).length === 0) {
+        errEl.textContent = '沒有任何欄位變動';
+        errEl.classList.add('show');
+        return;
+      }
+
+      gasWriteRequest({ action: 'edit-idea', token: token, sheet_row: sheetRow, fields: fields })
+        .then(function(r) {
+          if (r && r.ok) {
+            closeEditModal();
+            loadData();
+            showToast('已送出，AI 將在下一次排程時重新分析');
+          } else {
+            handleWriteError(r, function() { submitEdit(); }, errEl);
+          }
+        })
+        .catch(function(e) {
+          errEl.textContent = '網路錯誤：' + (e && e.message ? e.message : e);
+          errEl.classList.add('show');
+        });
+    }
+
+    // ===== 新增 modal =====
+    function onAddClick() {
+      var token = getValidWriteToken();
+      if (token) {
+        openAddModal();
+      } else {
+        openPasswordModal({ then: openAddModal });
+      }
+    }
+    function openAddModal() {
+      document.getElementById('addContentInput').value = '';
+      document.getElementById('addImageInput').value = '';
+      document.getElementById('addUrlInput').value = '';
+      document.getElementById('addAuthorInput').value = '';
+      document.getElementById('addCollectorInput').value = '';
+      document.getElementById('addNoteInput').value = '';
+      var err = document.getElementById('addError');
+      err.classList.remove('show');
+      err.textContent = '';
+      document.getElementById('addModal').classList.add('active');
+    }
+    function closeAddModal() {
+      document.getElementById('addModal').classList.remove('active');
+    }
+    function submitAdd() {
+      var token = getValidWriteToken();
+      if (!token) {
+        openPasswordModal({ then: function() { submitAdd(); } });
+        return;
+      }
+      var contentInput = document.getElementById('addContentInput');
+      var errEl = document.getElementById('addError');
+      var content = (contentInput.value || '').replace(/^\s+|\s+$/g, '');
+      if (!content) {
+        contentInput.focus();
+        errEl.textContent = '原始內容為必填';
+        errEl.classList.add('show');
+        return;
+      }
+      errEl.classList.remove('show');
+
+      var fields = {
+        content: contentInput.value,
+        image:     document.getElementById('addImageInput').value,
+        url:       document.getElementById('addUrlInput').value,
+        author:    document.getElementById('addAuthorInput').value,
+        collector: document.getElementById('addCollectorInput').value,
+        note:      document.getElementById('addNoteInput').value
+      };
+
+      gasWriteRequest({ action: 'add-idea', token: token, fields: fields })
+        .then(function(r) {
+          if (r && r.ok) {
+            closeAddModal();
+            loadData();
+            showToast('新增成功，AI 將在下一次排程時分析');
+          } else {
+            handleWriteError(r, function() { submitAdd(); }, errEl);
+          }
+        })
+        .catch(function(e) {
+          errEl.textContent = '網路錯誤：' + (e && e.message ? e.message : e);
+          errEl.classList.add('show');
+        });
+    }
+
+    // ESC 關閉 write-modal（保持 modal 開啟的優先順序）
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Escape') return;
+      ['passwordModal', 'editModal', 'addModal'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && el.classList.contains('active')) {
+          if (id === 'passwordModal') closePasswordModal();
+          else if (id === 'editModal') closeEditModal();
+          else if (id === 'addModal') closeAddModal();
+        }
+      });
+    });
+
+    // Enter 在密碼 modal 內送出
+    document.getElementById('passwordInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submitPassword();
+    });
   </script>
 </body>
 </html>
