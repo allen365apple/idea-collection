@@ -945,14 +945,14 @@
     .write-modal .form-row { display: flex; gap: 10px; }
     .write-modal .form-row > .write-modal-field { flex: 1; }
 
-    /* Modal 內的「✏️ 編輯」按鈕（放在 modal-close 旁） */
+    /* Modal 內的「✏️ 編輯」按鈕：放在標題上方避免與右上 ✕ 重疊 */
     .modal-edit {
-      position: absolute; top: 12px; right: 52px;
-      height: 32px; padding: 0 12px; border-radius: 8px;
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-bottom: 14px;
+      height: 30px; padding: 0 12px; border-radius: 8px;
       border: 1px solid #dcccf8; background: #f6f0ff; color: #7d5ac4;
       font-family: inherit; font-size: 0.78rem; font-weight: 600;
       cursor: pointer; transition: all 0.15s;
-      display: inline-flex; align-items: center; gap: 4px;
     }
     .modal-edit:hover { background: #efe4ff; border-color: #cbb0f4; }
 
@@ -984,8 +984,15 @@
     @media (max-width: 640px) {
       .write-modal { padding: 20px; }
       .write-modal .form-row { flex-direction: column; }
-      .modal-edit { right: 50px; padding: 0 10px; font-size: 0.72rem; }
+      .modal-edit { padding: 0 10px; font-size: 0.72rem; height: 28px; }
       .toast-stack { left: 16px; right: 16px; max-width: none; }
+      /* 手機版 toolbar：避免擠成一坨 */
+      .view-toolbar { flex-wrap: wrap; gap: 8px; }
+      .view-toolbar .result-count { flex: 0 0 auto; }
+      .filter-box { flex: 1 1 100%; order: 3; }
+      .filter-input { width: 100%; }
+      .btn-toolbar-add { order: 2; }
+      .view-toggle { order: 1; }
     }
   </style>
 </head>
@@ -2180,7 +2187,7 @@
       </div>
       <div class="write-modal-actions">
         <button type="button" class="write-btn-secondary" onclick="closePasswordModal()">取消</button>
-        <button type="button" class="write-btn-primary" onclick="submitPassword()">送出</button>
+        <button type="button" class="write-btn-primary" id="passwordSubmitBtn" onclick="submitPassword()">送出</button>
       </div>
     </div>
   </div>
@@ -2203,7 +2210,7 @@
       <div class="write-modal-error" id="editError"></div>
       <div class="write-modal-actions">
         <button type="button" class="write-btn-secondary" onclick="closeEditModal()">取消</button>
-        <button type="button" class="write-btn-primary" onclick="submitEdit()">送出</button>
+        <button type="button" class="write-btn-primary" id="editSubmitBtn" onclick="submitEdit()">送出</button>
       </div>
     </div>
   </div>
@@ -2240,7 +2247,7 @@
       <div class="write-modal-error" id="addError"></div>
       <div class="write-modal-actions">
         <button type="button" class="write-btn-secondary" onclick="closeAddModal()">取消</button>
-        <button type="button" class="write-btn-primary" onclick="submitAdd()">送出</button>
+        <button type="button" class="write-btn-primary" id="addSubmitBtn" onclick="submitAdd()">送出</button>
       </div>
     </div>
   </div>
@@ -2286,6 +2293,22 @@
       }).then(function(res) { return res.json(); });
     }
 
+    // 把按鈕切到 loading 狀態（disabled + 改文字），完成後還原
+    function setButtonLoading(btn, loading, loadingText) {
+      if (!btn) return;
+      if (loading) {
+        if (btn.dataset.originalText === undefined) btn.dataset.originalText = btn.textContent;
+        btn.textContent = loadingText || '送出中…';
+        btn.disabled = true;
+      } else {
+        if (btn.dataset.originalText) {
+          btn.textContent = btn.dataset.originalText;
+          delete btn.dataset.originalText;
+        }
+        btn.disabled = false;
+      }
+    }
+
     // ===== Password modal =====
     function openPasswordModal(opts) {
       pendingWriteThen = (opts && opts.then) ? opts.then : null;
@@ -2293,6 +2316,7 @@
       errEl.classList.remove('show');
       errEl.textContent = '';
       document.getElementById('passwordInput').value = '';
+      setButtonLoading(document.getElementById('passwordSubmitBtn'), false);
       document.getElementById('passwordModal').classList.add('active');
       setTimeout(function() { document.getElementById('passwordInput').focus(); }, 50);
     }
@@ -2303,6 +2327,8 @@
     function submitPassword() {
       var input = document.getElementById('passwordInput');
       var errEl = document.getElementById('passwordError');
+      var btn = document.getElementById('passwordSubmitBtn');
+      if (btn.disabled) return; // 防連點：已經在送
       var pwd = input.value;
       if (!pwd) {
         errEl.textContent = '請輸入密碼';
@@ -2310,8 +2336,10 @@
         return;
       }
       errEl.classList.remove('show');
+      setButtonLoading(btn, true, '驗證中…');
       gasWriteRequest({ action: 'verify-password', password: pwd })
         .then(function(r) {
+          setButtonLoading(btn, false);
           if (r && r.ok) {
             storeWriteToken(r.token, r.exp);
             var then = pendingWriteThen;
@@ -2324,6 +2352,7 @@
           }
         })
         .catch(function(err) {
+          setButtonLoading(btn, false);
           errEl.textContent = '網路錯誤：' + (err && err.message ? err.message : err);
           errEl.classList.add('show');
         });
@@ -2344,9 +2373,11 @@
     }
 
     // ===== 共用：寫入錯誤處理（含 token 過期重試）=====
-    function handleWriteError(serverResult, retryFn, formErrEl) {
+    function handleWriteError(serverResult, retryFn, formErrEl, submitBtnId) {
       var code = serverResult && serverResult.error;
       var message = (serverResult && serverResult.message) ? serverResult.message : '送出失敗';
+      // 還原原本 submit 按鈕（避免 token 過期重彈密碼框後原按鈕仍 disabled）
+      if (submitBtnId) setButtonLoading(document.getElementById(submitBtnId), false);
       if (code === 'TOKEN_EXPIRED' || code === 'TOKEN_INVALID') {
         clearWriteToken();
         // 開密碼 modal，驗證成功後重新呼叫 retryFn（formData 已保留在 modal 內 textarea）
@@ -2385,6 +2416,7 @@
       var err = document.getElementById('editError');
       err.classList.remove('show');
       err.textContent = '';
+      setButtonLoading(document.getElementById('editSubmitBtn'), false);
       document.getElementById('editModal').classList.add('active');
     }
     function closeEditModal() {
@@ -2393,6 +2425,8 @@
     }
     function submitEdit() {
       if (!currentEditingItem) return;
+      var btn = document.getElementById('editSubmitBtn');
+      if (btn.disabled) return; // 防連點
       var token = getValidWriteToken();
       if (!token) {
         openPasswordModal({ then: function() { submitEdit(); } });
@@ -2400,10 +2434,10 @@
       }
       var item = currentEditingItem;
       var sheetRow = item._sheet_row;
+      var errEl = document.getElementById('editError');
       if (!sheetRow) {
-        var err = document.getElementById('editError');
-        err.textContent = '無法定位這筆資料的列號，請重新整理頁面再試';
-        err.classList.add('show');
+        errEl.textContent = '無法定位這筆資料的列號，請重新整理頁面再試';
+        errEl.classList.add('show');
         return;
       }
       // 只送有變動的欄位
@@ -2415,7 +2449,6 @@
       if (newImage   !== (item.image   || '')) fields.image   = newImage;
       if (newNote    !== (item.note    || '')) fields.note    = newNote;
 
-      var errEl = document.getElementById('editError');
       errEl.classList.remove('show');
 
       if (Object.keys(fields).length === 0) {
@@ -2424,17 +2457,20 @@
         return;
       }
 
+      setButtonLoading(btn, true, '送出中…');
       gasWriteRequest({ action: 'edit-idea', token: token, sheet_row: sheetRow, fields: fields })
         .then(function(r) {
           if (r && r.ok) {
+            setButtonLoading(btn, false);
             closeEditModal();
             loadData();
             showToast('已送出，AI 將在下一次排程時重新分析');
           } else {
-            handleWriteError(r, function() { submitEdit(); }, errEl);
+            handleWriteError(r, function() { submitEdit(); }, errEl, 'editSubmitBtn');
           }
         })
         .catch(function(e) {
+          setButtonLoading(btn, false);
           errEl.textContent = '網路錯誤：' + (e && e.message ? e.message : e);
           errEl.classList.add('show');
         });
@@ -2459,12 +2495,15 @@
       var err = document.getElementById('addError');
       err.classList.remove('show');
       err.textContent = '';
+      setButtonLoading(document.getElementById('addSubmitBtn'), false);
       document.getElementById('addModal').classList.add('active');
     }
     function closeAddModal() {
       document.getElementById('addModal').classList.remove('active');
     }
     function submitAdd() {
+      var btn = document.getElementById('addSubmitBtn');
+      if (btn.disabled) return; // 防連點
       var token = getValidWriteToken();
       if (!token) {
         openPasswordModal({ then: function() { submitAdd(); } });
@@ -2490,17 +2529,20 @@
         note:      document.getElementById('addNoteInput').value
       };
 
+      setButtonLoading(btn, true, '送出中…');
       gasWriteRequest({ action: 'add-idea', token: token, fields: fields })
         .then(function(r) {
           if (r && r.ok) {
+            setButtonLoading(btn, false);
             closeAddModal();
             loadData();
             showToast('新增成功，AI 將在下一次排程時分析');
           } else {
-            handleWriteError(r, function() { submitAdd(); }, errEl);
+            handleWriteError(r, function() { submitAdd(); }, errEl, 'addSubmitBtn');
           }
         })
         .catch(function(e) {
+          setButtonLoading(btn, false);
           errEl.textContent = '網路錯誤：' + (e && e.message ? e.message : e);
           errEl.classList.add('show');
         });
