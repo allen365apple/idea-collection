@@ -1391,6 +1391,10 @@
     var DATA_CACHE_KEY = 'idea-data-cache-v1';
     var FETCH_TIMEOUT_MS = 90000; // 後端忙的時候要 30 秒以上才回，太短會把還在路上的資料切掉
     var FETCH_RETRIES = 1;
+    // 「網頁資料」分頁發布到網路的 CSV 網址（由 Apps Script 的 buildWebSnapshot 每 10 分鐘更新）
+    // 讀這個不經過 Apps Script，比較快也比較穩；空字串或讀不到時退回 GAS_URL
+    var SNAPSHOT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQaFiZj8ElrqExLebWBb4RsvYn-xOibQfVvVZpdsgnXfmoWilOkGK1-4HFD62RdEkXc8aV7MgJHCthZ/pub?gid=325275821&single=true&output=csv';
+    var SNAPSHOT_TIMEOUT_MS = 20000;
     var dataNoticeEl = document.getElementById('dataNotice');
     var onLatestView = false;
     var loadSeq = 0;
@@ -1404,8 +1408,9 @@
       } catch (e) { return null; }
     }
 
-    function writeDataCache(data) {
-      try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: data })); } catch (e) {}
+    // savedAt 記的是「這份資料是什麼時候的」，快照就用快照產生的時間
+    function writeDataCache(data, savedAt) {
+      try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify({ savedAt: savedAt || Date.now(), data: data })); } catch (e) {}
     }
 
     function formatCacheAge(savedAt) {
@@ -1435,24 +1440,82 @@
       searchHintEl.textContent = '先顯示關鍵字比對結果，再額外推薦一些概念接近的點子給你參考。';
     }
 
-    // 逾時就中止，失敗自動重試一次（後端忙碌時第二次常常就成功）
-    function fetchIdeas(retriesLeft) {
+    function fetchWithTimeout(url, ms) {
       var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-      var timer = controller ? setTimeout(function() { controller.abort(); }, FETCH_TIMEOUT_MS) : null;
-      return fetch(GAS_URL, controller ? { signal: controller.signal } : {})
+      var timer = controller ? setTimeout(function() { controller.abort(); }, ms) : null;
+      return fetch(url, controller ? { signal: controller.signal } : {})
+        .finally(function() { if (timer) clearTimeout(timer); });
+    }
+
+    // 從 Apps Script 拿：逾時就中止，失敗自動重試一次（後端忙碌時第二次常常就成功）
+    function fetchFromGas(retriesLeft) {
+      return fetchWithTimeout(GAS_URL, FETCH_TIMEOUT_MS)
         .then(function(res) {
           if (!res.ok) throw new Error('HTTP ' + res.status);
           return res.json();
         })
         .then(function(data) {
           if (!Array.isArray(data)) throw new Error('資料格式不對');
-          return data;
+          return { data: data, savedAt: Date.now() };
         })
-        .finally(function() { if (timer) clearTimeout(timer); })
         .catch(function(err) {
-          if (retriesLeft > 0) return fetchIdeas(retriesLeft - 1);
+          if (retriesLeft > 0) return fetchFromGas(retriesLeft - 1);
           throw err;
         });
+    }
+
+    // 解析 CSV（處理引號、欄位裡的逗號與換行）
+    function parseCsv(text) {
+      var rows = [], row = [], field = '', inQuotes = false;
+      for (var i = 0; i < text.length; i++) {
+        var c = text.charAt(i);
+        if (inQuotes) {
+          if (c === '"') {
+            if (text.charAt(i + 1) === '"') { field += '"'; i++; } else { inQuotes = false; }
+          } else { field += c; }
+        } else if (c === '"') { inQuotes = true; }
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else if (c !== '\r') { field += c; }
+      }
+      if (field || row.length) { row.push(field); rows.push(row); }
+      return rows;
+    }
+
+    // 從發布的快照拿：A 欄 meta／0、1、2…，B 欄開頭固定有「|」；段數、筆數都要對得上才算數
+    function fetchFromSnapshot() {
+      if (!SNAPSHOT_CSV_URL) return Promise.reject(new Error('沒有設定快照網址'));
+      return fetchWithTimeout(SNAPSHOT_CSV_URL, SNAPSHOT_TIMEOUT_MS)
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function(text) {
+          var rows = parseCsv(text);
+          var meta = null, parts = [];
+          rows.forEach(function(r) {
+            var tag = r[0], val = r[1] || '';
+            if (val.charAt(0) !== '|') return;
+            if (tag === 'meta') meta = JSON.parse(val.slice(1));
+            else if (/^\d+$/.test(tag)) parts[parseInt(tag, 10)] = val.slice(1);
+          });
+          if (!meta || parts.length !== meta.chunks) throw new Error('快照不完整');
+          for (var i = 0; i < parts.length; i++) {
+            if (typeof parts[i] !== 'string') throw new Error('快照缺段');
+          }
+          var data = JSON.parse(parts.join(''));
+          if (!Array.isArray(data) || data.length !== meta.count) throw new Error('快照筆數不對');
+          return { data: data, savedAt: meta.generatedAt };
+        });
+    }
+
+    // 平常：先讀快照，讀不到才找 Apps Script
+    // 剛新增／編輯完（preferFresh）：要看到自己剛改的，先找 Apps Script，失敗才退回快照
+    function fetchIdeas(preferFresh) {
+      if (preferFresh) {
+        return fetchFromGas(FETCH_RETRIES).catch(function() { return fetchFromSnapshot(); });
+      }
+      return fetchFromSnapshot().catch(function() { return fetchFromGas(FETCH_RETRIES); });
     }
 
     // mode：
@@ -1463,6 +1526,8 @@
     function loadData(mode) {
       var seq = ++loadSeq;
       var background = false;
+      // 只有新增／編輯後（不帶 mode）才優先找 Apps Script；按「重試」走一般順序
+      var preferFresh = mode === undefined;
       if (mode === true && allData.length === 0) {
         var cached = readDataCache();
         if (cached) {
@@ -1486,13 +1551,15 @@
         setSearchDisabled(true);
       }
 
-      fetchIdeas(FETCH_RETRIES)
-        .then(function(data) {
+      fetchIdeas(preferFresh)
+        .then(function(result) {
           if (seq !== loadSeq) return;
-          writeDataCache(data);
-          shownSavedAt = Date.now();
           setDataNotice('');
-          applyData(data);
+          // 畫面上的資料比拿到的還新（例如剛新增完、快照還沒更新），就保留畫面上的
+          if (background && result.savedAt < shownSavedAt) return;
+          writeDataCache(result.data, result.savedAt);
+          shownSavedAt = result.savedAt;
+          applyData(result.data);
           if (!background) {
             searchInput.focus();
             showLatest(true);
@@ -1507,7 +1574,7 @@
             setDataNotice('資料庫暫時沒有回應，先顯示' + cacheLabel(shownSavedAt) + ' <button onclick="loadData(\'background\')">重新更新</button>', true);
           } else {
             statusEl.innerHTML =
-              '<div class="error"><div>資料庫暫時沒有回應，可能正在匯入或整理資料，請稍等一兩分鐘再試</div><button onclick="loadData()">重試</button></div>';
+              '<div class="error"><div>資料庫暫時沒有回應，可能正在匯入或整理資料，請稍等一兩分鐘再試</div><button onclick="loadData(\'retry\')">重試</button></div>';
           }
         });
     }
