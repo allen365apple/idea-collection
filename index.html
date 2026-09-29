@@ -1389,7 +1389,7 @@
     // 後端（Apps Script）叫醒＋讀試算表要幾秒，匯入或排程在跑時還可能讀不到；
     // 瀏覽器記住上次成功載入的資料，打開網頁先顯示，背景抓到新的再換上
     var DATA_CACHE_KEY = 'idea-data-cache-v1';
-    var FETCH_TIMEOUT_MS = 30000;
+    var FETCH_TIMEOUT_MS = 90000; // 後端忙的時候要 30 秒以上才回，太短會把還在路上的資料切掉
     var FETCH_RETRIES = 1;
     var dataNoticeEl = document.getElementById('dataNotice');
     var onLatestView = false;
