@@ -287,6 +287,18 @@
     }
     .error button:hover { background: #c0392b; color: #fff; }
 
+    .data-notice {
+      display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px;
+      margin: 0 auto 16px; padding: 8px 14px; border-radius: 8px;
+      background: #f3f3f0; color: #7f7f78; font-size: 0.8rem; text-align: center;
+    }
+    .data-notice.warn { background: #fdf3e7; color: #a0602a; }
+    .data-notice button {
+      padding: 3px 12px; font-family: inherit; font-size: 0.78rem; cursor: pointer;
+      border: 1px solid currentColor; border-radius: 6px; background: transparent; color: inherit;
+    }
+    .data-notice .loading-spinner { width: 12px; height: 12px; margin: 0; border-width: 2px; }
+
     .empty-state { text-align: center; padding: 40px 0; color: #999; font-size: 0.9rem; }
     .section-heading { font-size: 0.85rem; color: #999; margin-bottom: 16px; }
     .section-heading strong { color: #7f7f78; font-weight: 600; }
@@ -1023,6 +1035,7 @@
         <button class="btn-random" id="randomBtn" disabled onclick="randomIdea()">🎲 抽點子</button>
       </div>
 
+      <div id="dataNotice"></div>
       <div id="status"></div>
       <div id="results"></div>
 
@@ -1372,31 +1385,130 @@
       searchBtn.disabled = disabled;
     }
 
-    function loadData() {
-      statusEl.innerHTML =
-        '<div class="loading"><div class="loading-spinner"></div><div>資料庫更新中，請稍候...</div></div>';
-      resultsEl.innerHTML = '';
-      setSearchDisabled(true);
+    // ===== 資料快取：先顯示上次的資料，背景再更新 =====
+    // 後端（Apps Script）叫醒＋讀試算表要幾秒，匯入或排程在跑時還可能讀不到；
+    // 瀏覽器記住上次成功載入的資料，打開網頁先顯示，背景抓到新的再換上
+    var DATA_CACHE_KEY = 'idea-data-cache-v1';
+    var FETCH_TIMEOUT_MS = 30000;
+    var FETCH_RETRIES = 1;
+    var dataNoticeEl = document.getElementById('dataNotice');
+    var onLatestView = false;
+    var loadSeq = 0;
 
-      fetch(GAS_URL)
+    function readDataCache() {
+      try {
+        var raw = localStorage.getItem(DATA_CACHE_KEY);
+        if (!raw) return null;
+        var cached = JSON.parse(raw);
+        return cached && Array.isArray(cached.data) && cached.data.length ? cached : null;
+      } catch (e) { return null; }
+    }
+
+    function writeDataCache(data) {
+      try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: data })); } catch (e) {}
+    }
+
+    function formatCacheAge(savedAt) {
+      var min = Math.floor((Date.now() - savedAt) / 60000);
+      if (min < 1) return '剛剛';
+      if (min < 60) return min + ' 分鐘前';
+      var hr = Math.floor(min / 60);
+      if (hr < 24) return hr + ' 小時前';
+      return Math.floor(hr / 24) + ' 天前';
+    }
+
+    function cacheLabel(savedAt) {
+      var age = formatCacheAge(savedAt);
+      return age === '剛剛' ? '剛剛的資料' : ' ' + age + '的資料';
+    }
+
+    function setDataNotice(html, warn) {
+      dataNoticeEl.innerHTML = html ? '<div class="data-notice' + (warn ? ' warn' : '') + '">' + html + '</div>' : '';
+    }
+
+    function applyData(data) {
+      allData = data;
+      ideaCountEl.innerHTML = '已收集 <strong>' + allData.length + '</strong> 個靈感點子';
+      setSearchDisabled(false);
+      document.getElementById('randomBtn').disabled = false;
+      searchInput.placeholder = '輸入關鍵字或需求，例如：愚人節、互動推廣、健康建築 教育感';
+      searchHintEl.textContent = '先顯示關鍵字比對結果，再額外推薦一些概念接近的點子給你參考。';
+    }
+
+    // 逾時就中止，失敗自動重試一次（後端忙碌時第二次常常就成功）
+    function fetchIdeas(retriesLeft) {
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = controller ? setTimeout(function() { controller.abort(); }, FETCH_TIMEOUT_MS) : null;
+      return fetch(GAS_URL, controller ? { signal: controller.signal } : {})
         .then(function(res) {
           if (!res.ok) throw new Error('HTTP ' + res.status);
           return res.json();
         })
         .then(function(data) {
-          allData = data;
-          statusEl.innerHTML = '';
-          ideaCountEl.innerHTML = '已收集 <strong>' + allData.length + '</strong> 個靈感點子';
-          setSearchDisabled(false);
-          document.getElementById('randomBtn').disabled = false;
-          searchInput.placeholder = '輸入關鍵字或需求，例如：愚人節、互動推廣、健康建築 教育感';
-          searchHintEl.textContent = '先顯示關鍵字比對結果，再額外推薦一些概念接近的點子給你參考。';
-          searchInput.focus();
+          if (!Array.isArray(data)) throw new Error('資料格式不對');
+          return data;
+        })
+        .finally(function() { if (timer) clearTimeout(timer); })
+        .catch(function(err) {
+          if (retriesLeft > 0) return fetchIdeas(retriesLeft - 1);
+          throw err;
+        });
+    }
+
+    // mode：
+    //   true         剛打開網頁：有上次的資料就先顯示，背景再更新
+    //   'background' 畫面上已經有資料：保留畫面，背景更新（「重新更新」按鈕用）
+    //   不帶         新增／編輯後：清掉畫面、等最新資料（原本的行為）
+    var shownSavedAt = 0;
+    function loadData(mode) {
+      var seq = ++loadSeq;
+      var background = false;
+      if (mode === true && allData.length === 0) {
+        var cached = readDataCache();
+        if (cached) {
+          applyData(cached.data);
+          shownSavedAt = cached.savedAt;
           showLatest(true);
+          searchInput.focus();
+          background = true;
+        }
+      } else if (mode === 'background' && allData.length > 0) {
+        background = true;
+      }
+
+      if (background) {
+        setDataNotice('<span class="loading-spinner"></span>先顯示' + cacheLabel(shownSavedAt) + '，正在更新…');
+      } else {
+        setDataNotice('');
+        statusEl.innerHTML =
+          '<div class="loading"><div class="loading-spinner"></div><div>資料庫更新中，請稍候...</div></div>';
+        resultsEl.innerHTML = '';
+        setSearchDisabled(true);
+      }
+
+      fetchIdeas(FETCH_RETRIES)
+        .then(function(data) {
+          if (seq !== loadSeq) return;
+          writeDataCache(data);
+          shownSavedAt = Date.now();
+          setDataNotice('');
+          applyData(data);
+          if (!background) {
+            searchInput.focus();
+            showLatest(true);
+          } else if (onLatestView) {
+            // 還在首頁才換上新資料；已經在看搜尋或抽點子結果就不打斷，新資料下次搜尋就會用到
+            showLatest(false);
+          }
         })
         .catch(function() {
-          statusEl.innerHTML =
-            '<div class="error"><div>無法載入資料，請確認網路連線後再試</div><button onclick="loadData()">重試</button></div>';
+          if (seq !== loadSeq) return;
+          if (background) {
+            setDataNotice('資料庫暫時沒有回應，先顯示' + cacheLabel(shownSavedAt) + ' <button onclick="loadData(\'background\')">重新更新</button>', true);
+          } else {
+            statusEl.innerHTML =
+              '<div class="error"><div>資料庫暫時沒有回應，可能正在匯入或整理資料，請稍等一兩分鐘再試</div><button onclick="loadData()">重試</button></div>';
+          }
         });
     }
 
@@ -1671,6 +1783,7 @@
     }
 
     function showLatest(resetCount) {
+      onLatestView = true;
       if (resetCount !== false) {
         latestVisibleCount = LATEST_INITIAL_COUNT;
         // 回到首頁狀態時清除搜尋上下文
@@ -1738,6 +1851,7 @@
     }
 
     function renderInitialSearchResults(query, keywordMatches) {
+      onLatestView = false;
       currentResults = [];
       latestSearchQuery = query;
       latestKeywordMatches = keywordMatches.slice();
@@ -2042,6 +2156,7 @@
       if (allData.length === 0) return;
       var idx = Math.floor(Math.random() * allData.length);
       var item = allData[idx];
+      onLatestView = false;
       currentResults = [item];
       statusEl.innerHTML = '<div class="section-heading">🎲 隨機抽到的點子</div>';
 
@@ -2174,7 +2289,7 @@
 
     searchBtn.addEventListener('click', doSearch);
     searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
-    loadData();
+    loadData(true);
   </script>
 
   <!-- ===== Web-write modals + toast ===== -->
