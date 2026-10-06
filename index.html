@@ -122,6 +122,35 @@
     }
     .idea-count strong { color: #999; font-weight: 600; }
 
+    /* ===== 類別下拉選單（全部／行銷案例／社群靈感）：放在卡片／列表切換旁邊 ===== */
+    .cat-select-wrap {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; font-weight: 500; color: #777;
+    }
+    .cat-select {
+      font-family: inherit; font-size: 0.82rem; font-weight: 500; color: #1a1a1a;
+      background: #f0eee8; border: none; border-radius: 10px;
+      padding: 7px 28px 7px 12px; cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23777' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+    }
+    .cat-select:hover { color: #444; }
+    .cat-select:focus-visible { outline: 2px solid #b6a0e8; outline-offset: 2px; }
+
+    /* 分類小標籤（卡片、詳情、列表） */
+    .cat-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 600; line-height: 1.4;
+      padding: 1px 8px; border-radius: 999px; white-space: nowrap; vertical-align: middle;
+      border: 1px solid transparent; align-self: flex-start;
+    }
+    .cat-badge-marketing { background: #fdf8f0; color: #8a6a32; border-color: #ead9b8; }
+    .cat-badge-social { background: #f1f7f1; color: #4f7553; border-color: #cfe1d0; }
+    .card .cat-badge, .random-card .cat-badge { margin-bottom: 8px; }
+    .modal-cat { margin-bottom: 8px; }
+    .col-summary .cat-badge { margin-right: 6px; }
+    .cat-heading-label { font-size: 0.8rem; font-weight: 500; color: #999; }
+
     .search-hint {
       text-align: center;
       color: #9b9b95;
@@ -932,6 +961,7 @@
     .write-modal-field .req { color: #c0392b; }
     .write-modal input[type="text"],
     .write-modal input[type="password"],
+    .write-modal select,
     .write-modal textarea {
       width: 100%; font-family: inherit; font-size: 0.9rem;
       padding: 9px 12px; border: 1px solid #d8d8d3;
@@ -940,7 +970,9 @@
     }
     .write-modal input[type="text"]:focus,
     .write-modal input[type="password"]:focus,
+    .write-modal select:focus,
     .write-modal textarea:focus { border-color: #b6a0e8; }
+    .write-modal-hint { font-size: 0.74rem; color: #999; margin-top: 4px; }
     .write-modal textarea { resize: vertical; min-height: 72px; line-height: 1.55; }
     .write-modal textarea.tall { min-height: 140px; }
     .write-modal-error {
@@ -1017,6 +1049,7 @@
       .filter-input { width: 100%; }
       .btn-toolbar-add { order: 2; }
       .view-toggle { order: 1; }
+      .cat-select-wrap { order: 0; }
     }
   </style>
 </head>
@@ -1447,6 +1480,98 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
     var listTagFilter = '';
     // 用來在切換模式時知道該重新渲染什麼
     var latestSemanticPayload = null;
+    var currentViewKind = 'latest'; // 'latest' | 'search' | 'random'：切換分類時知道要重畫哪個畫面
+
+    // ===== 分類（行銷案例／社群靈感）=====
+    // 記在網址 query（?cat=marketing / ?cat=social），不動 #about、#install 的 hash 分頁
+    var CATEGORY_KEYS = { all: '', marketing: '行銷案例', social: '社群靈感' };
+    var CATEGORY_BADGE_CLASS = { '行銷案例': 'cat-badge-marketing', '社群靈感': 'cat-badge-social' };
+    var categoryIndex = {}; // 語意推薦結果若沒帶 category（後端還沒更新），用這個從已載入的資料補
+    var currentCategory = readCategoryFromUrl();
+
+    function readCategoryFromUrl() {
+      try {
+        var m = /[?&]cat=([^&#]*)/.exec(window.location.search);
+        var v = m ? decodeURIComponent(m[1]) : '';
+        return (v && v !== 'all' && CATEGORY_KEYS.hasOwnProperty(v)) ? v : 'all';
+      } catch (e) { return 'all'; }
+    }
+    function writeCategoryToUrl(key) {
+      try {
+        var params = window.location.search.replace(/^\?/, '').split('&').filter(function(p) {
+          return p && p.indexOf('cat=') !== 0;
+        });
+        if (key !== 'all') params.push('cat=' + key);
+        var url = window.location.pathname + (params.length ? '?' + params.join('&') : '') + window.location.hash;
+        history.replaceState(null, '', url);
+      } catch (e) {}
+    }
+    // 只認合法的兩個值；舊快照沒有 category 或空白 → ''（只會出現在「全部」）
+    function getItemCategory(item) {
+      if (!item) return '';
+      var c = item.category;
+      if (c === undefined || c === null) {
+        c = categoryIndex[getItemIdentity(item)] || '';
+      }
+      c = String(c).replace(/^\s+|\s+$/g, '');
+      return CATEGORY_BADGE_CLASS.hasOwnProperty(c) ? c : '';
+    }
+    function matchesCurrentCategory(item) {
+      var want = CATEGORY_KEYS[currentCategory];
+      return !want || getItemCategory(item) === want;
+    }
+    function getCategoryData() {
+      if (currentCategory === 'all') return allData;
+      return allData.filter(matchesCurrentCategory);
+    }
+    function renderCategoryBadge(item) {
+      var c = getItemCategory(item);
+      if (!c) return '';
+      return '<span class="cat-badge ' + CATEGORY_BADGE_CLASS[c] + '">' + escapeHtml(c) + '</span>';
+    }
+    function categoryHeadingLabel() {
+      var name = CATEGORY_KEYS[currentCategory];
+      return name ? ' <span class="cat-heading-label">· 只看' + escapeHtml(name) + '</span>' : '';
+    }
+    var categoryCounts = null; // 各分類則數，顯示在分類切換按鈕的提示文字
+    function updateCategoryCounts() {
+      var counts = { all: allData.length, marketing: 0, social: 0 };
+      for (var i = 0; i < allData.length; i++) {
+        var c = getItemCategory(allData[i]);
+        if (c === CATEGORY_KEYS.marketing) counts.marketing++;
+        else if (c === CATEGORY_KEYS.social) counts.social++;
+      }
+      categoryCounts = counts;
+      renderCategorySwitch();
+    }
+    function renderCategorySwitch() {
+      document.querySelectorAll('.cat-select').forEach(function(sel) {
+        sel.value = currentCategory;
+        if (categoryCounts) {
+          [].forEach.call(sel.options, function(opt) {
+            opt.textContent = opt.textContent.replace(/（\d+）$/, '') + '（' + categoryCounts[opt.value] + '）';
+          });
+        }
+      });
+    }
+    function setCategory(key) {
+      if (!CATEGORY_KEYS.hasOwnProperty(key)) key = 'all';
+      if (key === currentCategory) return;
+      currentCategory = key;
+      writeCategoryToUrl(key);
+      renderCategorySwitch();
+      if (allData.length === 0) return; // 資料還沒載入，載入後自然會套用
+      listVisibleCount = LIST_PAGE_SIZE;
+      if (currentViewKind === 'random') {
+        randomIdea();
+      } else if (currentViewKind === 'search' && latestSearchQuery) {
+        latestKeywordMatches = getKeywordMatches(latestSearchQuery);
+        rerenderCurrentView();
+      } else {
+        showLatest(true);
+      }
+    }
+    renderCategorySwitch();
 
     function setViewMode(mode) {
       if (mode !== 'card' && mode !== 'list') return;
@@ -1540,6 +1665,12 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
 
     function applyData(data) {
       allData = data;
+      categoryIndex = {};
+      for (var ci = 0; ci < allData.length; ci++) {
+        var cat = allData[ci] && allData[ci].category ? String(allData[ci].category) : '';
+        if (cat) categoryIndex[getItemIdentity(allData[ci])] = cat;
+      }
+      updateCategoryCounts();
       ideaCountEl.innerHTML = '已收集 <strong>' + allData.length + '</strong> 個靈感點子';
       setSearchDisabled(false);
       document.getElementById('randomBtn').disabled = false;
@@ -1689,6 +1820,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
     function getLatestEntries() {
       var entries = [];
       for (var i = 0; i < allData.length; i++) {
+        if (!matchesCurrentCategory(allData[i])) continue;
         entries.push({ item: allData[i], idx: i });
       }
       entries.sort(function(a, b) {
@@ -1743,6 +1875,18 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       return { filtered: filtered, visible: visible };
     }
 
+    // 分類切換（全部／行銷案例／社群靈感）：最新點子、關鍵字搜尋、語意推薦、抽點子都只看選到的分類
+    function renderCategoryToggleHtml() {
+      var items = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例']];
+      var html = '<label class="cat-select-wrap">類別<select class="cat-select" aria-label="類別" onchange="setCategory(this.value)">';
+      items.forEach(function(it) {
+        var count = categoryCounts ? '（' + categoryCounts[it[0]] + '）' : '';
+        html += '<option value="' + it[0] + '"' + (it[0] === currentCategory ? ' selected' : '') + '>' + it[1] + count + '</option>';
+      });
+      html += '</select></label>';
+      return html;
+    }
+
     function renderViewToggleHtml() {
       var cardActive = viewMode === 'card' ? ' active' : '';
       var listActive = viewMode === 'list' ? ' active' : '';
@@ -1770,6 +1914,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       }
       html += '<div class="spacer"></div>';
       html += '<button type="button" class="btn-toolbar-add" onclick="onAddClick()" aria-label="新增點子">➕ 新增點子</button>';
+      html += renderCategoryToggleHtml();
       html += renderViewToggleHtml();
       html += '</div>';
       return html;
@@ -1813,7 +1958,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       var html = '<tr onclick="onListRowClick(event, ' + realIndex + ')">';
       html += '<td class="col-date">' + escapeHtml(item.date || '') + '</td>';
       html += '<td class="col-source"><div class="clamp-2">' + escapeHtml(item.content || '') + '</div></td>';
-      html += '<td><div class="clamp-2 col-summary">' + escapeHtml(item.summary || '') + '</div></td>';
+      html += '<td><div class="clamp-2 col-summary">' + renderCategoryBadge(item) + escapeHtml(item.summary || '') + '</div></td>';
       html += '<td class="col-tags">' + tagsHtml + '</td>';
       html += '</tr>';
       return html;
@@ -1925,6 +2070,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
           }
           for (var s = 0; s < semanticPayload.results.length; s++) {
             var semanticItem = semanticPayload.results[s];
+            if (!matchesCurrentCategory(semanticItem)) continue; // 選了分類就只推薦該分類
             if (!keywordIds[getItemIdentity(semanticItem)]) {
               semanticItems.push(semanticItem);
             }
@@ -1958,6 +2104,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
 
     function showLatest(resetCount) {
       onLatestView = true;
+      currentViewKind = 'latest';
       if (resetCount !== false) {
         latestVisibleCount = LATEST_INITIAL_COUNT;
         // 回到首頁狀態時清除搜尋上下文
@@ -1968,7 +2115,9 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       if (latestEntries.length === 0) {
         statusEl.innerHTML = '';
         currentResults = [];
-        resultsEl.innerHTML = '<div class="empty-state">目前還沒有任何靈感點子</div>';
+        resultsEl.innerHTML = currentCategory !== 'all' && allData.length > 0
+          ? '<div class="empty-state">「' + escapeHtml(CATEGORY_KEYS[currentCategory]) + '」目前還沒有點子，可以先切回「全部」看看</div>'
+          : '<div class="empty-state">目前還沒有任何靈感點子</div>';
         return;
       }
 
@@ -1976,7 +2125,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       if (viewMode === 'list') {
         var allItems = latestEntries.map(function(entry) { return entry.item; });
         currentResults = allItems.slice();
-        statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨</div>';
+        statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨' + categoryHeadingLabel() + '</div>';
         resultsEl.innerHTML = renderListView(currentResults);
         return;
       }
@@ -1985,7 +2134,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       var visibleEntries = latestEntries.slice(0, latestVisibleCount);
       var visibleItems = visibleEntries.map(function(entry) { return entry.item; });
       currentResults = [];
-      statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨ <strong>已顯示 ' + visibleItems.length + ' / ' + latestEntries.length + '</strong></div>';
+      statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨' + categoryHeadingLabel() + ' <strong>已顯示 ' + visibleItems.length + ' / ' + latestEntries.length + '</strong></div>';
       var html = renderViewToggleToolbar();
       html += renderResultSection({
         items: visibleItems
@@ -2000,6 +2149,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
     function renderViewToggleToolbar() {
       return '<div class="view-toolbar"><div class="spacer"></div>'
         + '<button type="button" class="btn-toolbar-add" onclick="onAddClick()" aria-label="新增點子">➕ 新增點子</button>'
+        + renderCategoryToggleHtml()
         + renderViewToggleHtml()
         + '</div>';
     }
@@ -2013,6 +2163,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       var keywords = query.toLowerCase().split(/\s+/).filter(Boolean);
       var matched = [];
       for (var i = 0; i < allData.length; i++) {
+        if (!matchesCurrentCategory(allData[i])) continue;
         var text = buildKeywordSearchPool(allData[i]);
         if (keywords.every(function(kw) { return text.indexOf(kw) !== -1; })) {
           matched.push(allData[i]);
@@ -2026,10 +2177,11 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
 
     function renderInitialSearchResults(query, keywordMatches) {
       onLatestView = false;
+      currentViewKind = 'search';
       currentResults = [];
       latestSearchQuery = query;
       latestKeywordMatches = keywordMatches.slice();
-      statusEl.innerHTML = '<div class="section-heading">搜尋「' + escapeHtml(query) + '」</div>';
+      statusEl.innerHTML = '<div class="section-heading">搜尋「' + escapeHtml(query) + '」' + categoryHeadingLabel() + '</div>';
 
       // ===== List mode =====
       if (viewMode === 'list') {
@@ -2079,7 +2231,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       var notices = normalized.notices;
 
       if (notices.length > 0) {
-        statusEl.innerHTML = notices.join('') + '<div class="section-heading">搜尋「' + escapeHtml(query) + '」</div>';
+        statusEl.innerHTML = notices.join('') + '<div class="section-heading">搜尋「' + escapeHtml(query) + '」' + categoryHeadingLabel() + '</div>';
       }
 
       // ===== List mode =====
@@ -2140,7 +2292,9 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       var searchToken = activeSearchToken;
       setSemanticSectionLoading();
 
-      fetch(GAS_URL + '?action=semantic-search&q=' + encodeURIComponent(latestSearchQuery) + '&limit=10')
+      // 選了分類時多要一些結果，篩掉另一類後才夠推薦
+      var semanticLimit = currentCategory === 'all' ? 10 : 30;
+      fetch(GAS_URL + '?action=semantic-search&q=' + encodeURIComponent(latestSearchQuery) + '&limit=' + semanticLimit)
         .then(function(res) {
           if (!res.ok) throw new Error('HTTP ' + res.status);
           return res.json();
@@ -2195,6 +2349,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       card += '<div class="card-footer">';
       if (item.author) card += '<span>' + escapeHtml(item.author) + '</span>';
       if (item.date) card += '<span>' + escapeHtml(item.date) + '</span>';
+      if (getItemCategory(item)) card += '<span>' + escapeHtml(getItemCategory(item)) + '</span>';
       if (item.tags) {
         var tags = item.tags.split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
         if (tags.length > 0) {
@@ -2266,6 +2421,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       if (item.author) html += '<span>' + escapeHtml(item.author) + '</span>';
       if (item.collector && item.collector !== item.author) html += '<span>蒐集：' + escapeHtml(item.collector) + '</span>';
       if (item.date) html += '<span>' + escapeHtml(item.date) + '</span>';
+      if (getItemCategory(item)) html += '<span>' + escapeHtml(getItemCategory(item)) + '</span>';
       if (item.tags) {
         var tags = item.tags.split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
         if (tags.length > 0) {
@@ -2328,11 +2484,20 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
     // ===== 抽點子 =====
     function randomIdea() {
       if (allData.length === 0) return;
-      var idx = Math.floor(Math.random() * allData.length);
-      var item = allData[idx];
       onLatestView = false;
+      currentViewKind = 'random';
+      // 「全部」從全部抽；選了分類就只抽那一類
+      var pool = getCategoryData();
+      if (pool.length === 0) {
+        currentResults = [];
+        statusEl.innerHTML = '<div class="section-heading">🎲 隨機抽到的點子' + categoryHeadingLabel() + '</div>';
+        resultsEl.innerHTML = '<div class="empty-state">「' + escapeHtml(CATEGORY_KEYS[currentCategory]) + '」目前還沒有點子可以抽，可以先切回「全部」</div>';
+        return;
+      }
+      var idx = Math.floor(Math.random() * pool.length);
+      var item = pool[idx];
       currentResults = [item];
-      statusEl.innerHTML = '<div class="section-heading">🎲 隨機抽到的點子</div>';
+      statusEl.innerHTML = '<div class="section-heading">🎲 隨機抽到的點子' + categoryHeadingLabel() + '</div>';
 
       var html = '<div class="random-stage">';
       html += '<div class="random-card" onclick="openModal(0)">';
@@ -2354,6 +2519,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       html += '<div class="card-footer">';
       if (item.author) html += '<span>' + escapeHtml(item.author) + '</span>';
       if (item.date) html += '<span>' + escapeHtml(item.date) + '</span>';
+      if (getItemCategory(item)) html += '<span>' + escapeHtml(getItemCategory(item)) + '</span>';
       if (item.tags) {
         var tags = item.tags.split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
         if (tags.length > 0) {
@@ -2497,6 +2663,15 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
         <label for="editNoteInput">蒐集者備註</label>
         <textarea id="editNoteInput"></textarea>
       </div>
+      <div class="write-modal-field">
+        <label for="editCategoryInput">分類</label>
+        <select id="editCategoryInput">
+          <option value="">未分類</option>
+          <option value="行銷案例">行銷案例</option>
+          <option value="社群靈感">社群靈感</option>
+        </select>
+        <div class="write-modal-hint">只改分類不會讓 AI 重新產生摘要與標籤</div>
+      </div>
       <div class="write-modal-error" id="editError"></div>
       <div class="write-modal-actions">
         <button type="button" class="write-btn-secondary" onclick="closeEditModal()">取消</button>
@@ -2533,6 +2708,15 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       <div class="write-modal-field">
         <label for="addNoteInput">蒐集者備註</label>
         <textarea id="addNoteInput"></textarea>
+      </div>
+      <div class="write-modal-field">
+        <label for="addCategoryInput">分類</label>
+        <select id="addCategoryInput">
+          <option value="">不確定，交給 AI 判斷</option>
+          <option value="行銷案例">行銷案例（品牌活動、廣告、裝置等專案）</option>
+          <option value="社群靈感">社群靈感（貼文梗、文案、迷因等）</option>
+        </select>
+        <div class="write-modal-hint">不選也可以送出，AI 產生摘要時會一起判斷分類</div>
       </div>
       <div class="write-modal-error" id="addError"></div>
       <div class="write-modal-actions">
@@ -2703,6 +2887,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       document.getElementById('editContentInput').value = item.content || '';
       document.getElementById('editImageInput').value = item.image || '';
       document.getElementById('editNoteInput').value = item.note || '';
+      document.getElementById('editCategoryInput').value = getItemCategory(item);
       var err = document.getElementById('editError');
       err.classList.remove('show');
       err.textContent = '';
@@ -2738,6 +2923,9 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       if (newContent !== (item.content || '')) fields.content = newContent;
       if (newImage   !== (item.image   || '')) fields.image   = newImage;
       if (newNote    !== (item.note    || '')) fields.note    = newNote;
+      var newCategory = document.getElementById('editCategoryInput').value;
+      if (newCategory !== getItemCategory(item)) fields.category = newCategory;
+      var onlyCategory = Object.keys(fields).length === 1 && fields.hasOwnProperty('category');
 
       errEl.classList.remove('show');
 
@@ -2754,7 +2942,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
             setButtonLoading(btn, false);
             closeEditModal();
             loadData();
-            showToast('已送出，AI 將在下一次排程時重新分析');
+            showToast(onlyCategory ? '分類已更新' : '已送出，AI 將在下一次排程時重新分析');
           } else {
             handleWriteError(r, function() { submitEdit(); }, errEl, 'editSubmitBtn');
           }
@@ -2782,6 +2970,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       document.getElementById('addAuthorInput').value = '';
       document.getElementById('addCollectorInput').value = '';
       document.getElementById('addNoteInput').value = '';
+      document.getElementById('addCategoryInput').value = '';
       var err = document.getElementById('addError');
       err.classList.remove('show');
       err.textContent = '';
@@ -2818,6 +3007,8 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
         collector: document.getElementById('addCollectorInput').value,
         note:      document.getElementById('addNoteInput').value
       };
+      var addCategory = document.getElementById('addCategoryInput').value;
+      if (addCategory) fields.category = addCategory; // 沒選就不送，排程 AI 分析時判斷
 
       setButtonLoading(btn, true, '送出中…');
       gasWriteRequest({ action: 'add-idea', token: token, fields: fields })
