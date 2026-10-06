@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>只要有人 Idea 靈感搜尋狂魔</title>
+  <title>只要有人靈感倉庫</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,7 +76,19 @@
       padding: 40px 20px 40px;
     }
     /* 關於頁維持窄版 */
-    #page-about { max-width: 720px; margin: 0 auto; }
+    #page-about, #page-install { max-width: 720px; margin: 0 auto; }
+    .install-prompt {
+      background: #ffffff; border: 1px solid #e8e8e5; border-radius: 8px; padding: 14px 16px; margin: 16px 0 10px;
+      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.78rem; color: #2d2d2d; line-height: 1.6;
+      white-space: pre-wrap; word-break: break-all; max-height: 320px; overflow-y: auto;
+    }
+    .install-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .install-copy-btn {
+      background: #1a1a1a; color: #ffffff; border: none; border-radius: 8px; padding: 10px 20px;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    }
+    .install-copy-btn:hover { opacity: 0.85; }
+    .install-copy-error { font-size: 0.82rem; color: #c75c5c; margin: 0; }
 
     /* ===== Page visibility ===== */
     .page { display: none; }
@@ -1017,6 +1029,7 @@
       <div class="nav-tabs">
         <button class="nav-tab active" data-page="search">搜尋</button>
         <button class="nav-tab" data-page="about">關於</button>
+        <button class="nav-tab" data-page="install">安裝到 Claude</button>
       </div>
     </div>
   </nav>
@@ -1025,7 +1038,7 @@
 
     <!-- ===== 搜尋頁 ===== -->
     <div id="page-search" class="page active">
-      <h1 style="cursor: pointer;" onclick="goHome()">✨ 只要有人 Idea 靈感搜尋狂魔 🔮</h1>
+      <h1 style="cursor: pointer;" onclick="goHome()">✨ 只要有人靈感倉庫 🔮</h1>
       <div id="ideaCount" class="idea-count"></div>
       <div id="searchHint" class="search-hint">先顯示關鍵字比對結果，再額外推薦一些概念接近的點子給你參考。</div>
 
@@ -1045,18 +1058,94 @@
       </div>
     </div>
 
+    <!-- ===== 安裝到 Claude 頁 ===== -->
+    <div id="page-install" class="page">
+
+      <div class="about-hero">
+        <h2>🤖 <span class="magic-text">把倉庫安裝到</span> <span class="magic-brand">Claude</span></h2>
+        <p>裝好之後，你在 Claude 或 Codex 裡直接說「去靈感倉庫找跟咖啡有關的案例」，AI 就會自己進倉庫翻點子、挑出適合的，再幫你發想。</p>
+      </div>
+
+      <div class="about-section">
+        <h3>MCP 是什麼？</h3>
+        <p>MCP 就像幫 AI 裝一個「插頭」。AI 本來只知道網路上的公開資訊，插上靈感倉庫這個插頭之後，它就能直接讀到公司蒐集的 700 多則品牌案例和有趣點子。你不用再自己搜尋、複製、貼給 AI。</p>
+      </div>
+
+      <div class="about-section">
+        <h3>裝好之後可以怎麼用？</h3>
+        <div class="command-block">我想做 Volvo 汽車、跟安全有關的點子，從靈感倉庫給我 5 個參考，再給我 5 個你延伸的新點子</div>
+        <div class="command-block">靈感倉庫裡有沒有用互動裝置做的戶外廣告？</div>
+        <div class="command-block">從靈感倉庫隨機抽 5 個點子給我發想</div>
+      </div>
+
+      <hr class="about-divider">
+
+      <div class="about-section">
+        <p class="about-section-label">安裝</p>
+        <h3>怎麼安裝？（30 秒）</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-indicator"><div class="step-number">1</div><div class="step-line"></div></div>
+            <div class="step-content">
+              <h4>按下面的「複製安裝指令」</h4>
+              <p>整段指令會複製起來。</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-indicator"><div class="step-number">2</div><div class="step-line"></div></div>
+            <div class="step-content">
+              <h4>貼到 Claude Code 或 Codex，按 Enter</h4>
+              <p>它會自己裝好並測試。</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-indicator"><div class="step-number">3</div></div>
+            <div class="step-content">
+              <h4>開一個新對話</h4>
+              <p>就可以開始用了。</p>
+            </div>
+          </div>
+        </div>
+
+        <pre class="install-prompt" id="installPrompt" tabindex="0" aria-label="安裝指令">請幫我把一個遠端 MCP 伺服器裝到你自己（目前這個工具）上，名稱叫 idea-warehouse，網址是：
+https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc4013873752c/mcp
+它是 HTTP（Streamable HTTP）類型，不需要其他帳號或密碼，網址裡已經包含通關密語。
+做法：
+- 如果你是 Claude Code：執行 claude mcp add --transport http idea-warehouse 上面的網址
+- 如果你是 Codex：在 ~/.codex/config.toml 加上 [mcp_servers.idea-warehouse] 與 url = "上面的網址"（改檔前先備份，不要動其他設定）
+裝完請確認這個 MCP 有出現在清單裡，並提醒我是否需要重開一個對話才會生效。重開後，請用 library_overview 工具驗證能連上，告訴我倉庫裡有幾則點子。
+之後我每次請你找點子時：請照這個 MCP 的使用說明，先用 get_download_info 把完整資料下載到 ~/.idea-warehouse/ideas.json 再查；倉庫每天都會新增點子，所以檔案裡的 downloaded_at 不是今天就一定要重新下載，不要用舊的檔案。
+注意：不要把這串網址貼到任何公開地方。</pre>
+        <div class="install-actions">
+          <button type="button" class="install-copy-btn" id="installCopyBtn">複製安裝指令</button>
+          <p class="install-copy-error" id="installCopyError" role="alert" hidden>複製失敗，請手動選取上面的文字複製</p>
+        </div>
+
+        <div class="note note-warning" style="margin-top: 20px;">
+          <p>這串指令裡的網址含通關密語，只在公司內部使用，不要貼到公開地方。</p>
+        </div>
+        <div class="note note-info">
+          <p>AI 只能「查」靈感倉庫、不能修改；想新增點子，一樣在 Slack 按 💡。倉庫每天都會新增點子，AI 會自動抓最新的。</p>
+        </div>
+        <div class="note note-info">
+          <p>只用 Claude 網頁版聊天的話，AI 沒辦法替你安裝，請到 Claude「設定 → 連接器 → 新增自訂連接器」，名稱填「只要有人靈感倉庫 MCP」，網址貼上：</p>
+          <p><span class="command" style="word-break: break-all;">https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc4013873752c/mcp</span></p>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== 關於頁 ===== -->
     <div id="page-about" class="page">
 
       <div class="about-hero">
-        <h2>💡 <span class="magic-text">關於</span> <span class="magic-brand">只要有人靈感蒐集狂魔</span> <a href="idea-collector-guide-presentation.html" target="_blank" class="presentation-btn">📽️ 以簡報檢視</a></h2>
+        <h2>💡 <span class="magic-text">關於</span> <span class="magic-brand">只要有人靈感倉庫</span> <a href="idea-collector-guide-presentation.html" target="_blank" class="presentation-btn">📽️ 以簡報檢視</a></h2>
         <p>在 Slack 看到好的創意靈感，按一個燈泡 💡 就能自動存進靈感倉庫，之後隨時用關鍵字搜尋出來。</p>
       </div>
 
       <!-- 為什麼 -->
       <div class="about-section">
         <p>我們平常在 Slack 分享了很多很棒的創意案例、社群靈感、競品觀察，但這些訊息很快就被洗掉、找不到。等到提案需要靈感的時候，只能靠記憶去翻，或是重新上網找。</p>
-        <p class="muted">Idea 靈感蒐集狂魔讓好點子不會消失，而且隨時搜得到。</p>
+        <p class="muted">只要有人靈感倉庫讓好點子不會消失，而且隨時搜得到。</p>
       </div>
 
       <hr class="about-divider">
@@ -1149,7 +1238,7 @@
         <div class="two-col" style="margin-bottom: 12px;">
           <div class="about-card">
             <h4>🌐 網頁搜尋</h4>
-            <p>打開靈感搜尋狂魔網頁，直接在搜尋框輸入關鍵字，結果即時顯示。還可以「🎲 抽點子」，隨機抽一個靈感給你！</p>
+            <p>打開只要有人靈感倉庫網頁，直接在搜尋框輸入關鍵字，結果即時顯示。還可以「🎲 抽點子」，隨機抽一個靈感給你！</p>
             <p style="margin-top: 8px;"><a href="#" onclick="switchPage('search'); return false;" style="font-size: 0.8rem; color: #4a7c96;">→ 前往搜尋</a></p>
           </div>
           <div class="about-card">
@@ -1270,7 +1359,7 @@
       </div>
 
       <div class="about-footer">
-        <p>只要有人社群顧問 × Idea 靈感蒐集狂魔 ✨</p>
+        <p>只要有人社群顧問 × 只要有人靈感倉庫 ✨</p>
       </div>
 
     </div>
@@ -1298,7 +1387,7 @@
       document.querySelector('.nav-tab[data-page="' + pageName + '"]').classList.add('active');
       window.scrollTo(0, 0);
       if (updateHash !== false) {
-        history.replaceState(null, '', pageName === 'search' ? '#' : '#about');
+        history.replaceState(null, '', pageName === 'search' ? '#' : '#' + pageName);
       }
     }
     document.querySelectorAll('.nav-tab').forEach(function(tab) {
@@ -1306,6 +1395,24 @@
     });
     // 根據 URL hash 決定初始頁面
     if (window.location.hash === '#about') { switchPage('about', false); }
+    if (window.location.hash === '#install') { switchPage('install', false); }
+
+    // ===== 安裝到 Claude：複製安裝指令 =====
+    (function() {
+      var btn = document.getElementById('installCopyBtn');
+      var err = document.getElementById('installCopyError');
+      var timer = null;
+      btn.addEventListener('click', function() {
+        var text = document.getElementById('installPrompt').textContent;
+        clearTimeout(timer);
+        if (!navigator.clipboard) { err.hidden = false; return; }
+        navigator.clipboard.writeText(text).then(function() {
+          err.hidden = true;
+          btn.textContent = '已複製 ✓';
+          timer = setTimeout(function() { btn.textContent = '複製安裝指令'; }, 2000);
+        }, function() { err.hidden = false; });
+      });
+    })();
 
     // ===== 搜尋功能 =====
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbxBoTnssI6IuILd5NsvAs1lbTBuhQmYUVbCNAbwtq0PR5UHzQroL0RHAUmFnj3Mx-ol4Q/exec';
