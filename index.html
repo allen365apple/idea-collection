@@ -8,7 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1051,6 +1051,394 @@
       .view-toggle { order: 1; }
       .cat-select-wrap { order: 0; }
     }
+
+    /* =====================================================================
+       Jebby Dashboard 風格（改版試作）：以下覆蓋上面的舊樣式。
+       token 照 Jebby Dashboard app/globals.css；字級只用 16/14/12/11，字重 700/500/400。
+       ===================================================================== */
+    :root {
+      --ground:#F6F2E8; --ground-2:#EFE9DA;
+      --surface:#FFFFFF; --surface-2:#FAF8F1;
+      --ink:#1E211B; --ink-2:#585E52; --ink-3:#8B9184;
+      --line:#E5DFCF; --line-2:#F0EBDD;
+      --lime:#D9F25A; --lime-2:#EAF9A8; --lime-3:#F4FBD6; --lime-deep:#B9DC2B;
+      --sage:#8FA88A; --sage-2:#B9C9B4; --sage-3:#E6EDE3; --sage-4:#F1F5EF; --sage-deep:#4F6B4A;
+      --note:#FBE98E; --note-2:#FDF4C7; --note-line:#E3C748;
+      --data-b:#3D6EA8; --warn:#C2683A;
+      --r-lg:24px; --r-md:16px; --r-sm:10px;
+      --shadow:0 1px 2px rgba(31,34,28,.04), 0 10px 26px -14px rgba(31,34,28,.18);
+      --shadow-sm:0 1px 2px rgba(31,34,28,.05);
+      --fs-title:16px; --fs-body:14px; --fs-secondary:12px; --fs-label:11px;
+      --fw-bold:700; --fw-medium:500; --fw-regular:400;
+      --font-body:"Outfit","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+      --font-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+      color-scheme: light;
+    }
+    html { background: var(--ground); }
+    body {
+      font-family: var(--font-body); background: var(--ground); color: var(--ink);
+      font-size: var(--fs-body); line-height: 1.65; -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select { font-family: inherit; }
+    ::selection { background: var(--lime-2); }
+    :focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
+
+    /* 共用按鈕外觀（Jebby .button）：次要＝米白底細邊框，主要＝lime */
+    .search-bar button, .btn-random, .semantic-cta, .btn-load-more, .btn-show-all,
+    .btn-toolbar-add, .modal-btn, .modal-edit, .presentation-btn, .write-btn-secondary,
+    .write-btn-primary, .install-copy-btn, .sheets-cta a, .cta a, .data-notice button, .error button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      min-height: 32px; padding: 4px 12px; margin: 0;
+      border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface-2);
+      color: var(--ink); font-size: var(--fs-secondary); font-weight: var(--fw-medium); line-height: 1.55;
+      text-decoration: none; white-space: nowrap; cursor: pointer; opacity: 1; box-shadow: none;
+      transition: background .15s, border-color .15s;
+    }
+    .search-bar button:hover, .btn-random:hover, .semantic-cta:hover, .btn-load-more:hover, .btn-show-all:hover,
+    .btn-toolbar-add:hover, .modal-btn:hover, .modal-edit:hover, .presentation-btn:hover, .write-btn-secondary:hover,
+    .cta a:hover, .data-notice button:hover, .error button:hover {
+      background: var(--sage-3); border-color: var(--sage-2); color: var(--ink); opacity: 1;
+    }
+    #searchBtn, .write-btn-primary, .install-copy-btn, .sheets-cta a {
+      background: var(--lime); border-color: var(--lime-deep); color: var(--ink);
+    }
+    #searchBtn:hover, .write-btn-primary:hover, .install-copy-btn:hover, .sheets-cta a:hover {
+      background: var(--lime-2); border-color: var(--lime-deep); opacity: 1;
+    }
+    .search-bar button:disabled, .btn-random:disabled, .write-btn-primary:disabled, .semantic-cta:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ===== 版面容器 ===== */
+    .container { max-width: 1200px; padding: 20px 20px 48px; }
+
+    /* ===== 頁首：細長導覽列（Jebby 色系） ===== */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--ground); border-bottom: 1px solid var(--line);
+    }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; height: 52px; gap: 24px; }
+    .nav-brand { font-size: var(--fs-secondary); font-weight: var(--fw-medium); letter-spacing: .08em; color: var(--ink-3); white-space: nowrap; }
+    .nav-tabs { display: flex; gap: 4px; margin-left: auto; padding: 3px; background: var(--ground-2); border-radius: var(--r-sm); }
+    .nav-tab {
+      padding: 6px 14px; font-family: inherit; font-size: var(--fs-secondary); font-weight: var(--fw-medium);
+      color: var(--ink-3); background: none; border: none; border-radius: 7px; cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .nav-tab:hover { color: var(--ink-2); }
+    .nav-tab.active { color: var(--ink); background: var(--surface); box-shadow: var(--shadow-sm); }
+
+    /* ===== 大標題：保留原本的彩色流動動畫 ===== */
+    h1.page-title {
+      cursor: pointer; text-align: center; margin: 12px 0 6px;
+      font-size: 30px; font-weight: var(--fw-bold); letter-spacing: -0.02em; line-height: 1.35;
+      overflow-wrap: anywhere;
+      background: linear-gradient(90deg, #b388ff, #ff80ab, #ffd740, #b388ff);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+
+    /* ===== 搜尋頁頂部 ===== */
+    .idea-count { margin: 0 0 2px; text-align: center; font-size: var(--fs-body); color: var(--ink-3); }
+    .idea-count strong { color: var(--ink-2); font-weight: var(--fw-bold); font-variant-numeric: tabular-nums; }
+    .search-hint { margin: 0 auto 14px; font-size: var(--fs-secondary); color: var(--ink-3); }
+    .search-hint:empty { display: none; }
+    .idea-count { margin-bottom: 20px; }
+    .search-bar { gap: 8px; margin-bottom: 20px; }
+    .search-bar input {
+      min-height: 44px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+      font-size: var(--fs-body); color: var(--ink); box-shadow: var(--shadow-sm);
+    }
+    .search-bar input::placeholder { color: var(--ink-3); }
+    .search-bar input:hover { border-color: var(--sage-2); }
+    .search-bar input:focus { border-color: var(--lime-deep); outline: none; box-shadow: 0 0 0 3px var(--lime-2); }
+    .search-bar button, .btn-random { min-height: 44px; padding: 6px 18px; font-size: var(--fs-body); }
+
+    .section-heading { font-size: var(--fs-body); color: var(--ink-3); margin-bottom: 12px; }
+    .section-heading strong { color: var(--ink-2); font-weight: var(--fw-medium); }
+    .result-section { margin-top: 28px; }
+    .result-section-title { font-size: var(--fs-title); font-weight: var(--fw-bold); color: var(--ink); line-height: 1.4; }
+    .result-section-copy { font-size: var(--fs-secondary); color: var(--ink-3); }
+    .semantic-notice {
+      border-radius: var(--r-sm); border: 1px solid var(--note-line); background: var(--note-2);
+      color: var(--ink-2); font-size: var(--fs-body);
+    }
+    .semantic-notice strong { color: var(--ink); font-weight: var(--fw-bold); }
+
+    .loading, .empty-state { color: var(--ink-3); font-size: var(--fs-body); }
+    .loading-spinner { border-color: var(--line); border-top-color: var(--ink-3); }
+    .error { color: var(--warn); font-size: var(--fs-body); }
+    .error button { margin-top: 12px; }
+    .data-notice {
+      padding: 10px 14px; border-radius: var(--r-sm); border: 1px solid var(--sage-2); border-left: 4px solid var(--sage-deep);
+      background: var(--sage-4); color: var(--ink); font-size: var(--fs-secondary);
+    }
+    .data-notice.warn { border-color: var(--note-line); border-left-color: var(--warn); background: var(--note-2); color: var(--ink); }
+    .data-notice button { min-height: 28px; padding: 2px 10px; }
+    .load-more-wrap, .list-load-controls { margin-top: 20px; }
+
+    /* ===== 工具列：共 N 則、類別、卡片／列表、新增 ===== */
+    .view-toolbar { gap: 10px 12px; margin-bottom: 16px; }
+    .view-toolbar .result-count { font-size: var(--fs-body); color: var(--ink-2); }
+    .cat-select-wrap { font-size: var(--fs-secondary); font-weight: var(--fw-medium); color: var(--ink-2); }
+    .cat-select {
+      min-height: 32px; padding: 4px 30px 4px 12px; border: 1px solid var(--line); border-radius: var(--r-sm);
+      background-color: var(--surface-2); color: var(--ink); font-size: var(--fs-secondary); font-weight: var(--fw-medium);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23585E52' stroke-width='1.5'/%3E%3C/svg%3E");
+    }
+    .cat-select:hover { background-color: var(--sage-3); border-color: var(--sage-2); color: var(--ink); }
+    .cat-select:focus-visible { outline: 2px solid var(--lime-deep); }
+    .cat-heading-label { font-size: var(--fs-secondary); color: var(--ink-3); }
+
+    .view-toggle { padding: 2px; gap: 2px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-2); }
+    .view-toggle button {
+      min-height: 28px; padding: 2px 12px; border-radius: 999px; color: var(--ink-2);
+      font-size: var(--fs-secondary); font-weight: var(--fw-medium);
+    }
+    .view-toggle button:hover { color: var(--ink); background: var(--sage-3); }
+    .view-toggle button.active { background: var(--lime); color: var(--ink); box-shadow: none; }
+
+    .filter-input {
+      min-height: 34px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface);
+      font-size: var(--fs-body); color: var(--ink);
+    }
+    .filter-input::placeholder { color: var(--ink-3); }
+    .filter-input:focus { border-color: var(--lime-deep); }
+    .filter-icon { font-size: var(--fs-secondary); color: var(--ink-3); }
+    .filter-clear, .active-filter button {
+      width: 20px; height: 20px; background: var(--sage-3); color: var(--ink-2); font-size: var(--fs-label); line-height: 1;
+    }
+    .active-filter {
+      padding: 2px 4px 2px 10px; border: 1px solid var(--sage-2); background: var(--sage-4);
+      color: var(--sage-deep); font-size: var(--fs-secondary); font-weight: var(--fw-medium);
+    }
+
+    /* ===== 卡片 ===== */
+    .card-grid { gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .card {
+      padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px;
+      background: var(--surface); box-shadow: var(--shadow-sm); transition: box-shadow .15s, border-color .15s;
+    }
+    .card:hover { border-color: var(--line-2); box-shadow: var(--shadow); }
+    .card-summary { font-size: var(--fs-title); font-weight: var(--fw-medium); line-height: 1.6; color: var(--ink); margin-bottom: 12px; }
+    .card-note {
+      font-size: var(--fs-secondary); color: var(--ink-2); background: var(--surface-2);
+      border-left: 3px solid var(--note-line); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    }
+    .card-img, .card-images-more { border-radius: var(--r-sm); border-color: var(--line); background: var(--surface-2); }
+    .card-images { margin-bottom: 12px; }
+    .card-images-more { font-size: var(--fs-secondary); color: var(--ink-3); }
+    .card-footer { font-size: var(--fs-secondary); color: var(--ink-3); border-top: 1px solid var(--line); }
+    .card-tags { font-size: var(--fs-label); color: var(--ink-3); }
+    .card-tags span[style] { color: var(--ink-3) !important; }
+
+    .cat-badge { font-size: var(--fs-label); font-weight: var(--fw-medium); line-height: 1.55; padding: 1px 8px; }
+    .cat-badge-marketing { background: var(--note-2); color: var(--ink); border-color: var(--note-line); }
+    .cat-badge-social { background: var(--sage-4); color: var(--sage-deep); border-color: var(--sage-2); }
+
+    /* 抽到的那一張 */
+    .random-card {
+      border: 1px solid var(--lime-deep); border-radius: 12px; padding: 24px 26px;
+      background: var(--surface); box-shadow: var(--shadow);
+    }
+    .random-card:hover { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-3), var(--shadow); }
+    .random-card .card-summary { font-size: var(--fs-title); font-weight: var(--fw-bold); }
+    .random-card .card-img { border-radius: var(--r-sm); }
+    /* 沒有縮圖時的文字縮圖：跟圖片同高，顯示原文前段 */
+    .card-text-thumb {
+      max-height: 120px; margin-bottom: 12px; padding: 12px 14px; overflow: hidden;
+      background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-sm);
+      font-size: var(--fs-secondary); line-height: 1.7; color: var(--ink-2); white-space: normal; overflow-wrap: anywhere;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5;
+    }
+    .random-card .card-text-thumb { max-height: 300px; font-size: var(--fs-body); line-height: 1.8; -webkit-line-clamp: 10; padding: 16px 18px; }
+    @media (max-width: 640px) {
+      .random-card .card-text-thumb { max-height: 220px; -webkit-line-clamp: 7; }
+    }
+    /* 抽到的卡片縮圖：寬度撐滿卡片（跟上面文字同寬），高度放大，不要裁得太扁 */
+    .random-card .card-img { flex: 1 1 0; width: 100%; height: 300px; max-height: none; object-fit: cover; }
+    .random-card .card-images-more { height: 300px; }
+    @media (max-width: 640px) {
+      .random-card .card-img, .random-card .card-images-more { height: 220px; }
+    }
+    /* 抽點子結果上方的類別下拉選單（按了抽點子才出現），樣式同列表的「類別」 */
+    .random-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+    .random-again {
+      margin-top: 16px; min-height: 40px; padding: 6px 20px; font-family: inherit; font-size: var(--fs-body); font-weight: var(--fw-medium);
+      color: var(--ink); background: var(--lime); border: 1px solid var(--lime-deep); border-radius: 12px; cursor: pointer;
+    }
+    .random-again:hover { background: var(--lime-2); }
+    .random-card .card-footer { font-size: var(--fs-secondary); }
+    .random-hint { font-size: var(--fs-secondary); color: var(--sage-deep); font-weight: var(--fw-medium); }
+
+    /* ===== 列表檢視 ===== */
+    .list-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+    .list-table { font-size: var(--fs-body); }
+    .list-table thead { background: var(--surface-2); border-bottom: 1px solid var(--line); }
+    .list-table th { padding: 10px 16px; font-size: var(--fs-secondary); font-weight: var(--fw-bold); color: var(--ink-3); text-transform: none; }
+    .list-table th.sortable:hover { color: var(--ink); }
+    .list-table th .sort-arrow { font-size: var(--fs-label); }
+    .list-table th.sort-asc .sort-arrow, .list-table th.sort-desc .sort-arrow { color: var(--sage-deep); }
+    .list-table tbody tr { border-bottom: 1px solid var(--line-2); }
+    .list-table tbody tr:hover { background: var(--surface-2); }
+    .list-table td { padding: 12px 16px; color: var(--ink); }
+    .col-date { font-size: var(--fs-secondary); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+    .col-source { font-size: var(--fs-secondary); color: var(--ink-2); }
+    .col-summary { font-weight: var(--fw-medium); color: var(--ink); }
+    .tag-chip {
+      font-size: var(--fs-label); font-weight: var(--fw-medium); line-height: 1.55; padding: 1px 8px;
+      color: var(--sage-deep); background: var(--sage-4); border: 1px solid var(--sage-2);
+    }
+    .tag-chip.clickable:hover { background: var(--sage-3); border-color: var(--sage-2); }
+    .tag-chip.match { background: var(--note-2); border-color: var(--note-line); color: var(--ink); }
+    .tag-chip-more { color: var(--ink-3); background: var(--surface-2); border-color: var(--line); }
+    .list-empty-state { color: var(--ink-3); font-size: var(--fs-body); }
+    .list-empty-state .empty-emoji { font-size: 28px; }
+    .btn-show-all { border-radius: var(--r-sm); }
+
+    /* ===== 詳情彈窗（Jebby dialog：米白底、大圓角） ===== */
+    .modal-overlay, .write-modal-overlay { background: rgba(30,33,27,.45); backdrop-filter: blur(3px); }
+    .modal {
+      background: var(--surface-2); border-radius: var(--r-lg); padding: 28px; box-shadow: var(--shadow);
+    }
+    .modal-close {
+      top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 12px;
+      border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 20px;
+    }
+    .modal-close:hover { background: var(--sage-3); border-color: var(--sage-2); }
+    .modal-summary { font-size: var(--fs-title); font-weight: var(--fw-bold); color: var(--ink); padding-right: 52px; }
+    .modal-img { border-radius: var(--r-sm); border-color: var(--line); background: var(--surface); }
+    .modal-content { font-size: var(--fs-body); color: var(--ink-2); border-left: 3px solid var(--line); }
+    .modal-note {
+      font-size: var(--fs-secondary); color: var(--ink-2); background: var(--surface);
+      border: 1px solid var(--line); border-radius: var(--r-sm);
+    }
+    .modal-note strong { font-size: var(--fs-label); font-weight: var(--fw-bold); color: var(--ink); }
+    .modal-footer { font-size: var(--fs-secondary); color: var(--ink-3); border-top: 1px solid var(--line); }
+    .modal-tags { font-size: var(--fs-label); color: var(--ink-3); }
+    .modal-edit { margin-bottom: 14px; }
+    #modalBody a[style] { color: var(--sage-deep) !important; }
+    #modalBody pre[style], #modalBody code[style] { background: var(--ground-2) !important; }
+    #modalBody blockquote[style] { border-left-color: var(--sage-2) !important; color: var(--ink-3) !important; }
+    #modalBody .semantic-notice { margin-bottom: 16px; }
+
+    /* ===== Google Sheets 入口 ===== */
+    .sheets-cta { margin-top: 32px; padding: 24px 20px; border-top: 1px solid var(--line); }
+    .sheets-cta p { font-size: var(--fs-secondary); color: var(--ink-3); }
+    .sheets-cta a { min-height: 40px; padding: 6px 18px; font-size: var(--fs-body); }
+
+    /* ===== 關於頁／安裝到 Claude 頁：放進一張大白卡 ===== */
+    #page-about.active, #page-install.active {
+      max-width: 760px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+      box-shadow: var(--shadow); padding: 32px 36px;
+    }
+    .about-hero { margin-bottom: 28px; }
+    .about-hero h2 { font-size: 22px; font-weight: var(--fw-bold); line-height: 1.35; gap: 8px 10px; letter-spacing: -.01em; }
+    .about-hero h2 .magic-text, .about-hero h2 .magic-brand {
+      color: var(--ink); -webkit-text-fill-color: var(--ink); background: none; animation: none;
+    }
+    .about-hero h2 .magic-brand { box-shadow: inset 0 -.38em 0 var(--lime); }
+    .about-hero p { font-size: var(--fs-body); color: var(--ink-2); line-height: 1.75; }
+    .presentation-btn { vertical-align: middle; }
+
+    .about-section { margin-bottom: 28px; }
+    .about-section-label { font-size: var(--fs-label); font-weight: var(--fw-bold); color: var(--ink-3); letter-spacing: .08em; }
+    .about-section h3 { font-size: var(--fs-title); font-weight: var(--fw-bold); line-height: 1.4; }
+    .about-section p { font-size: var(--fs-body); color: var(--ink); line-height: 1.75; }
+    .about-section p.muted { color: var(--ink-2); }
+    .about-section h4[style] { font-size: var(--fs-body) !important; font-weight: var(--fw-bold) !important; }
+    .about-section p[style*="font-size"] { font-size: var(--fs-body) !important; color: var(--ink-2) !important; }
+    .about-divider { border-top: 1px solid var(--line); margin: 32px 0; }
+    #page-about a[style], #page-install a[style] { color: var(--sage-deep) !important; text-decoration: underline; text-underline-offset: 3px; }
+    .about-card p[style*="0.72rem"] { font-size: var(--fs-label) !important; color: var(--sage-deep) !important; }
+    .about-card p[style*="0.8rem"], .about-card a[style] { font-size: var(--fs-secondary) !important; }
+
+    .step-number { background: var(--ink); color: var(--surface); font-size: var(--fs-secondary); font-weight: var(--fw-bold); }
+    .step-line { background: var(--line); }
+    .step-content h4 { font-size: var(--fs-body); font-weight: var(--fw-bold); }
+    .step-content p { font-size: var(--fs-body); color: var(--ink-2); }
+
+    .note {
+      background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--note-line);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 12px 16px;
+    }
+    .note p { font-size: var(--fs-secondary); color: var(--ink-2); line-height: 1.7; }
+    .note strong { color: var(--ink); font-weight: var(--fw-bold); }
+    .note-warning { border-left-color: var(--warn); }
+    .note-info { border-left-color: var(--sage); }
+    .note-highlight { background: var(--lime-3); border-color: var(--lime-2); border-left: 3px solid var(--lime-deep); }
+
+    .two-col { gap: 12px; }
+    .about-card, .flow-card, .cta {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-sm);
+    }
+    .about-card { padding: 16px; }
+    .about-card h4, .flow-card h4 { font-size: var(--fs-body); font-weight: var(--fw-bold); }
+    .about-card p, .flow-card p { font-size: var(--fs-secondary); color: var(--ink-2); }
+    .flow-card { padding: 14px 16px; }
+    .flow-dot { background: var(--ink); }
+    .flow-connector { background: var(--line); }
+    .tech-tag {
+      padding: 1px 6px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line-2);
+      font-size: var(--fs-label); color: var(--ink-2);
+    }
+    .command, .channel-tag {
+      background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; color: var(--ink);
+      font-family: var(--font-body);
+    }
+    .command { font-size: var(--fs-secondary); font-family: var(--font-mono); }
+    .channel-tag { font-size: var(--fs-label); padding: 1px 8px; }
+    .command-block {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 14px;
+      font-family: var(--font-body); font-size: var(--fs-secondary); color: var(--ink);
+    }
+    .cta h3 { font-size: var(--fs-title); }
+    .cta p { font-size: var(--fs-body); color: var(--ink-2); }
+    .about-footer { font-size: var(--fs-secondary); color: var(--ink-3); padding-top: 24px; }
+
+    .install-prompt {
+      background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-sm);
+      font-family: var(--font-mono); font-size: var(--fs-secondary); color: var(--ink); max-height: 260px;
+    }
+    .install-copy-btn { min-height: 40px; padding: 6px 18px; font-size: var(--fs-body); }
+    .install-copy-error { font-size: var(--fs-secondary); color: var(--warn); font-weight: var(--fw-medium); }
+
+    /* ===== 新增／編輯／密碼視窗 ===== */
+    .write-modal { background: var(--surface-2); border-radius: var(--r-lg); padding: 24px 26px; box-shadow: var(--shadow); }
+    .write-modal-title { font-size: var(--fs-title); font-weight: var(--fw-bold); }
+    .write-modal-field label { font-size: var(--fs-secondary); font-weight: var(--fw-medium); color: var(--ink); }
+    .write-modal-field .req, .write-modal-required-mark { color: var(--warn); }
+    .write-modal input[type="text"], .write-modal input[type="password"], .write-modal select, .write-modal textarea {
+      border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); font-size: var(--fs-body);
+    }
+    .write-modal input[type="text"]:focus, .write-modal input[type="password"]:focus,
+    .write-modal select:focus, .write-modal textarea:focus { border-color: var(--lime-deep); outline: 2px solid var(--lime-deep); outline-offset: 1px; }
+    .write-modal-hint {
+      font-size: var(--fs-secondary); color: var(--ink-2); background: var(--note-2); border: 1px solid var(--note-line);
+      border-radius: var(--r-sm);
+    }
+    .write-modal-error { font-size: var(--fs-secondary); color: var(--warn); background: var(--note-2); border: 1px solid var(--note-line); border-radius: var(--r-sm); }
+    .write-btn-primary, .write-btn-secondary { min-height: 36px; padding: 6px 18px; font-size: var(--fs-body); }
+
+    .toast { background: var(--ink); color: var(--surface); border-radius: var(--r-md); font-size: var(--fs-body); box-shadow: var(--shadow); }
+    .toast.error { background: var(--warn); }
+
+    /* ===== 手機（≤640） ===== */
+    @media (max-width: 640px) {
+      .container { padding: 12px 16px 32px; }
+      .nav-inner { padding: 0 12px; gap: 10px; }
+      .nav-brand { display: none; }
+      .nav-tabs { flex: 1; margin-left: 0; }
+      .nav-tab { flex: 1 1 0; min-width: 0; padding: 6px 4px; }
+      h1.page-title { font-size: 22px; margin-top: 4px; }
+      .card-grid { grid-template-columns: minmax(0, 1fr); }
+      .card { padding: 14px 16px; }
+      .modal { padding: 20px 18px; border-radius: var(--r-md); }
+      .modal-close { top: 14px; right: 14px; width: 36px; height: 36px; }
+      .modal-summary { padding-right: 44px; }
+      #page-about.active, #page-install.active { padding: 22px 18px; border-radius: var(--r-md); }
+      .about-hero h2 { font-size: 19px; }
+      .write-modal { padding: 20px; border-radius: var(--r-md); }
+      .modal-edit { font-size: var(--fs-secondary); }
+    }
   </style>
 </head>
 <body>
@@ -1071,9 +1459,9 @@
 
     <!-- ===== 搜尋頁 ===== -->
     <div id="page-search" class="page active">
-      <h1 style="cursor: pointer;" onclick="goHome()">✨ 只要有人靈感倉庫 🔮</h1>
+      <h1 class="page-title" onclick="goHome()">✨ 只要有人靈感倉庫 🔮</h1>
       <div id="ideaCount" class="idea-count"></div>
-      <div id="searchHint" class="search-hint">先顯示關鍵字比對結果，再額外推薦一些概念接近的點子給你參考。</div>
+      <div id="searchHint" class="search-hint"></div>
 
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋 Idea（多個關鍵字用空格分隔）" disabled>
@@ -1248,7 +1636,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
           <p>另外，如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，目前系統會解析不出來。所以分享靈感的時候，請記得附帶一段簡短的文字來描述。連結自動解析的功能之後會再慢慢開發。</p>
         </div>
 
-        <div class="note note-info" style="margin-top: 10px; background: linear-gradient(135deg, #f0f7fa 0%, #fdf8f0 100%); border-left: 4px solid #4a7c96;">
+        <div class="note note-highlight" style="margin-top: 10px;">
           <p><strong>✨ 連純圖片都能分析！</strong></p>
           <p>就算訊息只有一張圖、沒有任何文字，AI 也能自動辨識圖片內容並產生完整的摘要和標籤。不需要額外打字描述，直接丟圖就行！</p>
         </div>
@@ -1546,7 +1934,8 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
     }
     function renderCategorySwitch() {
       document.querySelectorAll('.cat-select').forEach(function(sel) {
-        sel.value = currentCategory;
+        // 抽點子的類別選單有自己的值，不跟列表的類別連動
+        if (!sel.closest('.random-cat')) sel.value = currentCategory;
         if (categoryCounts) {
           [].forEach.call(sel.options, function(opt) {
             opt.textContent = opt.textContent.replace(/（\d+）$/, '') + '（' + categoryCounts[opt.value] + '）';
@@ -1563,7 +1952,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       if (allData.length === 0) return; // 資料還沒載入，載入後自然會套用
       listVisibleCount = LIST_PAGE_SIZE;
       if (currentViewKind === 'random') {
-        randomIdea();
+        showLatest(true);
       } else if (currentViewKind === 'search' && latestSearchQuery) {
         latestKeywordMatches = getKeywordMatches(latestSearchQuery);
         rerenderCurrentView();
@@ -1675,7 +2064,6 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       setSearchDisabled(false);
       document.getElementById('randomBtn').disabled = false;
       searchInput.placeholder = '輸入關鍵字或需求，例如：愚人節、互動推廣、健康建築 教育感';
-      searchHintEl.textContent = '先顯示關鍵字比對結果，再額外推薦一些概念接近的點子給你參考。';
     }
 
     function fetchWithTimeout(url, ms) {
@@ -2326,6 +2714,24 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
     }
 
     // ===== 精簡卡片（Grid 用）=====
+    // 沒有縮圖時，用原文的前一段文字當作縮圖區塊（去掉 Slack 標記與網址）
+    function contentPreviewText(item) {
+      var t = String(item.content || '');
+      t = t.replace(/<@[^>]+>/g, '')                       // @提及
+           .replace(/<(https?:[^|>]+)\|([^>]+)>/g, '$2')   // <網址|文字> → 文字
+           .replace(/<https?:[^>]+>/g, '')                  // <網址>
+           .replace(/https?:\/\/\S+/g, '')                 // 裸網址
+           .replace(/[*_~`]/g, '')
+           .replace(/(^|\n)\s*(&gt;|>)\s?/g, '$1')         // 引用符號
+           .replace(/:[a-z0-9_+-]+:/gi, '')                 // Slack 表情代碼
+           .replace(/\s+/g, ' ').trim();
+      return t.length > 220 ? t.slice(0, 220) + '…' : t;
+    }
+    function renderContentPreview(item) {
+      var t = contentPreviewText(item);
+      return t ? '<div class="card-text-thumb">' + escapeHtml(t) + '</div>' : '';
+    }
+
     function renderCard(item, viewIndex) {
       var card = '<div class="card" onclick="openModal(' + viewIndex + ')">';
       card += '<div class="card-summary">' + escapeHtml(item.summary || '') + '</div>';
@@ -2345,6 +2751,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
           card += '</div>';
         }
       }
+      if (!item.image || !item.image.trim()) card += renderContentPreview(item);
 
       card += '<div class="card-footer">';
       if (item.author) card += '<span>' + escapeHtml(item.author) + '</span>';
@@ -2482,22 +2889,40 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
     }
 
     // ===== 抽點子 =====
+    var randomCategory = 'all';
+    function renderRandomCategoryChips(active) {
+      var items = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例']];
+      var html = '<label class="cat-select-wrap random-cat">類別<select class="cat-select" aria-label="抽點子的類別" onchange="setRandomCategory(this.value)">';
+      items.forEach(function(it) {
+        var count = categoryCounts ? '（' + categoryCounts[it[0]] + '）' : '';
+        html += '<option value="' + it[0] + '"' + (it[0] === active ? ' selected' : '') + '>' + it[1] + count + '</option>';
+      });
+      return html + '</select></label>';
+    }
+    function setRandomCategory(key) {
+      randomCategory = CATEGORY_KEYS.hasOwnProperty(key) ? key : 'all';
+      randomIdea();
+    }
+
     function randomIdea() {
       if (allData.length === 0) return;
+      // 已經在抽點子畫面再抽一次時，保留目前捲動位置，不要跳回頁首
+      var keepScroll = currentViewKind === 'random' ? window.scrollY : null;
       onLatestView = false;
       currentViewKind = 'random';
-      // 「全部」從全部抽；選了分類就只抽那一類
-      var pool = getCategoryData();
+      // 抽點子有自己的類別（預設抽全部），按了「抽點子」之後才在結果上方出現類別選單可以切換
+      var randomCat = CATEGORY_KEYS.hasOwnProperty(randomCategory) ? randomCategory : 'all';
+      var pool = randomCat === 'all' ? allData : allData.filter(function(it) { return getItemCategory(it) === CATEGORY_KEYS[randomCat]; });
       if (pool.length === 0) {
         currentResults = [];
-        statusEl.innerHTML = '<div class="section-heading">🎲 隨機抽到的點子' + categoryHeadingLabel() + '</div>';
-        resultsEl.innerHTML = '<div class="empty-state">「' + escapeHtml(CATEGORY_KEYS[currentCategory]) + '」目前還沒有點子可以抽，可以先切回「全部」</div>';
+        statusEl.innerHTML = '<div class="section-heading random-heading">🎲 隨機抽到的點子' + renderRandomCategoryChips(randomCat) + '</div>';
+        resultsEl.innerHTML = '<div class="empty-state">「' + escapeHtml(CATEGORY_KEYS[randomCat]) + '」目前還沒有點子可以抽，可以改選「抽全部」</div>';
         return;
       }
       var idx = Math.floor(Math.random() * pool.length);
       var item = pool[idx];
       currentResults = [item];
-      statusEl.innerHTML = '<div class="section-heading">🎲 隨機抽到的點子' + categoryHeadingLabel() + '</div>';
+      statusEl.innerHTML = '<div class="section-heading random-heading">🎲 隨機抽到的點子' + renderRandomCategoryChips(randomCat) + '</div>';
 
       var html = '<div class="random-stage">';
       html += '<div class="random-card" onclick="openModal(0)">';
@@ -2515,6 +2940,7 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
           html += '</div>';
         }
       }
+      if (!item.image || !item.image.trim()) html += renderContentPreview(item);
 
       html += '<div class="card-footer">';
       if (item.author) html += '<span>' + escapeHtml(item.author) + '</span>';
@@ -2530,11 +2956,18 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
         }
       }
       html += '</div></div>';
-      html += '<div class="random-hint">再按一次「🎲 抽點子」換下一個</div>';
+      html += '<button type="button" class="random-again" onclick="randomIdea()">🎲 再抽一個</button>';
       html += '</div>';
 
+      // 換內容前先把結果區高度撐住，避免頁面瞬間變短、捲動位置被拉回上面
+      if (keepScroll !== null) resultsEl.style.minHeight = resultsEl.offsetHeight + 'px';
       resultsEl.innerHTML = html;
-      window.scrollTo(0, 0);
+      if (keepScroll !== null) {
+        window.scrollTo(0, keepScroll);
+        setTimeout(function() { resultsEl.style.minHeight = ''; }, 800);
+      } else {
+        window.scrollTo(0, 0);
+      }
     }
 
     // ===== Slack Markdown → HTML =====
