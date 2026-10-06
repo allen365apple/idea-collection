@@ -3043,10 +3043,19 @@ https://idea-collection-mcp.allen365apple.workers.dev/55f03b4d85e13750d79bc40138
       // inline code: `text`
       html = html.replace(/`([^`\n]+)`/g, '<code style="background:#f4f4f2;padding:1px 5px;border-radius:3px;font-size:0.88em;">$1</code>');
       // Slack links: <url|label> or <url>
-      html = html.replace(/&lt;(https?:\/\/[^|&]+)\|([^&]+)&gt;/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#4a7c96;">$2</a>');
-      html = html.replace(/&lt;(https?:\/\/[^&]+)&gt;/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#4a7c96;">$1</a>');
+      // 網址裡常有 &（Slack 存成 &amp;，跳脫後變 &amp;amp;），先換成佔位符，最後再放回，避免被裸網址規則重複包成連結
+      var links = [];
+      function linkTag(url, label) {
+        var href = url.replace(/&amp;amp;/g, '&amp;');
+        var text = label.replace(/&amp;amp;/g, '&amp;');
+        links.push('<a href="' + href + '" target="_blank" rel="noopener noreferrer" style="color:#4a7c96;word-break:break-all;">' + text + '</a>');
+        return '%%LINK' + (links.length - 1) + '%%';
+      }
+      html = html.replace(/&lt;(https?:\/\/[^\s|]+?)\|([^\n]+?)&gt;/g, function(m, url, label) { return linkTag(url, label); });
+      html = html.replace(/&lt;(https?:\/\/[^\s|]+?)&gt;/g, function(m, url) { return linkTag(url, url); });
       // bare URLs
-      html = html.replace(/(^|[\s>])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#4a7c96;">$2</a>');
+      html = html.replace(/(^|[\s>])(https?:\/\/[^\s<]+)/g, function(m, pre, url) { return pre + linkTag(url, url); });
+      html = html.replace(/%%LINK(\d+)%%/g, function(m, n) { return links[Number(n)]; });
       return html;
     }
 
