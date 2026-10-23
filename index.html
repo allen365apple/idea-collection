@@ -77,18 +77,6 @@
     }
     /* 關於頁維持窄版 */
     #page-about, #page-install { max-width: 720px; margin: 0 auto; }
-    .install-prompt {
-      background: #ffffff; border: 1px solid #e8e8e5; border-radius: 8px; padding: 14px 16px; margin: 16px 0 10px;
-      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.78rem; color: #2d2d2d; line-height: 1.6;
-      white-space: pre-wrap; word-break: break-all; max-height: 320px; overflow-y: auto;
-    }
-    .install-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .install-copy-btn {
-      background: #1a1a1a; color: #ffffff; border: none; border-radius: 8px; padding: 10px 20px;
-      font-size: 0.9rem; font-weight: 600; cursor: pointer;
-    }
-    .install-copy-btn:hover { opacity: 0.85; }
-    .install-copy-error { font-size: 0.82rem; color: #c75c5c; margin: 0; }
 
     /* ===== Page visibility ===== */
     .page { display: none; }
@@ -147,7 +135,6 @@
     .cat-badge-marketing { background: #fdf8f0; color: #8a6a32; border-color: #ead9b8; }
     .cat-badge-social { background: #f1f7f1; color: #4f7553; border-color: #cfe1d0; }
     .card .cat-badge, .random-card .cat-badge { margin-bottom: 8px; }
-    .modal-cat { margin-bottom: 8px; }
     .col-summary .cat-badge { margin-right: 6px; }
     .cat-heading-label { font-size: 0.8rem; font-weight: 500; color: #999; }
 
@@ -306,12 +293,6 @@
     .random-card .card-images { margin-bottom: 14px; }
     .random-card .card-img { max-height: 200px; border-radius: 8px; }
     .random-card .card-footer { font-size: 0.78rem; }
-    .random-hint {
-      margin-top: 16px;
-      font-size: 0.82rem;
-      color: #b388ff;
-      font-weight: 500;
-    }
 
     .loading { text-align: center; padding: 40px 0; color: #999; font-size: 0.9rem; }
     .loading-spinner {
@@ -385,23 +366,6 @@
       font-size: 0.9rem; font-weight: 500; line-height: 1.7; margin-bottom: 10px; color: #1a1a1a;
       overflow-wrap: anywhere; word-break: break-word;
       display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-    }
-    .card-note {
-      font-size: 0.78rem;
-      line-height: 1.7;
-      color: #6b6b6b;
-      background: #f8f7f4;
-      border-left: 3px solid #ddd5c8;
-      border-radius: 0 8px 8px 0;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      word-break: break-word;
     }
     .card-images { display: flex; gap: 6px; margin-bottom: 10px; }
     .card-img {
@@ -630,14 +594,6 @@
       background: #ffffff; border: 1px solid #e8e8e5;
       border-radius: 8px; padding: 12px 16px; margin: 8px 0;
       font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; color: #2d2d2d;
-    }
-
-    /* Channel list */
-    .channel-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .channel-tag {
-      display: inline-block; background: #f5f5f3; border: 1px solid #e8e8e5;
-      border-radius: 6px; padding: 2px 8px;
-      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.72rem; color: #2d2d2d;
     }
 
     /* Flow */
@@ -939,6 +895,7 @@
       padding: 60px 20px 40px; overflow-y: auto;
     }
     .write-modal-overlay.active { display: flex; }
+    #passwordModal { z-index: 120; } /* 送出時 token 過期，密碼框要蓋在編輯框上面 */
     .write-modal {
       background: #fff; border-radius: 12px; max-width: 520px; width: 100%;
       padding: 24px 26px; position: relative;
@@ -997,7 +954,6 @@
       border-radius: 8px; cursor: pointer;
     }
     .write-btn-secondary:hover { background: #ebebe7; }
-    .write-modal-required-mark { color: #c0392b; font-size: 0.75rem; margin-left: 4px; }
     .write-modal .form-row { display: flex; gap: 10px; }
     .write-modal .form-row > .write-modal-field { flex: 1; }
 
@@ -1086,7 +1042,7 @@
     /* 共用按鈕外觀（Jebby .button）：次要＝米白底細邊框，主要＝lime */
     .search-bar button, .btn-random, .semantic-cta, .btn-load-more, .btn-show-all,
     .btn-toolbar-add, .modal-btn, .modal-edit, .presentation-btn, .write-btn-secondary,
-    .write-btn-primary, .install-copy-btn, .sheets-cta a, .cta a, .data-notice button, .error button {
+    .write-btn-primary, .sheets-cta a, .cta a, .data-notice button, .error button {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       min-height: 32px; padding: 4px 12px; margin: 0;
       border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface-2);
@@ -1099,10 +1055,10 @@
     .cta a:hover, .data-notice button:hover, .error button:hover {
       background: var(--sage-3); border-color: var(--sage-2); color: var(--ink); opacity: 1;
     }
-    #searchBtn, .write-btn-primary, .install-copy-btn, .sheets-cta a {
+    #searchBtn, .write-btn-primary, .sheets-cta a {
       background: var(--lime); border-color: var(--lime-deep); color: var(--ink);
     }
-    #searchBtn:hover, .write-btn-primary:hover, .install-copy-btn:hover, .sheets-cta a:hover {
+    #searchBtn:hover, .write-btn-primary:hover, .sheets-cta a:hover {
       background: var(--lime-2); border-color: var(--lime-deep); opacity: 1;
     }
     .search-bar button:disabled, .btn-random:disabled, .write-btn-primary:disabled, .semantic-cta:disabled { opacity: .5; cursor: not-allowed; }
@@ -1219,10 +1175,6 @@
     }
     .card:hover { border-color: var(--line-2); box-shadow: var(--shadow); }
     .card-summary { font-size: var(--fs-title); font-weight: var(--fw-medium); line-height: 1.6; color: var(--ink); margin-bottom: 12px; }
-    .card-note {
-      font-size: var(--fs-secondary); color: var(--ink-2); background: var(--surface-2);
-      border-left: 3px solid var(--note-line); border-radius: 0 var(--r-sm) var(--r-sm) 0;
-    }
     .card-img, .card-images-more { border-radius: var(--r-sm); border-color: var(--line); background: var(--surface-2); }
     .card-images { margin-bottom: 12px; }
     .card-images-more { font-size: var(--fs-secondary); color: var(--ink-3); }
@@ -1267,7 +1219,6 @@
     }
     .random-again:hover { background: var(--lime-2); }
     .random-card .card-footer { font-size: var(--fs-secondary); }
-    .random-hint { font-size: var(--fs-secondary); color: var(--sage-deep); font-weight: var(--fw-medium); }
 
     /* ===== 列表檢視 ===== */
     .list-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
@@ -1380,12 +1331,11 @@
       padding: 1px 6px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line-2);
       font-size: var(--fs-label); color: var(--ink-2);
     }
-    .command, .channel-tag {
+    .command {
       background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; color: var(--ink);
       font-family: var(--font-body);
     }
     .command { font-size: var(--fs-secondary); font-family: var(--font-mono); }
-    .channel-tag { font-size: var(--fs-label); padding: 1px 8px; }
     .command-block {
       background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 14px;
       font-family: var(--font-body); font-size: var(--fs-secondary); color: var(--ink);
@@ -1394,18 +1344,11 @@
     .cta p { font-size: var(--fs-body); color: var(--ink-2); }
     .about-footer { font-size: var(--fs-secondary); color: var(--ink-3); padding-top: 24px; }
 
-    .install-prompt {
-      background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-sm);
-      font-family: var(--font-mono); font-size: var(--fs-secondary); color: var(--ink); max-height: 260px;
-    }
-    .install-copy-btn { min-height: 40px; padding: 6px 18px; font-size: var(--fs-body); }
-    .install-copy-error { font-size: var(--fs-secondary); color: var(--warn); font-weight: var(--fw-medium); }
-
     /* ===== 新增／編輯／密碼視窗 ===== */
     .write-modal { background: var(--surface-2); border-radius: var(--r-lg); padding: 24px 26px; box-shadow: var(--shadow); }
     .write-modal-title { font-size: var(--fs-title); font-weight: var(--fw-bold); }
     .write-modal-field label { font-size: var(--fs-secondary); font-weight: var(--fw-medium); color: var(--ink); }
-    .write-modal-field .req, .write-modal-required-mark { color: var(--warn); }
+    .write-modal-field .req { color: var(--warn); }
     .write-modal input[type="text"], .write-modal input[type="password"], .write-modal select, .write-modal textarea {
       border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); font-size: var(--fs-body);
     }
@@ -1461,7 +1404,6 @@
     <div id="page-search" class="page active">
       <h1 class="page-title" onclick="goHome()">✨ 只要有人靈感倉庫 🔮</h1>
       <div id="ideaCount" class="idea-count"></div>
-      <div id="searchHint" class="search-hint"></div>
 
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋 Idea（多個關鍵字用空格分隔）" disabled>
@@ -1758,24 +1700,6 @@
     if (window.location.hash === '#about') { switchPage('about', false); }
     if (window.location.hash === '#install') { switchPage('install', false); }
 
-    // ===== 安裝到 Claude：複製安裝指令 =====
-    (function() {
-      var btn = document.getElementById('installCopyBtn');
-      var err = document.getElementById('installCopyError');
-      if (!btn || !err) return;
-      var timer = null;
-      btn.addEventListener('click', function() {
-        var text = document.getElementById('installPrompt').textContent;
-        clearTimeout(timer);
-        if (!navigator.clipboard) { err.hidden = false; return; }
-        navigator.clipboard.writeText(text).then(function() {
-          err.hidden = true;
-          btn.textContent = '已複製 ✓';
-          timer = setTimeout(function() { btn.textContent = '複製安裝指令'; }, 2000);
-        }, function() { err.hidden = false; });
-      });
-    })();
-
     // ===== 搜尋功能 =====
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbxBoTnssI6IuILd5NsvAs1lbTBuhQmYUVbCNAbwtq0PR5UHzQroL0RHAUmFnj3Mx-ol4Q/exec';
 
@@ -1786,7 +1710,6 @@
     var statusEl = document.getElementById('status');
     var resultsEl = document.getElementById('results');
     var ideaCountEl = document.getElementById('ideaCount');
-    var searchHintEl = document.getElementById('searchHint');
     var LATEST_INITIAL_COUNT = 10;
     var LATEST_BATCH_SIZE = 10;
     var latestVisibleCount = LATEST_INITIAL_COUNT;
@@ -1848,10 +1771,6 @@
     function matchesCurrentCategory(item) {
       var want = CATEGORY_KEYS[currentCategory];
       return !want || getItemCategory(item) === want;
-    }
-    function getCategoryData() {
-      if (currentCategory === 'all') return allData;
-      return allData.filter(matchesCurrentCategory);
     }
     function renderCategoryBadge(item) {
       var c = getItemCategory(item);
@@ -2142,6 +2061,8 @@
           } else {
             statusEl.innerHTML =
               '<div class="error"><div>資料庫暫時沒有回應，可能正在匯入或整理資料，請稍等一兩分鐘再試</div><button onclick="loadData(\'retry\')">重試</button></div>';
+            // 之前已經載入過資料（例如編輯後重新載入失敗）：搜尋不要一直鎖著
+            if (allData.length > 0) setSearchDisabled(false);
           }
         });
     }
@@ -2347,10 +2268,9 @@
       listVisibleCount = LIST_PAGE_SIZE;
       rerenderCurrentView();
     }
+    // 標籤 chip 點擊用；邏輯跟篩選框輸入一樣
     function applyTagFilter(text) {
-      listTagFilter = (text || '').trim();
-      listVisibleCount = LIST_PAGE_SIZE;
-      rerenderCurrentView();
+      onTagFilterInput(text);
     }
     // 列表的標籤 chip：用 data-tag 存值、統一在這裡處理點擊（不在 HTML 裡組 onclick 字串）
     document.addEventListener('click', function(e) {
@@ -2371,16 +2291,6 @@
     function listShowAll() {
       listVisibleCount = (currentResults && currentResults.length) ? currentResults.length : Number.MAX_SAFE_INTEGER;
       rerenderCurrentView();
-    }
-
-    function renderCards(items) {
-      currentResults = items.slice();
-      var html = '<div class="card-grid">';
-      for (var i = 0; i < currentResults.length; i++) {
-        html += renderCard(currentResults[i], i);
-      }
-      html += '</div>';
-      return html;
     }
 
     function renderSemanticNotice(title, body) {
@@ -2718,13 +2628,16 @@
     }
 
     // ===== Modal：展開完整內容 =====
+    // 詳細視窗開著時 currentResults 可能被重建（背景更新、重新載入），所以記住開啟當下的 item，編輯用它
+    var currentModalItem = null;
     function openModal(viewIndex) {
       var item = currentResults[viewIndex];
       if (!item) return;
+      currentModalItem = item;
       var html = '';
-      // ✏️ 編輯按鈕：只有 item 帶 _sheet_row（從 doGet 來的真實資料）才顯示，避免在抽點子等情境顯示
+      // ✏️ 編輯按鈕：只有 item 帶 _sheet_row（試算表列號；doGet 與網頁快照的資料都有）才顯示
       if (item._sheet_row) {
-        html += '<button type="button" class="modal-edit" onclick="onEditClick(' + viewIndex + ')" aria-label="編輯">✏️ 編輯</button>';
+        html += '<button type="button" class="modal-edit" onclick="onEditClick()" aria-label="編輯">✏️ 編輯</button>';
       }
       html += '<div class="modal-summary">' + escapeHtml(item.summary || '') + '</div>';
 
@@ -2794,6 +2707,7 @@
       if (e && e.target !== document.getElementById('modalOverlay')) return;
       document.getElementById('modalOverlay').classList.remove('active');
       document.body.style.overflow = '';
+      currentModalItem = null;
     }
 
     // ===== Lightbox =====
@@ -2810,12 +2724,12 @@
     // ESC 關閉
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
+        // 新增／編輯／密碼視窗開著：只關最上層那個（由 write-modal 的 ESC 處理），詳細視窗留著
+        if (document.querySelector('.write-modal-overlay.active')) return;
         if (document.getElementById('lightbox').classList.contains('active')) {
           closeLightbox();
         } else if (document.getElementById('modalOverlay').classList.contains('active')) {
           closeModal();
-          document.getElementById('modalOverlay').classList.remove('active');
-          document.body.style.overflow = '';
         }
       }
     });
@@ -3063,7 +2977,7 @@
   <div class="write-modal-overlay" id="passwordModal" onclick="if(event.target===this) closePasswordModal()">
     <div class="write-modal" role="dialog" aria-label="密碼驗證">
       <div class="write-modal-title">🔑 輸入編輯密碼</div>
-      <div class="write-modal-hint">請輸入編輯密碼（公司 Wi-Fi 密碼）</div>
+      <div class="write-modal-hint">請輸入編輯密碼</div>
       <div class="write-modal-field">
         <input type="password" id="passwordInput" placeholder="輸入密碼" autocomplete="current-password">
         <div class="write-modal-error" id="passwordError"></div>
@@ -3295,11 +3209,13 @@
       } else {
         showToast(message, 'error');
       }
+      // 這則點子在試算表的列號變了（有人排序／刪列）：重新載入拿最新列號，使用者重開編輯即可
+      if (code === 'ROW_MOVED') loadData();
     }
 
     // ===== 編輯 modal =====
-    function onEditClick(viewIndex) {
-      var item = currentResults[viewIndex];
+    function onEditClick() {
+      var item = currentModalItem;
       if (!item) return;
       currentEditingItem = item;
       var token = getValidWriteToken();
@@ -3363,11 +3279,13 @@
       }
 
       setButtonLoading(btn, true, '送出中…');
-      gasWriteRequest({ action: 'edit-idea', token: token, sheet_row: sheetRow, fields: fields })
+      // uid：永久點子編號，後端用來核對列號；對不上會回 ROW_MOVED
+      gasWriteRequest({ action: 'edit-idea', token: token, sheet_row: sheetRow, uid: item.uid || '', fields: fields })
         .then(function(r) {
           if (r && r.ok) {
             setButtonLoading(btn, false);
             closeEditModal();
+            closeModal();
             loadData();
             showToast(onlyCategory ? '分類已更新' : '已送出，AI 將在下一次排程時重新分析');
           } else {
@@ -3456,17 +3374,12 @@
         });
     }
 
-    // ESC 關閉 write-modal（保持 modal 開啟的優先順序）
+    // ESC 關閉 write-modal：一次只關最上層一個（密碼框會疊在編輯／新增框上面，所以先看密碼框）
     document.addEventListener('keydown', function(e) {
       if (e.key !== 'Escape') return;
-      ['passwordModal', 'editModal', 'addModal'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el && el.classList.contains('active')) {
-          if (id === 'passwordModal') closePasswordModal();
-          else if (id === 'editModal') closeEditModal();
-          else if (id === 'addModal') closeAddModal();
-        }
-      });
+      if (document.getElementById('passwordModal').classList.contains('active')) closePasswordModal();
+      else if (document.getElementById('editModal').classList.contains('active')) closeEditModal();
+      else if (document.getElementById('addModal').classList.contains('active')) closeAddModal();
     });
 
     // Enter 在密碼 modal 內送出
