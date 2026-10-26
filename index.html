@@ -76,7 +76,7 @@
       padding: 40px 20px 40px;
     }
     /* 關於頁維持窄版 */
-    #page-about, #page-install { max-width: 720px; margin: 0 auto; }
+    #page-about { max-width: 720px; margin: 0 auto; }
 
     /* ===== Page visibility ===== */
     .page { display: none; }
@@ -1276,8 +1276,8 @@
     .sheets-cta p { font-size: var(--fs-secondary); color: var(--ink-3); }
     .sheets-cta a { min-height: 40px; padding: 6px 18px; font-size: var(--fs-body); }
 
-    /* ===== 關於頁／安裝到 Claude 頁：放進一張大白卡 ===== */
-    #page-about.active, #page-install.active {
+    /* ===== 關於頁：放進一張大白卡 ===== */
+    #page-about.active {
       max-width: 760px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
       box-shadow: var(--shadow); padding: 32px 36px;
     }
@@ -1298,7 +1298,7 @@
     .about-section h4[style] { font-size: var(--fs-body) !important; font-weight: var(--fw-bold) !important; }
     .about-section p[style*="font-size"] { font-size: var(--fs-body) !important; color: var(--ink-2) !important; }
     .about-divider { border-top: 1px solid var(--line); margin: 32px 0; }
-    #page-about a[style], #page-install a[style] { color: var(--sage-deep) !important; text-decoration: underline; text-underline-offset: 3px; }
+    #page-about a[style] { color: var(--sage-deep) !important; text-decoration: underline; text-underline-offset: 3px; }
     .about-card p[style*="0.72rem"] { font-size: var(--fs-label) !important; color: var(--sage-deep) !important; }
     .about-card p[style*="0.8rem"], .about-card a[style] { font-size: var(--fs-secondary) !important; }
 
@@ -1377,7 +1377,7 @@
       .modal { padding: 20px 18px; border-radius: var(--r-md); }
       .modal-close { top: 14px; right: 14px; width: 36px; height: 36px; }
       .modal-summary { padding-right: 44px; }
-      #page-about.active, #page-install.active { padding: 22px 18px; border-radius: var(--r-md); }
+      #page-about.active { padding: 22px 18px; border-radius: var(--r-md); }
       .about-hero h2 { font-size: 19px; }
       .write-modal { padding: 20px; border-radius: var(--r-md); }
       .modal-edit { font-size: var(--fs-secondary); }
@@ -1921,7 +1921,6 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
         <button class="nav-tab active" data-page="search">搜尋</button>
         <button class="nav-tab" data-page="cannes">坎城圖書館</button>
         <button class="nav-tab" data-page="about">關於</button>
-        <button class="nav-tab" data-page="install">安裝到 Claude</button>
       </div>
     </div>
   </nav>
@@ -1972,251 +1971,16 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       <div id="cannesResults"></div>
     </div>
 
-    <!-- ===== 安裝到 Claude 頁 ===== -->
-    <div id="page-install" class="page">
-
-      <div class="about-hero">
-        <h2>🤖 <span class="magic-text">把倉庫安裝到</span> <span class="magic-brand">Claude</span></h2>
-        <p>裝好之後，你在 Claude 或 Codex 裡直接說「去靈感倉庫找跟咖啡有關的案例」，AI 就會自己進倉庫翻點子、挑出適合的，再幫你發想。</p>
-      </div>
-
-      <div class="about-section">
-        <h3>MCP 是什麼？</h3>
-        <p>MCP 就像幫 AI 裝一個「插頭」。AI 本來只知道網路上的公開資訊，插上靈感倉庫這個插頭之後，它就能直接讀到公司蒐集的 700 多則品牌案例和有趣點子。你不用再自己搜尋、複製、貼給 AI。</p>
-      </div>
-
-      <div class="about-section">
-        <h3>裝好之後可以怎麼用？</h3>
-        <div class="command-block">我想做 Volvo 汽車、跟安全有關的點子，從靈感倉庫給我 5 個參考，再給我 5 個你延伸的新點子</div>
-        <div class="command-block">靈感倉庫裡有沒有用互動裝置做的戶外廣告？</div>
-        <div class="command-block">從靈感倉庫隨機抽 5 個點子給我發想</div>
-      </div>
-
-      <hr class="about-divider">
-
-      <div class="about-section">
-        <p class="about-section-label">安裝</p>
-        <h3>怎麼連線？</h3>
-        <div class="note note-info">
-          <p>AI 連線改由 Jebby Dashboard /ideas 提供（需公司帳號）。</p>
-        </div>
-      </div>
-    </div>
-
     <!-- ===== 關於頁 ===== -->
     <div id="page-about" class="page">
-
       <div class="about-hero">
-        <h2>💡 <span class="magic-text">關於</span> <span class="magic-brand">只要有人靈感倉庫</span> <a href="idea-collector-guide-presentation.html" target="_blank" class="presentation-btn">📽️ 以簡報檢視</a></h2>
-        <p>在 Slack 看到好的創意靈感，按一個燈泡 💡 就能自動存進靈感倉庫，之後隨時用關鍵字搜尋出來。</p>
+        <h2>💡 關於 <span class="magic-brand">只要有人靈感倉庫</span></h2>
+        <p>由只要有人社群顧問整理的靈感資料庫，收錄值得參考的品牌行銷案例與社群創意，讓好點子更容易被找到、延伸。</p>
       </div>
-
-      <!-- 為什麼 -->
       <div class="about-section">
-        <p>我們平常在 Slack 分享了很多很棒的創意案例、社群靈感、競品觀察，但這些訊息很快就被洗掉、找不到。等到提案需要靈感的時候，只能靠記憶去翻，或是重新上網找。</p>
-        <p class="muted">只要有人靈感倉庫讓好點子不會消失，而且隨時搜得到。</p>
+        <h3>靈感來源</h3>
+        <p>靈感來自團隊日常分享、公開網站，以及 Instagram、Threads、YouTube 等社群與影音內容，還有坎城等國際創意獎案例。</p>
       </div>
-
-      <hr class="about-divider">
-
-      <!-- 蒐集 -->
-      <div class="about-section">
-        <p class="about-section-label">蒐集</p>
-        <h3>怎麼蒐集？</h3>
-
-        <div class="steps">
-          <div class="step">
-            <div class="step-indicator"><div class="step-number">1</div><div class="step-line"></div></div>
-            <div class="step-content">
-              <h4>看到好東西</h4>
-              <p>在 Slack 頻道看到值得收藏的創意靈感</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-indicator"><div class="step-number">2</div><div class="step-line"></div></div>
-            <div class="step-content">
-              <h4>按下燈泡 Emoji 💡</h4>
-              <p>對那則訊息按下燈泡 Emoji 💡，系統就會開始自動蒐集</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-indicator"><div class="step-number">3</div><div class="step-line"></div></div>
-            <div class="step-content">
-              <h4>到 #idea-inbox 加個備註（非必要）</h4>
-              <p>按完 💡 之後，系統會在 #idea-inbox 頻道發通知並標記你，直接在底下回覆備註就好。例如：「母親節可以用」「這個手法適合麥當勞」。備註會影響 AI 分析結果。</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-indicator"><div class="step-number">4</div></div>
-            <div class="step-content">
-              <h4>完成！✨</h4>
-              <p>系統會自動處理後面所有事情——抓原文、AI 分析、產生摘要和標籤，全部存進靈感倉庫。</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="note note-warning" style="margin-top: 20px;">
-          <p>請先在 Slack 加入 <strong>#idea-inbox</strong> 頻道，才能收到備註通知。</p>
-        </div>
-
-        <div class="note" style="margin-top: 10px;">
-          <p><strong>💡 目前支援的頻道</strong></p>
-          <p>按燈泡收集靈感的功能只在部分公司 Slack 頻道開放（清單請看公司內部說明）。</p>
-          <p style="margin-top: 8px;">如果需要在其他頻道也加入這個功能，請洽靈感倉庫管理員。</p>
-        </div>
-
-        <div class="note note-info" style="margin-top: 10px;">
-          <p><strong>📸 支援的訊息類型</strong></p>
-          <p>支援<strong>純文字</strong>、<strong>帶有連結</strong>、<strong>圖片附件</strong>以及<strong>純圖片（沒有文字）</strong>的訊息。圖片會自動存到 Google Drive，AI 也能直接分析圖片內容並產生摘要和標籤。</p>
-          <p>另外，如果訊息<strong>只有貼一個連結、沒有附帶任何文字</strong>，目前系統會解析不出來。所以分享靈感的時候，請記得附帶一段簡短的文字來描述。連結自動解析的功能之後會再慢慢開發。</p>
-        </div>
-
-        <div class="note note-highlight" style="margin-top: 10px;">
-          <p><strong>✨ 連純圖片都能分析！</strong></p>
-          <p>就算訊息只有一張圖、沒有任何文字，AI 也能自動辨識圖片內容並產生完整的摘要和標籤。不需要額外打字描述，直接丟圖就行！</p>
-        </div>
-
-        <div class="note note-warning" style="margin-top: 10px;">
-          <p><strong>⚠️ AI 分析與每日上限</strong></p>
-          <p>所有靈感的摘要和標籤都是由 <strong>Gemini AI</strong> 自動分析產生的（使用公司帳戶的免費 Gemini API）。由於每天的 AI 分析額度有限，<strong>請大家一天不要提供超過 20 個點子</strong>，避免額度用完後當天剩下的靈感無法處理。</p>
-          <p>放心，超過額度的靈感不會消失，只是會延到隔天才由 AI 分析完成。</p>
-        </div>
-      </div>
-
-      <hr class="about-divider">
-
-      <!-- 搜尋 -->
-      <div class="about-section">
-        <p class="about-section-label">搜尋</p>
-        <h3>怎麼搜尋？</h3>
-        <p style="margin-bottom: 16px;">有兩種方式，搜尋結果一樣：</p>
-
-        <div class="two-col" style="margin-bottom: 12px;">
-          <div class="about-card">
-            <h4>🌐 網頁搜尋</h4>
-            <p>打開只要有人靈感倉庫網頁，直接在搜尋框輸入關鍵字，結果即時顯示。還可以「🎲 抽點子」，隨機抽一個靈感給你！</p>
-            <p style="margin-top: 8px;"><a href="#" onclick="switchPage('search'); return false;" style="font-size: 0.8rem; color: #4a7c96;">→ 前往搜尋</a></p>
-          </div>
-          <div class="about-card">
-            <h4>🤖 @ 機器人</h4>
-            <p>在 Slack 任何地方（包括 thread）</p>
-            <div class="command-block">@Idea Collection Bot 愚人節</div>
-            <p style="font-size: 0.72rem; color: #7a9e7e; margin-top: 4px;">✓ 到哪都能用</p>
-          </div>
-        </div>
-
-        <div class="note note-info" style="margin-top: 16px;">
-          <p><strong>💡 網頁搜尋 vs Slack 搜尋</strong></p>
-          <p>網頁版可以瀏覽完整的卡片式結果、看原文摘要和標籤；Slack 搜尋則方便你在工作中快速查找，不用離開 Slack。兩邊的資料來源一樣。</p>
-        </div>
-      </div>
-
-      <!-- 小技巧 -->
-      <div class="about-section">
-        <p class="about-section-label">小技巧</p>
-
-        <div style="margin-bottom: 16px;">
-          <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">多關鍵字搜尋</h4>
-          <p style="font-size: 0.85rem; color: #6b6b6b;">輸入多個關鍵字，找出同時包含所有關鍵字的結果</p>
-          <div class="command-block">@Idea Collection Bot 麥當勞 愚人節</div>
-        </div>
-
-        <div>
-          <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">指定顯示筆數（Slack 限定）</h4>
-          <p style="font-size: 0.85rem; color: #6b6b6b;">預設顯示最新 10 筆，想看更多可以用 #數字</p>
-          <div class="command-block">@Idea Collection Bot #20 愚人節</div>
-        </div>
-      </div>
-
-      <hr class="about-divider">
-
-      <!-- 技術架構 -->
-      <div class="about-section">
-        <p class="about-section-label">技術架構</p>
-        <h3>背後怎麼運作的？</h3>
-        <p class="muted" style="margin-bottom: 20px;">整個流程全自動，不需要手動整理。</p>
-
-        <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 14px;">💡 蒐集流程</h4>
-
-        <div class="flow">
-          <div class="flow-item">
-            <div class="flow-track"><div class="flow-dot"></div><div class="flow-connector"></div></div>
-            <div class="flow-card">
-              <h4>觸發蒐集</h4>
-              <p>在 Slack 對一則訊息按下 💡 → Slack Workflow 自動把訊息轉發到 #idea-inbox，並同步記錄到 Google Sheets。</p>
-              <span class="tech-tag">Slack Workflow</span>
-            </div>
-          </div>
-          <div class="flow-item">
-            <div class="flow-track"><div class="flow-dot"></div><div class="flow-connector"></div></div>
-            <div class="flow-card">
-              <h4>自動抓取原文</h4>
-              <p>Google Apps Script 每小時自動執行一次，檢查新進的資料。發現新紀錄後，透過 Slack API 抓取完整原文、發布日期、撰寫者等資訊。</p>
-              <span class="tech-tag">Google Apps Script</span>
-              <span class="tech-tag">Slack API</span>
-            </div>
-          </div>
-          <div class="flow-item">
-            <div class="flow-track"><div class="flow-dot"></div><div class="flow-connector"></div></div>
-            <div class="flow-card">
-              <h4>Gemini AI 分析</h4>
-              <p>程式將原文和備註送給 Google Gemini AI，自動產生一句話摘要和多維度搜尋標籤（含同義詞擴充）。</p>
-              <span class="tech-tag">Google Gemini AI</span>
-            </div>
-          </div>
-          <div class="flow-item">
-            <div class="flow-track"><div class="flow-dot"></div></div>
-            <div class="flow-card">
-              <h4>寫回資料庫</h4>
-              <p>AI 分析完成後，所有資料自動寫回 Google Sheets 的「只要有人靈感倉庫」。</p>
-              <span class="tech-tag">Google Sheets</span>
-            </div>
-          </div>
-        </div>
-
-        <h4 style="font-size: 0.85rem; font-weight: 600; margin-top: 24px; margin-bottom: 14px;">🔍 搜尋流程</h4>
-
-        <div class="flow">
-          <div class="flow-item">
-            <div class="flow-track"><div class="flow-dot"></div><div class="flow-connector"></div></div>
-            <div class="flow-card">
-              <h4>接收搜尋請求</h4>
-              <p>透過網頁搜尋框或 @Idea Collection Bot 發起搜尋。</p>
-              <span class="tech-tag">GitHub Pages</span>
-              <span class="tech-tag">Slack Bot</span>
-            </div>
-          </div>
-          <div class="flow-item">
-            <div class="flow-track"><div class="flow-dot"></div><div class="flow-connector"></div></div>
-            <div class="flow-card">
-              <h4>搜尋比對</h4>
-              <p>在 Google Sheets 中搜尋摘要、標籤等欄位，把符合關鍵字的結果按蒐集日期由新到舊排序。</p>
-              <span class="tech-tag">Google Apps Script</span>
-            </div>
-          </div>
-          <div class="flow-item">
-            <div class="flow-track"><div class="flow-dot"></div></div>
-            <div class="flow-card">
-              <h4>回傳結果</h4>
-              <p>網頁版以卡片式呈現完整結果；Slack 版直接在對話中回傳摘要和原文連結。</p>
-              <span class="tech-tag">Web App</span>
-              <span class="tech-tag">Slack API</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <hr class="about-divider">
-
-      <!-- CTA -->
-      <div class="sheets-cta" style="border-top: none; margin-top: 0;">
-        <p>所有靈感都存在公司內部的資料庫中（完整資料需公司帳號才能開啟）</p>
-      </div>
-
-      <div class="about-footer">
-        <p>只要有人社群顧問 × 只要有人靈感倉庫 ✨</p>
-      </div>
-
     </div>
   </div>
 
@@ -2253,7 +2017,6 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     // 根據 URL hash 決定初始頁面
     if (window.location.hash === '#about') { switchPage('about', false); }
     if (window.location.hash.split('?')[0] === '#cannes') { switchPage('cannes', false); }
-    if (window.location.hash === '#install') { switchPage('install', false); }
 
     // ===== 搜尋功能 =====
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbxBoTnssI6IuILd5NsvAs1lbTBuhQmYUVbCNAbwtq0PR5UHzQroL0RHAUmFnj3Mx-ol4Q/exec';
@@ -2293,7 +2056,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     var currentViewKind = 'latest'; // 'latest' | 'search' | 'random'：切換分類時知道要重畫哪個畫面
 
     // ===== 分類（行銷案例／社群靈感）=====
-    // 記在網址 query（?cat=marketing / ?cat=social），不動 #about、#install 的 hash 分頁
+    // 記在網址 query（?cat=marketing / ?cat=social），不動 #about、#cannes 的 hash 分頁
     var CATEGORY_KEYS = { all: '', marketing: '行銷案例', social: '社群靈感' };
     var CATEGORY_BADGE_CLASS = { '行銷案例': 'cat-badge-marketing', '社群靈感': 'cat-badge-social' };
     var categoryIndex = {}; // 語意推薦結果若沒帶 category（後端還沒更新），用這個從已載入的資料補
