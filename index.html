@@ -1421,6 +1421,9 @@
     }
     .toolbar-icon:hover { background: var(--sage-3); color: var(--ink); }
     .toolbar-icon:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 1px; }
+    .home-card-toolbar { flex-wrap: nowrap; }
+    .home-card-toolbar .result-count { flex: 0 0 auto; color: var(--ink-3); font-size: var(--fs-secondary); }
+    .home-card-toolbar .spacer { flex: 1 1 auto; min-width: 0; }
     .sort-wrap { position: relative; display: inline-flex; }
     .sort-menu {
       position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 142px;
@@ -2988,8 +2991,8 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       var visibleEntries = latestEntries.slice(0, latestVisibleCount);
       var visibleItems = visibleEntries.map(function(entry) { return entry.item; });
       currentResults = [];
-      statusEl.innerHTML = '<div class="section-heading">最新靈感 ✨' + categoryHeadingLabel() + ' <strong>已顯示 ' + visibleItems.length + ' / ' + latestEntries.length + '</strong></div>';
-      var html = renderViewToggleToolbar();
+      statusEl.innerHTML = '';
+      var html = renderViewToggleToolbar(visibleItems.length, latestEntries.length);
       html += renderResultSection({
         items: visibleItems
       });
@@ -2999,9 +3002,9 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       resultsEl.innerHTML = html;
     }
 
-    // 卡片模式下也要有切換按鈕：簡易版 toolbar（只有 toggle）
-    function renderViewToggleToolbar() {
-      return '<div class="view-toolbar"><div class="spacer"></div>'
+    // 卡片模式下，顯示數與排序／新增／檢視圖示共用 Dashboard 同款單行工具列。
+    function renderViewToggleToolbar(visibleCount, totalCount) {
+      return '<div class="view-toolbar home-card-toolbar"><span class="result-count">' + visibleCount + ' / ' + totalCount + '</span><div class="spacer"></div>'
         + renderSortMenuHtml()
         + renderAddIconHtml()
         + renderViewToggleHtml()
