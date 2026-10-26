@@ -1382,6 +1382,135 @@
       .write-modal { padding: 20px; border-radius: var(--r-md); }
       .modal-edit { font-size: var(--fs-secondary); }
     }
+
+    /* ===== Dashboard 同步：類別頁籤、純圖示工具列 ===== */
+    .idea-tabs-row {
+      display: flex; align-items: center; gap: 10px; min-width: 0;
+      margin: 0 0 18px; border-bottom: 1px solid var(--line);
+    }
+    .idea-tabs {
+      display: flex; flex: 1 1 auto; min-width: 0; gap: 3px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .idea-tabs::-webkit-scrollbar { display: none; }
+    .idea-tab {
+      flex: 0 0 auto; padding: 8px 13px; margin-bottom: -1px;
+      border: 0; border-bottom: 2px solid transparent; background: transparent;
+      color: var(--ink-2); cursor: pointer; font: inherit; font-size: var(--fs-body);
+      white-space: nowrap;
+    }
+    .idea-tab:hover { color: var(--ink); }
+    .idea-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+    .idea-tab-count { margin-left: 5px; color: var(--ink-3); font-size: var(--fs-label); }
+    .cannes-entry {
+      flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px;
+      margin-bottom: 4px; padding: 5px 11px 5px 9px; border: 0;
+      border-radius: 999px; background: var(--lime); color: var(--ink);
+      font: inherit; font-size: var(--fs-secondary); font-weight: var(--fw-medium);
+      cursor: pointer; white-space: nowrap; box-shadow: var(--shadow-sm);
+    }
+    .cannes-entry:hover { background: var(--lime-2); }
+    .cannes-entry:focus-visible, .cannes-back:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
+    .view-toggle button { min-width: 30px; padding: 5px 8px; }
+    .view-toggle button svg, .toolbar-icon svg { width: 15px; height: 15px; }
+    .toolbar-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; padding: 0; border: 1px solid var(--line);
+      border-radius: var(--r-sm); background: var(--surface-2); color: var(--ink-2);
+      cursor: pointer;
+    }
+    .toolbar-icon:hover { background: var(--sage-3); color: var(--ink); }
+    .toolbar-icon:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 1px; }
+    .sort-wrap { position: relative; display: inline-flex; }
+    .sort-menu {
+      position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 142px;
+      padding: 5px; border: 1px solid var(--line); border-radius: var(--r-md);
+      background: var(--surface); box-shadow: var(--shadow);
+    }
+    .sort-menu button {
+      display: block; width: 100%; padding: 7px 9px; border: 0; border-radius: var(--r-sm);
+      background: transparent; color: var(--ink-2); text-align: left; cursor: pointer;
+      font: inherit; font-size: var(--fs-secondary);
+    }
+    .sort-menu button:hover, .sort-menu button.active { background: var(--lime-3); color: var(--ink); }
+
+    /* ===== 坎城圖書館（公開首頁版） ===== */
+    .cannes-page-head { position: relative; margin-bottom: 18px; }
+    .cannes-page-head .page-title { margin: 4px 0 4px; }
+    .cannes-back {
+      border: 0; padding: 4px 0; background: transparent; color: var(--ink-3);
+      font: inherit; font-size: var(--fs-secondary); cursor: pointer;
+    }
+    .cannes-back:hover { color: var(--ink); }
+    .cannes-stats { margin: 0; text-align: center; color: var(--ink-3); font-size: var(--fs-secondary); }
+    .cannes-filters {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+      margin-bottom: 10px; padding: 10px 12px; border: 1px solid var(--line);
+      border-radius: var(--r-md); background: var(--surface);
+    }
+    .cannes-filter-label { color: var(--ink-3); font-size: var(--fs-secondary); white-space: nowrap; }
+    .cannes-filter-group { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+    .cannes-filter-chip {
+      min-height: 28px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 999px;
+      background: var(--surface-2); color: var(--ink-2); cursor: pointer; font: inherit; font-size: var(--fs-label);
+    }
+    .cannes-filter-chip:hover { border-color: var(--sage-2); background: var(--sage-3); }
+    .cannes-filter-chip.active { border-color: var(--lime-deep); background: var(--lime); color: var(--ink); }
+    .cannes-category-select, .cannes-keyword {
+      min-height: 32px; padding: 4px 9px; border: 1px solid var(--line); border-radius: var(--r-sm);
+      background: var(--surface-2); color: var(--ink); font: inherit; font-size: var(--fs-secondary);
+    }
+    .cannes-keyword { flex: 1 1 180px; min-width: 160px; background: var(--surface); }
+    .cannes-category-select:focus-visible, .cannes-keyword:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 1px; }
+    .cannes-filter-spacer { flex: 1; }
+    .cannes-active { min-height: 24px; margin-bottom: 12px; color: var(--ink-3); font-size: var(--fs-secondary); }
+    .cannes-active-chip {
+      display: inline-flex; align-items: center; gap: 5px; margin: 2px 4px; padding: 3px 7px 3px 9px;
+      border: 1px solid var(--sage-2); border-radius: 999px; background: var(--sage-4); color: var(--ink-2);
+    }
+    .cannes-active-chip button { border: 0; background: transparent; color: var(--ink-3); cursor: pointer; padding: 0 2px; }
+    .cannes-clear { border: 0; background: transparent; color: var(--sage-deep); cursor: pointer; font: inherit; font-size: var(--fs-secondary); text-decoration: underline; }
+    .cannes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+    .cannes-card {
+      display: flex; flex-direction: column; min-width: 0; padding: 0; overflow: hidden;
+      border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface);
+      box-shadow: var(--shadow-sm); cursor: pointer; transition: border-color .15s, box-shadow .15s;
+    }
+    .cannes-card:hover { border-color: var(--line-2); box-shadow: var(--shadow); }
+    .cannes-card img { display: block; width: 100%; height: 170px; object-fit: cover; background: var(--surface-2); }
+    .cannes-card-body { display: flex; flex-direction: column; gap: 5px; padding: 13px 15px 14px; }
+    .cannes-card-title { font-size: var(--fs-title); font-weight: var(--fw-bold); line-height: 1.4; color: var(--ink); }
+    .cannes-card-brand { color: var(--ink-2); font-size: var(--fs-secondary); }
+    .cannes-card-meta { color: var(--ink-3); font-size: var(--fs-label); }
+    .cannes-award-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+    .cannes-award-pill { padding: 2px 6px; border-radius: 999px; background: var(--note-2); color: var(--ink-2); font-size: var(--fs-label); }
+    .cannes-list-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+    .cannes-list { width: 100%; border-collapse: collapse; min-width: 620px; font-size: var(--fs-secondary); }
+    .cannes-list th { padding: 10px 12px; background: var(--surface-2); color: var(--ink-3); text-align: left; font-size: var(--fs-label); font-weight: var(--fw-bold); }
+    .cannes-list td { padding: 11px 12px; border-top: 1px solid var(--line-2); color: var(--ink-2); vertical-align: top; }
+    .cannes-list tbody tr { cursor: pointer; }
+    .cannes-list tbody tr:hover { background: var(--surface-2); }
+    .cannes-list .cannes-row-title { color: var(--ink); font-weight: var(--fw-medium); }
+    .cannes-more { display: flex; justify-content: center; margin-top: 18px; }
+    .cannes-more button { min-height: 34px; padding: 5px 13px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface-2); color: var(--ink); cursor: pointer; font: inherit; font-size: var(--fs-secondary); }
+    .cannes-more button:hover { background: var(--sage-3); border-color: var(--sage-2); }
+    .cannes-empty, .cannes-loading { padding: 42px 16px; text-align: center; color: var(--ink-3); font-size: var(--fs-body); }
+    .cannes-detail-image { width: 100%; max-height: 360px; object-fit: contain; border-radius: var(--r-sm); background: var(--surface-2); }
+    .cannes-detail-title { margin: 12px 0 4px; font-size: 20px; font-weight: var(--fw-bold); line-height: 1.4; }
+    .cannes-detail-brand, .cannes-detail-meta { color: var(--ink-2); font-size: var(--fs-secondary); }
+    .cannes-detail-awards { margin: 16px 0; padding-left: 18px; color: var(--ink-2); font-size: var(--fs-secondary); line-height: 1.7; }
+    .cannes-detail-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .cannes-detail-actions a, .cannes-detail-actions button { display: inline-flex; align-items: center; gap: 5px; min-height: 32px; padding: 5px 10px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface-2); color: var(--ink); cursor: pointer; font: inherit; font-size: var(--fs-secondary); text-decoration: none; }
+    .cannes-detail-actions a:hover, .cannes-detail-actions button:hover { background: var(--sage-3); border-color: var(--sage-2); }
+    @media (max-width: 640px) {
+      .idea-tabs-row { overflow-x: auto; scrollbar-width: none; }
+      .idea-tabs-row::-webkit-scrollbar { display: none; }
+      .cannes-entry { margin-right: 2px; }
+      .cannes-filters { align-items: stretch; }
+      .cannes-filter-spacer { display: none; }
+      .cannes-keyword { flex-basis: 100%; }
+      .cannes-grid { grid-template-columns: minmax(0, 1fr); }
+    }
   </style>
 </head>
 <body>
@@ -1392,6 +1521,7 @@
       <span class="nav-brand">只要有人社群顧問</span>
       <div class="nav-tabs">
         <button class="nav-tab active" data-page="search">搜尋</button>
+        <button class="nav-tab" data-page="cannes">坎城圖書館</button>
         <button class="nav-tab" data-page="about">關於</button>
         <button class="nav-tab" data-page="install">安裝到 Claude</button>
       </div>
@@ -1411,6 +1541,13 @@
         <button class="btn-random" id="randomBtn" disabled onclick="randomIdea()">🎲 抽點子</button>
       </div>
 
+      <div id="ideaTabsRow" class="idea-tabs-row" data-ideas-tabs-row>
+        <div id="ideaTabs" class="idea-tabs" role="tablist" aria-label="類別"></div>
+        <button type="button" id="cannesEntry" class="cannes-entry" onclick="switchPage('cannes')" aria-label="開啟坎城圖書館">
+          <span aria-hidden="true">🦁</span> 坎城圖書館
+        </button>
+      </div>
+
       <div id="dataNotice"></div>
       <div id="status"></div>
       <div id="results"></div>
@@ -1418,6 +1555,19 @@
       <div class="sheets-cta">
         <p>所有靈感都存在公司內部的資料庫中（完整資料需公司帳號才能開啟）</p>
       </div>
+    </div>
+
+    <!-- ===== 坎城圖書館 ===== -->
+    <div id="page-cannes" class="page">
+      <div class="cannes-page-head">
+        <button type="button" class="cannes-back" onclick="switchPage('search')" aria-label="回靈感倉庫">← 靈感倉庫</button>
+        <h1 class="page-title"><span aria-hidden="true">🦁</span> 坎城圖書館</h1>
+        <p id="cannesStats" class="cannes-stats"></p>
+      </div>
+      <div id="cannesNotice"></div>
+      <div id="cannesFilters" class="cannes-filters"></div>
+      <div id="cannesActive" class="cannes-active"></div>
+      <div id="cannesResults"></div>
     </div>
 
     <!-- ===== 安裝到 Claude 頁 ===== -->
@@ -1689,6 +1839,7 @@
       document.getElementById('page-' + pageName).classList.add('active');
       document.querySelector('.nav-tab[data-page="' + pageName + '"]').classList.add('active');
       window.scrollTo(0, 0);
+      if (pageName === 'cannes' && typeof SNAPSHOT_CSV_URL !== 'undefined') loadCannesData();
       if (updateHash !== false) {
         history.replaceState(null, '', pageName === 'search' ? '#' : '#' + pageName);
       }
@@ -1698,6 +1849,7 @@
     });
     // 根據 URL hash 決定初始頁面
     if (window.location.hash === '#about') { switchPage('about', false); }
+    if (window.location.hash === '#cannes') { switchPage('cannes', false); }
     if (window.location.hash === '#install') { switchPage('install', false); }
 
     // ===== 搜尋功能 =====
@@ -1729,6 +1881,9 @@
     var listVisibleCount = LIST_PAGE_SIZE;
     var listSortField = 'date';   // 'date' | 'summary'
     var listSortDir = 'desc';     // 'asc' | 'desc'
+    // Dashboard 同步：排序圖示同時套用到卡片與列表檢視
+    var ideaSortField = 'date';   // 'date' | 'summary' | 'author'
+    var ideaSortDir = 'desc';     // 'asc' | 'desc'
     var listTagFilter = '';
     // 用來在切換模式時知道該重新渲染什麼
     var latestSemanticPayload = null;
@@ -1793,6 +1948,14 @@
       renderCategorySwitch();
     }
     function renderCategorySwitch() {
+      var tabsEl = document.getElementById('ideaTabs');
+      if (tabsEl) {
+        var tabs = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例']];
+        tabsEl.innerHTML = tabs.map(function(it) {
+          var count = categoryCounts ? categoryCounts[it[0]] : '';
+          return '<button type="button" role="tab" class="idea-tab' + (it[0] === currentCategory ? ' active' : '') + '" aria-selected="' + (it[0] === currentCategory ? 'true' : 'false') + '" onclick="setCategory(\'' + it[0] + '\')">' + it[1] + (count === '' ? '' : '<span class="idea-tab-count">' + count + '</span>') + '</button>';
+        }).join('');
+      }
       document.querySelectorAll('.cat-select').forEach(function(sel) {
         // 抽點子的類別選單有自己的值，不跟列表的類別連動
         if (!sel.closest('.random-cat')) sel.value = currentCategory;
@@ -2067,6 +2230,14 @@
         });
     }
 
+    function compareIdeaItems(a, b) {
+      var va = ideaSortField === 'summary' ? (a.summary || '') : ideaSortField === 'author' ? (a.author || '') : (a.date || '');
+      var vb = ideaSortField === 'summary' ? (b.summary || '') : ideaSortField === 'author' ? (b.author || '') : (b.date || '');
+      var result = String(va).localeCompare(String(vb), 'zh-Hant');
+      if (result === 0) result = String(b.date || '').localeCompare(String(a.date || ''), 'zh-Hant');
+      return ideaSortDir === 'asc' ? result : -result;
+    }
+
     function getLatestEntries() {
       var entries = [];
       for (var i = 0; i < allData.length; i++) {
@@ -2074,9 +2245,8 @@
         entries.push({ item: allData[i], idx: i });
       }
       entries.sort(function(a, b) {
-        var dateCompare = (b.item.date || '').localeCompare(a.item.date || '');
-        if (dateCompare !== 0) return dateCompare;
-        return b.idx - a.idx;
+        var result = compareIdeaItems(a.item, b.item);
+        return result || (b.idx - a.idx);
       });
       return entries;
     }
@@ -2127,29 +2297,73 @@
 
     // 分類切換（全部／行銷案例／社群靈感）：最新點子、關鍵字搜尋、語意推薦、抽點子都只看選到的分類
     function renderCategoryToggleHtml() {
-      var items = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例']];
-      var html = '<label class="cat-select-wrap">類別<select class="cat-select" aria-label="類別" onchange="setCategory(this.value)">';
-      items.forEach(function(it) {
-        var count = categoryCounts ? '（' + categoryCounts[it[0]] + '）' : '';
-        html += '<option value="' + it[0] + '"' + (it[0] === currentCategory ? ' selected' : '') + '>' + it[1] + count + '</option>';
-      });
-      html += '</select></label>';
-      return html;
+      // 類別已移到搜尋框下方的頁籤列，與 Dashboard /ideas 對齊。
+      return '';
     }
 
     function renderViewToggleHtml() {
       var cardActive = viewMode === 'card' ? ' active' : '';
       var listActive = viewMode === 'list' ? ' active' : '';
       var html = '<div class="view-toggle" role="tablist">';
-      html += '<button type="button" class="' + cardActive.trim() + '" onclick="setViewMode(\'card\')" aria-label="卡片檢視">';
+      html += '<button type="button" class="' + cardActive.trim() + '" onclick="setViewMode(\'card\')" aria-label="卡片檢視" title="卡片檢視">';
       html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
-      html += '卡片</button>';
-      html += '<button type="button" class="' + listActive.trim() + '" onclick="setViewMode(\'list\')" aria-label="列表檢視">';
+      html += '</button>';
+      html += '<button type="button" class="' + listActive.trim() + '" onclick="setViewMode(\'list\')" aria-label="列表檢視" title="列表檢視">';
       html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>';
-      html += '列表</button>';
+      html += '</button>';
       html += '</div>';
       return html;
     }
+
+    function renderSortMenuHtml() {
+      var options = [
+        ['date-desc', '最新'], ['date-asc', '最舊'],
+        ['summary-asc', '摘要 A→Z'], ['summary-desc', '摘要 Z→A'],
+        ['author-asc', '撰寫者 A→Z']
+      ];
+      var active = ideaSortField + '-' + ideaSortDir;
+      var html = '<div class="sort-wrap"><button type="button" class="toolbar-icon" onclick="toggleIdeaSortMenu(event)" aria-label="排序" title="排序" aria-haspopup="menu" aria-expanded="false">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16"/><path d="M3 8l4-4 4 4"/><path d="M17 20V4"/><path d="M13 16l4 4 4-4"/></svg></button>';
+      html += '<div id="ideaSortMenu" class="sort-menu" role="menu" hidden>';
+      options.forEach(function(opt) {
+        html += '<button type="button" role="menuitemradio" class="' + (active === opt[0] ? 'active' : '') + '" aria-checked="' + (active === opt[0] ? 'true' : 'false') + '" onclick="setIdeaSort(\'' + opt[0].split('-')[0] + '\',\'' + opt[0].split('-')[1] + '\')">' + opt[1] + '</button>';
+      });
+      return html + '</div></div>';
+    }
+
+    function renderAddIconHtml() {
+      return '<button type="button" class="toolbar-icon" onclick="onAddClick()" aria-label="新增點子" title="新增點子"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>';
+    }
+
+    function toggleIdeaSortMenu(e) {
+      if (e) e.stopPropagation();
+      var menu = document.getElementById('ideaSortMenu');
+      if (!menu) return;
+      var next = menu.hidden;
+      menu.hidden = !next;
+      var trigger = menu.parentElement && menu.parentElement.querySelector('button');
+      if (trigger) trigger.setAttribute('aria-expanded', next ? 'true' : 'false');
+    }
+
+    function setIdeaSort(field, dir) {
+      if (['date', 'summary', 'author'].indexOf(field) === -1 || ['asc', 'desc'].indexOf(dir) === -1) return;
+      ideaSortField = field;
+      ideaSortDir = dir;
+      listSortField = field === 'author' ? 'date' : field;
+      listSortDir = dir;
+      listVisibleCount = LIST_PAGE_SIZE;
+      rerenderCurrentView();
+    }
+
+    document.addEventListener('click', function(e) {
+      var menu = document.getElementById('ideaSortMenu');
+      if (!menu || menu.hidden) return;
+      if (!menu.parentElement.contains(e.target)) {
+        menu.hidden = true;
+        var trigger = menu.parentElement.querySelector('button');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
 
     function renderListToolbar(filteredTotal) {
       var html = '<div class="view-toolbar">';
@@ -2163,8 +2377,8 @@
         html += '<span class="active-filter show">標籤含「' + escapeHtml(listTagFilter) + '」<button type="button" onclick="clearTagFilter()" aria-label="移除篩選">✕</button></span>';
       }
       html += '<div class="spacer"></div>';
-      html += '<button type="button" class="btn-toolbar-add" onclick="onAddClick()" aria-label="新增點子">➕ 新增點子</button>';
-      html += renderCategoryToggleHtml();
+      html += renderSortMenuHtml();
+      html += renderAddIconHtml();
       html += renderViewToggleHtml();
       html += '</div>';
       return html;
@@ -2260,6 +2474,8 @@
         listSortField = field;
         listSortDir = (field === 'date') ? 'desc' : 'asc';
       }
+      ideaSortField = listSortField;
+      ideaSortDir = listSortDir;
       listVisibleCount = LIST_PAGE_SIZE;
       rerenderCurrentView();
     }
@@ -2393,8 +2609,8 @@
     // 卡片模式下也要有切換按鈕：簡易版 toolbar（只有 toggle）
     function renderViewToggleToolbar() {
       return '<div class="view-toolbar"><div class="spacer"></div>'
-        + '<button type="button" class="btn-toolbar-add" onclick="onAddClick()" aria-label="新增點子">➕ 新增點子</button>'
-        + renderCategoryToggleHtml()
+        + renderSortMenuHtml()
+        + renderAddIconHtml()
         + renderViewToggleHtml()
         + '</div>';
     }
@@ -2414,9 +2630,7 @@
           matched.push(allData[i]);
         }
       }
-      matched.sort(function(a, b) {
-        return (b.date || '').localeCompare(a.date || '');
-      });
+      matched.sort(compareIdeaItems);
       return matched;
     }
 
@@ -2708,6 +2922,7 @@
       document.getElementById('modalOverlay').classList.remove('active');
       document.body.style.overflow = '';
       currentModalItem = null;
+      cannesModalItem = null;
     }
 
     // ===== Lightbox =====
@@ -2864,6 +3079,269 @@
       }
     }
 
+    // ===== 坎城圖書館（同步 Jebby Dashboard 的公開資料與篩選） =====
+    // 沿用已公開的「網頁資料」發布網址，只替換分頁 gid；不把試算表 ID、權限或登入資訊新增到首頁。
+    var CANNES_GIDS = { works: '1318530595', awards: '2073556996', categories: '1343981659' };
+    var cannesState = { status: 'idle', items: [], categories: [], stats: null };
+    var cannesQuery = { years: [], levels: [], category: '', q: '', sort: 'year-desc', view: 'list', limit: 20 };
+    var cannesLoaded = false;
+    var cannesLoading = null;
+    var CANNES_LEVEL_ORDER = { 'Grand Prix': 5, 'Titanium': 4, 'Gold': 3, 'Silver': 2, 'Bronze': 1 };
+
+    function cannesCsvUrl(gid) {
+      return SNAPSHOT_CSV_URL.replace(/gid=\d+/, 'gid=' + gid);
+    }
+
+    function csvObjects(text) {
+      var rows = parseCsv(text);
+      if (!rows.length) return [];
+      var headers = rows.shift().map(function(h) { return String(h || '').replace(/^\uFEFF/, '').trim(); });
+      return rows.map(function(row) {
+        var obj = {};
+        headers.forEach(function(h, i) { obj[h] = String(row[i] == null ? '' : row[i]).trim(); });
+        return obj;
+      }).filter(function(row) { return Object.keys(row).some(function(k) { return row[k] !== ''; }); });
+    }
+
+    function findIdeaForCannes(item) {
+      if (!item || !item.ideaUid) return null;
+      for (var i = 0; i < allData.length; i++) {
+        if (String(allData[i].uid || '') === String(item.ideaUid)) return allData[i];
+      }
+      return null;
+    }
+
+    function loadCannesData() {
+      if (cannesLoaded || cannesLoading) {
+        renderCannesPage();
+        return cannesLoading;
+      }
+      cannesState.status = 'loading';
+      renderCannesPage();
+      cannesLoading = Promise.all([
+        fetchWithTimeout(cannesCsvUrl(CANNES_GIDS.works), 30000).then(function(r) { if (!r.ok) throw new Error('作品資料 HTTP ' + r.status); return r.text(); }),
+        fetchWithTimeout(cannesCsvUrl(CANNES_GIDS.awards), 30000).then(function(r) { if (!r.ok) throw new Error('獎項資料 HTTP ' + r.status); return r.text(); }),
+        fetchWithTimeout(cannesCsvUrl(CANNES_GIDS.categories), 30000).then(function(r) { if (!r.ok) throw new Error('類別資料 HTTP ' + r.status); return r.text(); })
+      ]).then(function(texts) {
+        var workRows = csvObjects(texts[0]);
+        var awardRows = csvObjects(texts[1]);
+        var categoryRows = csvObjects(texts[2]);
+        var awardsById = {};
+        awardRows.forEach(function(row) {
+          var id = row.ltwm_id || '';
+          if (!id) return;
+          if (!awardsById[id]) awardsById[id] = [];
+          awardsById[id].push({ level: row.level || '', category: row.category || '', subcategory: row.subcategory || '' });
+        });
+        var categoryMap = {};
+        categoryRows.forEach(function(row) {
+          if (row.category) categoryMap[row.category] = { zh: row.zh || row.category, order: Number(row.order) || 9999 };
+        });
+        var items = workRows.filter(function(row) { return row.ltwm_id; }).map(function(row) {
+          var awards = awardsById[row.ltwm_id] || [];
+          return {
+            id: row.ltwm_id,
+            year: Number(row.year) || 0,
+            title: row.title || '未命名作品',
+            brand: row.brand || '',
+            agency: row.agency || '',
+            level: row.top_level || (awards[0] && awards[0].level) || '',
+            imageUrl: row.image_url || '',
+            caseFilmUrl: row.case_film_url || '',
+            ideaUid: row.idea_uid || row.same_as || '',
+            awards: awards
+          };
+        });
+        var categoryNames = Object.keys(categoryMap);
+        awardRows.forEach(function(row) { if (row.category && categoryNames.indexOf(row.category) === -1) categoryNames.push(row.category); });
+        categoryNames.sort(function(a, b) {
+          var ao = categoryMap[a] ? categoryMap[a].order : 9999;
+          var bo = categoryMap[b] ? categoryMap[b].order : 9999;
+          return ao - bo || a.localeCompare(b);
+        });
+        var years = {}; items.forEach(function(item) { if (item.year) years[item.year] = true; });
+        cannesState = {
+          status: 'ready', items: items,
+          categories: categoryNames.map(function(name) { return { key: name, label: categoryMap[name] ? categoryMap[name].zh : name }; }),
+          stats: { total: items.length, awards: awardRows.length, linked: items.filter(function(item) { return !!item.ideaUid; }).length, years: Object.keys(years).map(Number).sort(function(a, b) { return b - a; }) }
+        };
+        cannesLoaded = true;
+        var entry = document.getElementById('cannesEntry');
+        if (entry) entry.innerHTML = '<span aria-hidden="true">🦁</span> 坎城圖書館 <span class="idea-tab-count">' + items.length.toLocaleString('en-US') + '</span>';
+        renderCannesPage();
+      }).catch(function(error) {
+        cannesState = { status: 'error', items: [], categories: [], stats: null };
+        var notice = document.getElementById('cannesNotice');
+        if (notice) notice.innerHTML = '<div class="data-notice warn">坎城圖書館資料暫時讀不到，請稍後再試。<button type="button" onclick="retryCannesData()">重試</button></div>';
+        renderCannesPage();
+      }).finally(function() { cannesLoading = null; });
+      return cannesLoading;
+    }
+
+    function retryCannesData() {
+      cannesLoaded = false;
+      cannesLoading = null;
+      loadCannesData();
+    }
+
+    function cannesFilteredItems() {
+      var q = String(cannesQuery.q || '').toLowerCase().trim();
+      var items = cannesState.items.filter(function(item) {
+        if (cannesQuery.years.length && cannesQuery.years.indexOf(item.year) === -1) return false;
+        if (cannesQuery.levels.length && cannesQuery.levels.indexOf(item.level) === -1) return false;
+        if (cannesQuery.category && !item.awards.some(function(award) { return award.category === cannesQuery.category; })) return false;
+        if (q) {
+          var text = [item.title, item.brand, item.agency, item.level].concat(item.awards.map(function(a) { return a.category + ' ' + a.subcategory; })).join(' ').toLowerCase();
+          if (text.indexOf(q) === -1) return false;
+        }
+        return true;
+      });
+      var sort = cannesQuery.sort;
+      items.sort(function(a, b) {
+        if (sort === 'title-asc') return a.title.localeCompare(b.title, 'zh-Hant');
+        if (sort === 'brand-asc') return a.brand.localeCompare(b.brand, 'zh-Hant') || b.year - a.year;
+        if (sort === 'year-asc') return a.year - b.year || a.title.localeCompare(b.title, 'zh-Hant');
+        if (sort === 'level-desc') return (CANNES_LEVEL_ORDER[b.level] || 0) - (CANNES_LEVEL_ORDER[a.level] || 0) || b.year - a.year;
+        return b.year - a.year || (CANNES_LEVEL_ORDER[b.level] || 0) - (CANNES_LEVEL_ORDER[a.level] || 0) || a.title.localeCompare(b.title, 'zh-Hant');
+      });
+      return items;
+    }
+
+    function cannesToggleYear(year) {
+      var index = cannesQuery.years.indexOf(year);
+      if (index === -1) cannesQuery.years.push(year); else cannesQuery.years.splice(index, 1);
+      cannesQuery.limit = 20;
+      renderCannesPage();
+    }
+    function cannesToggleLevel(level) {
+      var index = cannesQuery.levels.indexOf(level);
+      if (index === -1) cannesQuery.levels.push(level); else cannesQuery.levels.splice(index, 1);
+      cannesQuery.limit = 20;
+      renderCannesPage();
+    }
+    function cannesSetCategory(category) { cannesQuery.category = category || ''; cannesQuery.limit = 20; renderCannesPage(); }
+    function cannesSetKeyword(keyword) { cannesQuery.q = String(keyword || '').trim(); cannesQuery.limit = 20; renderCannesPage(); }
+    function cannesSetSort(sort) { cannesQuery.sort = sort; renderCannesPage(); }
+    function cannesSetView(view) { cannesQuery.view = view === 'card' ? 'card' : 'list'; renderCannesPage(); }
+    function cannesClearFilters() { cannesQuery.years = []; cannesQuery.levels = []; cannesQuery.category = ''; cannesQuery.q = ''; cannesQuery.limit = 20; renderCannesPage(); }
+
+    function cannesFiltersHtml() {
+      if (cannesState.status !== 'ready') return '';
+      var stats = cannesState.stats;
+      var years = stats.years.map(function(year) {
+        return '<button type="button" class="cannes-filter-chip' + (cannesQuery.years.indexOf(year) !== -1 ? ' active' : '') + '" onclick="cannesToggleYear(' + year + ')">' + year + '</button>';
+      }).join('');
+      var levels = ['Grand Prix', 'Titanium', 'Gold', 'Silver', 'Bronze'].map(function(level) {
+        return '<button type="button" class="cannes-filter-chip' + (cannesQuery.levels.indexOf(level) !== -1 ? ' active' : '') + '" onclick="cannesToggleLevel(\'' + level + '\')">' + level + '</button>';
+      }).join('');
+      var cats = '<option value="">全部官方類別</option>' + cannesState.categories.map(function(cat) { return '<option value="' + escapeHtml(cat.key) + '"' + (cat.key === cannesQuery.category ? ' selected' : '') + '>' + escapeHtml(cat.label) + '</option>'; }).join('');
+      var sortOptions = [['year-desc', '最新年份'], ['year-asc', '最早年份'], ['level-desc', '獎項等級'], ['title-asc', '作品名稱'], ['brand-asc', '品牌 A→Z']];
+      var sortHtml = '<select class="cannes-category-select" aria-label="排序" onchange="cannesSetSort(this.value)">' + sortOptions.map(function(opt) { return '<option value="' + opt[0] + '"' + (opt[0] === cannesQuery.sort ? ' selected' : '') + '>' + opt[1] + '</option>'; }).join('') + '</select>';
+      var html = '<div class="cannes-filter-group"><span class="cannes-filter-label">年份</span>' + years + '</div>';
+      html += '<div class="cannes-filter-group"><span class="cannes-filter-label">獎項</span>' + levels + '</div>';
+      html += '<select class="cannes-category-select" aria-label="官方類別" onchange="cannesSetCategory(this.value)">' + cats + '</select>';
+      html += '<input class="cannes-keyword" type="search" value="' + escapeHtml(cannesQuery.q) + '" placeholder="搜尋作品、品牌、代理商…" onchange="cannesSetKeyword(this.value)" onkeydown="if(event.key===\'Enter\'){cannesSetKeyword(this.value);this.blur();}">';
+      html += '<span class="cannes-filter-spacer"></span>' + sortHtml;
+      html += '<div class="view-toggle" role="tablist" aria-label="坎城檢視方式">';
+      html += '<button type="button" class="' + (cannesQuery.view === 'card' ? 'active' : '') + '" onclick="cannesSetView(\'card\')" aria-label="卡片檢視" title="卡片檢視"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>';
+      html += '<button type="button" class="' + (cannesQuery.view === 'list' ? 'active' : '') + '" onclick="cannesSetView(\'list\')" aria-label="列表檢視" title="列表檢視"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button></div>';
+      return html;
+    }
+
+    function cannesActiveHtml() {
+      if (cannesState.status !== 'ready') return '';
+      var matched = cannesFilteredItems();
+      var html = '符合 <strong>' + matched.length.toLocaleString('en-US') + '</strong> 件';
+      var chips = cannesQuery.years.map(String).concat(cannesQuery.levels, cannesQuery.category ? [cannesQuery.category] : [], cannesQuery.q ? ['「' + cannesQuery.q + '」'] : []);
+      if (chips.length) {
+        html += ' ・ ' + chips.map(function(chip) { return '<span class="cannes-active-chip">' + escapeHtml(chip) + '</span>'; }).join('');
+        html += '<button type="button" class="cannes-clear" onclick="cannesClearFilters()">清除全部</button>';
+      }
+      return html;
+    }
+
+    function cannesCardHtml(item) {
+      var idea = findIdeaForCannes(item);
+      var summary = idea && idea.summary ? idea.summary : '已收進靈感倉庫的坎城得獎案例';
+      var image = safeUrl(item.imageUrl);
+      var awards = item.awards.slice(0, 3).map(function(a) { return '<span class="cannes-award-pill">' + escapeHtml(a.level + ' · ' + a.category) + '</span>'; }).join('');
+      var html = '<article class="cannes-card" onclick="openCannesModal(\'' + escapeHtml(item.id) + '\')">';
+      if (image) html += '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy">';
+      html += '<div class="cannes-card-body"><div class="cannes-card-title">' + escapeHtml(item.title) + '</div>';
+      if (item.brand) html += '<div class="cannes-card-brand">' + escapeHtml(item.brand) + (item.agency ? ' · ' + escapeHtml(item.agency) : '') + '</div>';
+      html += '<div class="cannes-card-meta">' + escapeHtml(String(item.year)) + ' · ' + escapeHtml(item.level || '坎城得獎作品') + '</div>';
+      html += '<div class="cannes-card-meta clamp-2">' + escapeHtml(summary) + '</div><div class="cannes-award-pills">' + awards + '</div></div></article>';
+      return html;
+    }
+
+    function cannesListHtml(items) {
+      var html = '<div class="cannes-list-wrap"><table class="cannes-list"><thead><tr><th>年份</th><th>作品</th><th>品牌／代理商</th><th>最高獎項</th><th>官方類別</th></tr></thead><tbody>';
+      items.forEach(function(item) {
+        var categories = item.awards.slice(0, 2).map(function(a) { return a.category; }).filter(Boolean).join('、');
+        html += '<tr onclick="openCannesModal(\'' + escapeHtml(item.id) + '\')"><td>' + escapeHtml(String(item.year)) + '</td><td class="cannes-row-title">' + escapeHtml(item.title) + '</td><td>' + escapeHtml(item.brand || '') + (item.agency ? '<br><span class="cannes-card-meta">' + escapeHtml(item.agency) + '</span>' : '') + '</td><td>' + escapeHtml(item.level || '') + '</td><td>' + escapeHtml(categories) + '</td></tr>';
+      });
+      return html + '</tbody></table></div>';
+    }
+
+    function renderCannesPage() {
+      var filtersEl = document.getElementById('cannesFilters');
+      var activeEl = document.getElementById('cannesActive');
+      var resultsEl = document.getElementById('cannesResults');
+      var statsEl = document.getElementById('cannesStats');
+      if (!filtersEl || !activeEl || !resultsEl) return;
+      if (cannesState.status === 'idle' || cannesState.status === 'loading') {
+        filtersEl.innerHTML = '';
+        activeEl.innerHTML = '';
+        resultsEl.innerHTML = '<div class="cannes-loading"><span class="loading-spinner"></span> 坎城圖書館資料載入中…</div>';
+        return;
+      }
+      if (cannesState.status === 'error') {
+        filtersEl.innerHTML = '';
+        activeEl.innerHTML = '';
+        resultsEl.innerHTML = '<div class="cannes-empty">坎城圖書館暫時沒有回應，請按上方重試。</div>';
+        return;
+      }
+      var stats = cannesState.stats;
+      statsEl.textContent = stats.years[stats.years.length - 1] + '–' + stats.years[0] + ' · ' + stats.total.toLocaleString('en-US') + ' 件作品 · ' + stats.awards.toLocaleString('en-US') + ' 座獎項 · 已連結 ' + stats.linked.toLocaleString('en-US') + ' 件';
+      filtersEl.innerHTML = cannesFiltersHtml();
+      activeEl.innerHTML = cannesActiveHtml();
+      var matched = cannesFilteredItems();
+      var shown = matched.slice(0, cannesQuery.limit);
+      if (!shown.length) resultsEl.innerHTML = '<div class="cannes-empty">找不到符合的作品，試試清除部分條件。</div>';
+      else resultsEl.innerHTML = cannesQuery.view === 'card' ? '<div class="cannes-grid">' + shown.map(cannesCardHtml).join('') + '</div>' : cannesListHtml(shown);
+      if (shown.length < matched.length) resultsEl.innerHTML += '<div class="cannes-more"><button type="button" onclick="cannesQuery.limit += 20; renderCannesPage()">看更多（剩 ' + (matched.length - shown.length).toLocaleString('en-US') + ' 件）</button></div>';
+    }
+
+    var cannesModalItem = null;
+    function openCannesModal(id) {
+      var item = cannesState.items.filter(function(candidate) { return candidate.id === id; })[0];
+      if (!item) return;
+      cannesModalItem = item;
+      var idea = findIdeaForCannes(item);
+      var html = '';
+      var image = safeUrl(item.imageUrl);
+      if (image) html += '<img class="cannes-detail-image" src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '">';
+      html += '<div class="cannes-detail-title">' + escapeHtml(item.title) + '</div>';
+      html += '<div class="cannes-detail-brand">' + escapeHtml(item.brand || '') + (item.agency ? ' · ' + escapeHtml(item.agency) : '') + '</div>';
+      html += '<div class="cannes-detail-meta">' + escapeHtml(String(item.year)) + ' · ' + escapeHtml(item.level || '') + '</div>';
+      html += '<ul class="cannes-detail-awards">' + item.awards.map(function(a) { return '<li><strong>' + escapeHtml(a.level) + '</strong> · ' + escapeHtml(a.category) + (a.subcategory ? ' · ' + escapeHtml(a.subcategory) : '') + '</li>'; }).join('') + '</ul>';
+      html += '<div class="cannes-detail-actions">';
+      if (safeUrl(item.caseFilmUrl)) html += '<a href="' + escapeHtml(safeUrl(item.caseFilmUrl)) + '" target="_blank" rel="noopener noreferrer">▶ Case film</a>';
+      if (idea) html += '<button type="button" onclick="openCannesIdea()">在靈感倉庫看這則 ↗</button>';
+      html += '</div>';
+      document.getElementById('modalBody').innerHTML = html;
+      document.getElementById('modalOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function openCannesIdea() {
+      if (!cannesModalItem) return;
+      var idea = findIdeaForCannes(cannesModalItem);
+      if (!idea) return;
+      closeModal();
+      currentResults = [idea];
+      openModal(0);
+    }
+
     // ===== Slack Markdown → HTML =====
     function parseSlackMarkdown(text) {
       // 先處理 code block（避免內部被轉換）
@@ -2970,6 +3448,7 @@
 
     searchBtn.addEventListener('click', doSearch);
     searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
+    if (window.location.hash === '#cannes') loadCannesData();
     loadData(true);
   </script>
 
