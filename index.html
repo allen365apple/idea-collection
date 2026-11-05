@@ -1383,59 +1383,121 @@
       .modal-edit { font-size: var(--fs-secondary); }
     }
 
-    /* ===== Dashboard 同步：類別頁籤、純圖示工具列 ===== */
-    .idea-tabs-row {
-      display: flex; align-items: center; gap: 10px; min-width: 0;
-      margin: 0 0 18px; border-bottom: 1px solid var(--line);
-    }
-    .idea-tabs {
-      display: flex; flex: 1 1 auto; min-width: 0; gap: 3px;
-      overflow-x: auto; scrollbar-width: none;
-    }
-    .idea-tabs::-webkit-scrollbar { display: none; }
-    .idea-tab {
-      flex: 0 0 auto; padding: 8px 13px; margin-bottom: -1px;
-      border: 0; border-bottom: 2px solid transparent; background: transparent;
-      color: var(--ink-2); cursor: pointer; font: inherit; font-size: var(--fs-body);
-      white-space: nowrap;
-    }
-    .idea-tab:hover { color: var(--ink); }
-    .idea-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
-    .idea-tab-count { margin-left: 5px; color: var(--ink-3); font-size: var(--fs-label); }
+    /* ===== Dashboard 同步（#548，2026-10-29）：頁首坎城入口、純線條圖示工具列（漏斗、排序｜卡片／列表｜新增） ===== */
+    /* 標題置中、坎城入口貼右邊（Dashboard 放在傑比條右邊）：墨綠方鈕，寬螢幕獅子＋名稱、≤760px 只剩獅子 */
+    .home-head { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; }
+    .home-head .page-title { grid-column: 2; }
     .cannes-entry {
-      flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px;
-      margin-bottom: 4px; padding: 5px 11px 5px 9px; border: 0;
-      border-radius: 999px; background: var(--lime); color: var(--ink);
-      font: inherit; font-size: var(--fs-secondary); font-weight: var(--fw-medium);
-      cursor: pointer; white-space: nowrap; box-shadow: var(--shadow-sm);
+      grid-column: 3; justify-self: end;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 0 13px 0 11px;
+      border: 1px solid var(--ink); border-radius: 11px; background: var(--ink); color: var(--lime);
+      font: inherit; font-size: var(--fs-secondary); font-weight: var(--fw-medium); line-height: 1.55;
+      cursor: pointer; white-space: nowrap;
     }
-    .cannes-entry:hover { background: var(--lime-2); }
+    .cannes-entry:hover { background: var(--ink-2); border-color: var(--ink-2); }
+    .cannes-entry-lion { width: 18px; height: 18px; flex-shrink: 0; }
     .cannes-entry:focus-visible, .cannes-back:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
-    .view-toggle button { min-width: 30px; padding: 5px 8px; }
-    .view-toggle button svg, .toolbar-icon svg { width: 15px; height: 15px; }
-    .toolbar-icon {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; padding: 0; border: 1px solid var(--line);
-      border-radius: var(--r-sm); background: var(--surface-2); color: var(--ink-2);
-      cursor: pointer;
+    @media (max-width: 760px) {
+      .home-head { grid-template-columns: 40px minmax(0, 1fr) 40px; }
+      .cannes-entry { width: 40px; padding: 0; }
+      .cannes-entry-text { display: none; }
     }
-    .toolbar-icon:hover { background: var(--sage-3); color: var(--ink); }
-    .toolbar-icon:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 1px; }
-    .home-card-toolbar { flex-wrap: nowrap; }
-    .home-card-toolbar .result-count { flex: 0 0 auto; color: var(--ink-3); font-size: var(--fs-secondary); }
-    .home-card-toolbar .spacer { flex: 1 1 auto; min-width: 0; }
+
+    /* 工具列：左邊是「N / 總數」或列表的「共 N 則＋標籤篩選框」，右邊是圖示（依類型分組、組間一條短灰線） */
+    .idea-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 16px; }
+    .toolbar-left { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; flex: 1 1 auto; min-width: 0; }
+    .idea-toolbar .result-count { color: var(--ink-3); font-size: var(--fs-secondary); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .tool-icons { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: auto; }
+    .tool-group { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    .tool-sep { flex-shrink: 0; width: 1px; height: 18px; background: var(--line); }
+    /* 圖示按鈕走「純線條」：沒有外框、沒有底色，滑過淡綠底；有條件時亮萊姆＋右上小圓點 */
+    .toolbar-icon {
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; padding: 0; flex-shrink: 0; border: 1px solid transparent;
+      border-radius: 50%; background: transparent; color: var(--ink-2); cursor: pointer;
+    }
+    .toolbar-icon svg { width: 18px; height: 18px; stroke-width: 1.75; }
+    .toolbar-icon:hover, .toolbar-icon[aria-expanded="true"] { background: var(--sage-3); color: var(--ink); }
+    .toolbar-icon[data-active] { background: var(--lime); color: var(--ink); }
+    .toolbar-icon:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
+    .tool-active-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--surface); }
+    /* 卡片／列表切換：不要膠囊外框，兩顆各自是圓形圖示按鈕，選中亮萊姆（兩頁共用） */
+    .view-toggle { display: inline-flex; padding: 0; gap: 6px; border: 0; border-radius: 0; background: transparent; }
+    .view-toggle button {
+      width: 32px; height: 32px; min-width: 32px; min-height: 32px; padding: 0; justify-content: center;
+      border: 1px solid transparent; border-radius: 50%; background: transparent; color: var(--ink-2); box-shadow: none;
+    }
+    .view-toggle button svg { width: 18px; height: 18px; stroke-width: 1.75; }
+    .view-toggle button:hover { background: var(--sage-3); color: var(--ink); }
+    .view-toggle button.active { background: var(--lime); color: var(--ink); box-shadow: none; }
+    .view-toggle button:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
+    /* 漏斗與排序的選單：預設靠按鈕右緣往左展開，會超出畫面就換邊（data-align="start"） */
     .sort-wrap { position: relative; display: inline-flex; }
     .sort-menu {
-      position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 142px;
+      position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 142px; max-width: calc(100vw - 32px);
       padding: 5px; border: 1px solid var(--line); border-radius: var(--r-md);
       background: var(--surface); box-shadow: var(--shadow);
     }
+    .sort-menu[data-align="start"] { left: 0; right: auto; }
+    .sort-menu[hidden] { display: none; }
     .sort-menu button {
-      display: block; width: 100%; padding: 7px 9px; border: 0; border-radius: var(--r-sm);
-      background: transparent; color: var(--ink-2); text-align: left; cursor: pointer;
-      font: inherit; font-size: var(--fs-secondary);
+      display: flex; align-items: baseline; justify-content: space-between; gap: 12px; width: 100%; padding: 7px 9px;
+      border: 0; border-radius: var(--r-sm); background: transparent; color: var(--ink-2); text-align: left; cursor: pointer;
+      font: inherit; font-size: var(--fs-secondary); white-space: nowrap;
     }
-    .sort-menu button:hover, .sort-menu button.active { background: var(--lime-3); color: var(--ink); }
+    .sort-menu button small { flex-shrink: 0; font-size: var(--fs-label); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+    .sort-menu button:hover, .sort-menu button:focus-visible, .sort-menu button.active { background: var(--lime-3); color: var(--ink); outline: none; }
+
+    /* 列表的標籤篩選框（在工具列左邊） */
+    .idea-toolbar .filter-box { display: flex; align-items: center; min-width: 0; }
+    .idea-toolbar .filter-input { width: 200px; min-width: 0; min-height: 32px; padding: 4px 30px; font-size: var(--fs-secondary); }
+    .idea-toolbar .filter-input:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 1px; }
+
+    /* 列表四欄：日期｜分類｜Idea 摘要｜標籤；三條欄線可拖拉（寬度記在這台瀏覽器），摘要吃剩下的寬度 */
+    .list-table th { position: relative; }
+    .list-table .col-date { padding-right: 4px; white-space: nowrap; font-size: var(--fs-label); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+    .list-table td.col-date { padding-top: 15px; }
+    .list-table .col-category { padding-left: 4px; padding-right: 8px; white-space: nowrap; }
+    .list-table td.col-category { padding-top: 13px; }
+    .list-table .col-category .cat-badge { margin: 0; }
+    .list-table .col-tags { text-align: right; }
+    .list-table td.col-tags { padding-top: 14px; }
+    /* 收合時（放得下的幾個＋「+N」）不換行；展開後才換行 */
+    .list-table td.col-tags[data-collapsed] { white-space: nowrap; }
+    .list-table .col-summary { overflow-wrap: anywhere; }
+    .sort-button {
+      all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+      font-size: var(--fs-secondary); font-weight: var(--fw-bold); line-height: 1.55; color: var(--ink-3);
+    }
+    .sort-button:hover, .sort-button[data-active] { color: var(--ink); }
+    .sort-button:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
+    .sort-button .sort-arrow { margin-left: 0; opacity: 1; font-size: var(--fs-label); color: var(--sage-deep); }
+    .col-resize { position: absolute; top: 0; bottom: 0; width: 10px; cursor: col-resize; touch-action: none; z-index: 1; }
+    .col-resize[data-edge="start"] { left: -5px; }
+    .col-resize[data-edge="end"] { right: -5px; }
+    /* 平常看不到；滑到表頭才淡淡出現 1px 細線，摸到可拖的地方或鍵盤聚焦時變萊姆、粗一點 */
+    .col-resize::after { content: ""; position: absolute; top: 10px; bottom: 10px; left: 4.5px; width: 1px; border-radius: 1px; background: transparent; transition: background-color .12s, width .12s, left .12s; }
+    .list-table thead:hover .col-resize::after { background: var(--line); }
+    .col-resize:hover::after, .col-resize:focus-visible::after, .col-resize.dragging::after { left: 3.5px; width: 3px; background: var(--lime-deep); }
+    .col-resize:focus-visible { outline: none; }
+    @media (prefers-reduced-motion: reduce) { .col-resize::after { transition: none; } }
+    /* 標籤：同卡片的灰色小字 #標籤，點了用它篩選；「+N」點了展開那一列，展開後最後有「收合」 */
+    .tag-link {
+      all: unset; display: inline-block; margin-left: 6px; cursor: pointer; white-space: nowrap;
+      font-size: var(--fs-label); font-weight: var(--fw-regular); line-height: 1.6; color: var(--ink-3);
+    }
+    .tag-link:hover { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
+    .tag-link:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 1px; border-radius: 2px; }
+    .tag-link.tag-less { color: var(--sage-deep); }
+    .tag-link.match { color: var(--ink); font-weight: var(--fw-medium); background: var(--note-2); border-radius: 4px; padding: 0 3px; }
+
+    @media (max-width: 640px) {
+      /* 手機：列表藏「分類」「標籤」兩欄；「共 N 則」跟篩選框同一行、篩選框吃剩下的寬度，圖示換到下一行靠右 */
+      .list-table .col-category, .list-table .col-tags { display: none; }
+      .toolbar-left.list-filter-bar { flex-wrap: nowrap; flex: 1 1 100%; }
+      .idea-toolbar .filter-box { flex: 1 1 auto; order: 0; }
+      .idea-toolbar .filter-input { width: 100%; }
+    }
 
     /* ===== 坎城圖書館（公開首頁版） ===== */
     .cannes-page-head { position: relative; margin-bottom: 18px; }
@@ -1506,9 +1568,6 @@
     .cannes-detail-actions a, .cannes-detail-actions button { display: inline-flex; align-items: center; gap: 5px; min-height: 32px; padding: 5px 10px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface-2); color: var(--ink); cursor: pointer; font: inherit; font-size: var(--fs-secondary); text-decoration: none; }
     .cannes-detail-actions a:hover, .cannes-detail-actions button:hover { background: var(--sage-3); border-color: var(--sage-2); }
     @media (max-width: 640px) {
-      .idea-tabs-row { overflow-x: auto; scrollbar-width: none; }
-      .idea-tabs-row::-webkit-scrollbar { display: none; }
-      .cannes-entry { margin-right: 2px; }
       .cannes-filters { align-items: stretch; }
       .cannes-filter-spacer { display: none; }
       .cannes-keyword { flex-basis: 100%; }
@@ -1597,15 +1656,18 @@
 
 .cl-iconButton {
   position: relative; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; flex-shrink: 0;
-  border: 1px solid var(--line); border-radius: 50%; background: var(--surface-2); color: var(--ink-2); cursor: pointer;
+  border: 1px solid transparent; border-radius: 50%; background: transparent; color: var(--ink-2); cursor: pointer;
 }
-.cl-iconButton svg { width: 16px; height: 16px; }
-.cl-iconButton:hover, .cl-iconButton[aria-expanded="true"] { background: var(--sage-3); border-color: var(--sage-2); color: var(--ink); }
-.cl-iconButton[data-active] { background: var(--lime); border-color: var(--lime-deep); color: var(--ink); }
+.cl-iconButton svg { width: 18px; height: 18px; stroke-width: 1.75; }
+.cl-iconButton:hover, .cl-iconButton[aria-expanded="true"] { background: var(--sage-3); color: var(--ink); }
+.cl-iconButton[data-active] { background: var(--lime); color: var(--ink); }
 .cl-iconButton:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
 .cl-iconButton:disabled { opacity: .55; cursor: default; }
-.cl-iconButton:disabled:hover { background: var(--surface-2); border-color: var(--line); color: var(--ink-2); }
-.cl-activeDot { position: absolute; top: -1px; right: -1px; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--surface); }
+.cl-iconButton:disabled:hover { background: transparent; color: var(--ink-2); }
+.cl-activeDot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--surface); }
+/* 工具列依類型分組（漏斗＋排序｜卡片／列表），組與組之間一條短灰線 */
+.cl-toolGroup { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.cl-toolSep { flex-shrink: 0; width: 1px; height: 18px; background: var(--line); }
 
 
 .cl-badge {
@@ -1617,14 +1679,15 @@
 .cl-filterWrap { position: relative; display: inline-flex; }
 .cl-filterPop {
   position: absolute; left: 0; top: calc(100% + 10px); z-index: 30;
-  display: flex; flex-direction: column; gap: 8px; width: max-content; max-width: calc(100vw - 32px); padding: 8px;
+  display: flex; flex-direction: column; width: max-content; max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 120px); max-height: min(560px, calc(100dvh - 120px)); padding: 8px 8px 0;
   border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--shadow);
 }
 .cl-filterPop::before {
   content: ""; position: absolute; top: -6px; left: var(--caret-x, 50%); width: 10px; height: 10px; transform: translateX(-50%) rotate(45deg);
   border-top: 1px solid var(--line); border-left: 1px solid var(--line); background: var(--surface);
 }
-.cl-filterCols { display: grid; grid-template-columns: 224px 224px; }
+.cl-filterCols { display: grid; grid-template-columns: 224px 224px; flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-bottom: 8px; }
 .cl-filterCol { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .cl-filterCol:first-child { padding-right: 7px; }
 .cl-filterCol + .cl-filterCol { padding-left: 7px; border-left: 1px solid var(--line-2); }
@@ -1634,13 +1697,41 @@
 .cl-filterList { display: flex; flex-direction: column; gap: 2px; max-height: min(320px, 50vh); overflow-y: auto; }
 .cl-filterList .cl-menuItem span { white-space: normal; }
 .cl-filterList .cl-menuItem:disabled { opacity: .45; cursor: default; background: transparent; }
-.cl-filterFoot { display: flex; justify-content: flex-end; padding: 2px 4px 0; border-top: 1px solid var(--line-2); padding-top: 8px; }
+.cl-filterList { scroll-padding-top: 4px; }
+/* 固定在前面的子類別（小預算突破、即時回應、網紅／創作者）後面一條細線；最後一列「其他」上面也一條 */
+.cl-filterList .cl-menuItem[data-pinned] + .cl-menuItem:not([data-pinned]), .cl-filterList .cl-menuItem[data-other] { position: relative; margin-top: 7px; }
+.cl-filterList .cl-menuItem[data-pinned] + .cl-menuItem:not([data-pinned])::before, .cl-filterList .cl-menuItem[data-other]::before { content: ""; position: absolute; left: 6px; right: 6px; top: -4px; border-top: 1px solid var(--line-2); }
+/* 很窄時清單下面的「＋ 更多（N）」／「－ 收合」 */
+.cl-moreRow {
+  display: flex; align-items: center; width: 100%; padding: 6px 10px; border: 0; border-radius: var(--r-sm); background: transparent; cursor: pointer; text-align: left;
+  font-size: var(--fs-secondary); font-weight: var(--fw-medium); line-height: 1.55; color: var(--sage-deep);
+}
+.cl-moreRow:hover { background: var(--sage-3); color: var(--ink); }
+.cl-moreRow:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: -2px; }
+/* 一個畫面一個重點色：萊姆只給「完成」，選中的列用淡灰綠底＋粗字 */
+.cl-filterList .cl-menuItem[aria-checked="true"] { background: var(--sage-3); color: var(--ink); font-weight: var(--fw-bold); }
+/* 底部固定一條：左「清除」、右萊姆膠囊「完成・N 件」；清單捲動時照樣看得到 */
+.cl-filterFoot {
+  position: sticky; bottom: 0; flex-shrink: 0; display: flex; align-items: center; gap: 8px; margin: 0 -8px; padding: 8px;
+  border-top: 1px solid var(--line-2); border-radius: 0 0 var(--r-md) var(--r-md); background: var(--surface);
+}
+.cl-filterFoot .cl-doneButton { margin-left: auto; }
+.cl-doneButton {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 96px; min-height: 36px; padding: 4px 16px;
+  border: 1px solid var(--lime-deep); border-radius: 999px; background: var(--lime); color: var(--ink); cursor: pointer; white-space: nowrap;
+  font-size: var(--fs-secondary); font-weight: var(--fw-medium); line-height: 1.55; font-variant-numeric: tabular-nums;
+}
+.cl-doneButton:hover { background: var(--lime-2); }
+.cl-doneButton:active { background: var(--lime-3); }
+.cl-doneButton:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
 @media (max-width: 520px) {
-  .cl-filterPop { width: min(320px, calc(100vw - 32px)); }
+  .cl-filterPop { width: min(320px, calc(100vw - 32px)); max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); }
   .cl-filterCols { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .cl-filterCol:first-child { padding-right: 0; }
   .cl-filterCol + .cl-filterCol { padding-left: 0; border-left: 0; padding-top: 10px; border-top: 1px solid var(--line-2); }
-  .cl-filterList { max-height: min(220px, 30vh); }
+  /* 收合時只有幾列、不捲動；展開後約 8 列高、可捲動 */
+  .cl-filterList { max-height: none; overflow-y: visible; }
+  .cl-filterList[data-expanded] { max-height: 252px; overflow-y: auto; }
 }
 
 
@@ -1929,20 +2020,19 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
 
     <!-- ===== 搜尋頁 ===== -->
     <div id="page-search" class="page active">
-      <h1 class="page-title" onclick="goHome()">✨ 只要有人靈感倉庫 🔮</h1>
+      <!-- 坎城圖書館入口在頁首右邊（Dashboard 放在傑比條右邊）：寬螢幕獅子＋名稱，手機只剩獅子圖示 -->
+      <div class="home-head">
+        <h1 class="page-title" onclick="goHome()">✨ 只要有人靈感倉庫 🔮</h1>
+        <button type="button" id="cannesEntry" class="cannes-entry" onclick="switchPage('cannes')" aria-label="坎城圖書館" title="坎城圖書館">
+          <svg class="cannes-entry-lion" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 15.5C4 14.5 3.5 12 4.6 10.5C3.6 8.4 4.8 6 7 5.6C7.6 3.6 10 2.6 12 3.6C14 2.6 16.4 3.6 17 5.6C19.2 6 20.4 8.4 19.4 10.5C20.5 12 20 14.5 17.7 15.5C17.5 18 15.4 19.8 12 20.8C8.6 19.8 6.5 18 6.3 15.5ZM8 10.5C8 8 9.8 6.8 12 6.8C14.2 6.8 16 8 16 10.5V13C16 15.8 14.2 17.6 12 17.6C9.8 17.6 8 15.8 8 13ZM10.3 11h.01M13.7 11h.01M11 13.3h2L12 14.4Z"/></svg><span class="cannes-entry-text">坎城圖書館</span>
+        </button>
+      </div>
       <div id="ideaCount" class="idea-count"></div>
 
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋 Idea（多個關鍵字用空格分隔）" disabled>
         <button id="searchBtn" disabled>搜尋</button>
         <button class="btn-random" id="randomBtn" disabled onclick="randomIdea()">🎲 抽點子</button>
-      </div>
-
-      <div id="ideaTabsRow" class="idea-tabs-row" data-ideas-tabs-row>
-        <div id="ideaTabs" class="idea-tabs" role="tablist" aria-label="類別"></div>
-        <button type="button" id="cannesEntry" class="cannes-entry" onclick="switchPage('cannes')" aria-label="開啟坎城圖書館">
-          <span aria-hidden="true">🦁</span> 坎城圖書館
-        </button>
       </div>
 
       <div id="dataNotice"></div>
@@ -2113,15 +2203,8 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       categoryCounts = counts;
       renderCategorySwitch();
     }
+    // 類別選擇在工具列的漏斗（renderCategoryMenuHtml，跟著工具列重畫）；這裡只同步抽點子的類別下拉上的則數
     function renderCategorySwitch() {
-      var tabsEl = document.getElementById('ideaTabs');
-      if (tabsEl) {
-        var tabs = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例']];
-        tabsEl.innerHTML = tabs.map(function(it) {
-          var count = categoryCounts ? categoryCounts[it[0]] : '';
-          return '<button type="button" role="tab" class="idea-tab' + (it[0] === currentCategory ? ' active' : '') + '" aria-selected="' + (it[0] === currentCategory ? 'true' : 'false') + '" onclick="setCategory(\'' + it[0] + '\')">' + it[1] + (count === '' ? '' : '<span class="idea-tab-count">' + count + '</span>') + '</button>';
-        }).join('');
-      }
       document.querySelectorAll('.cat-select').forEach(function(sel) {
         // 抽點子的類別選單有自己的值，不跟列表的類別連動
         if (!sel.closest('.random-cat')) sel.value = currentCategory;
@@ -2209,18 +2292,58 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     var onLatestView = false;
     var loadSeq = 0;
 
+    // 快取存在 IndexedDB：點子快照約 780 萬字，Safari／iPhone 的 localStorage 上限約 5 MB 存不進去；
+    // 瀏覽器不支援或打不開（無痕模式等）時一律當作沒有快取，不擋載入
+    var cacheDbPromise = null;
+    function openCacheDb() {
+      if (!cacheDbPromise) {
+        cacheDbPromise = new Promise(function(resolve, reject) {
+          if (!window.indexedDB) { reject(Error('no indexedDB')); return; }
+          var req = indexedDB.open('idea-collection-cache', 1);
+          req.onupgradeneeded = function() { req.result.createObjectStore('kv'); };
+          req.onsuccess = function() { resolve(req.result); };
+          req.onerror = function() { reject(req.error); };
+          req.onblocked = function() { reject(Error('blocked')); };
+        });
+        cacheDbPromise.catch(function() {});
+      }
+      return cacheDbPromise;
+    }
+    function cacheGet(key) {
+      return openCacheDb().then(function(db) {
+        return new Promise(function(resolve) {
+          var req = db.transaction('kv', 'readonly').objectStore('kv').get(key);
+          req.onsuccess = function() { resolve(req.result || null); };
+          req.onerror = function() { resolve(null); };
+        });
+      }).catch(function() { return null; });
+    }
+    function cacheSet(key, value) {
+      return openCacheDb().then(function(db) {
+        return new Promise(function(resolve, reject) {
+          var tx = db.transaction('kv', 'readwrite');
+          tx.objectStore('kv').put(value, key);
+          tx.oncomplete = function() { resolve(true); };
+          tx.onerror = tx.onabort = function() { reject(tx.error); };
+        });
+      }).catch(function() { return false; });
+    }
+
     function readDataCache() {
-      try {
-        var raw = localStorage.getItem(DATA_CACHE_KEY);
-        if (!raw) return null;
-        var cached = JSON.parse(raw);
+      return cacheGet(DATA_CACHE_KEY).then(function(cached) {
+        if (!cached) {
+          // 舊版存在 localStorage 的快取：讀一次，下次寫入 IndexedDB 後就刪掉
+          try { var raw = localStorage.getItem(DATA_CACHE_KEY); cached = raw ? JSON.parse(raw) : null; } catch (e) { cached = null; }
+        }
         return cached && Array.isArray(cached.data) && cached.data.length ? cached : null;
-      } catch (e) { return null; }
+      });
     }
 
     // savedAt 記的是「這份資料是什麼時候的」，快照就用快照產生的時間
     function writeDataCache(data, savedAt) {
-      try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify({ savedAt: savedAt || Date.now(), data: data })); } catch (e) {}
+      cacheSet(DATA_CACHE_KEY, { savedAt: savedAt || Date.now(), data: data }).then(function(ok) {
+        if (ok) { try { localStorage.removeItem(DATA_CACHE_KEY); } catch (e) {} }
+      });
     }
 
     function formatCacheAge(savedAt) {
@@ -2348,56 +2471,63 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       // 只有新增／編輯後（不帶 mode）才優先找 Apps Script；按「重試」走一般順序
       var preferFresh = mode === undefined;
       if (mode === true && allData.length === 0) {
-        var cached = readDataCache();
-        if (cached) {
-          applyData(cached.data);
-          shownSavedAt = cached.savedAt;
-          showLatest(true);
-          searchInput.focus();
-          background = true;
-        }
+        readDataCache().then(function(cached) {
+          if (seq !== loadSeq) return;
+          if (cached && allData.length === 0) {
+            applyData(cached.data);
+            shownSavedAt = cached.savedAt;
+            showLatest(true);
+            searchInput.focus();
+            background = true;
+          }
+          fetchLatest();
+        });
+        return;
       } else if (mode === 'background' && allData.length > 0) {
         background = true;
       }
+      fetchLatest();
 
-      if (background) {
-        setDataNotice('<span class="loading-spinner"></span>先顯示' + cacheLabel(shownSavedAt) + '，正在更新…');
-      } else {
-        setDataNotice('');
-        statusEl.innerHTML =
-          '<div class="loading"><div class="loading-spinner"></div><div>資料庫更新中，請稍候...</div></div>';
-        resultsEl.innerHTML = '';
-        setSearchDisabled(true);
-      }
-
-      fetchIdeas(preferFresh)
-        .then(function(result) {
-          if (seq !== loadSeq) return;
+      function fetchLatest() {
+        if (background) {
+          setDataNotice('<span class="loading-spinner"></span>先顯示' + cacheLabel(shownSavedAt) + '，正在更新…');
+        } else {
           setDataNotice('');
-          // 畫面上的資料比拿到的還新（例如剛新增完、快照還沒更新），就保留畫面上的
-          if (background && result.savedAt < shownSavedAt) return;
-          writeDataCache(result.data, result.savedAt);
-          shownSavedAt = result.savedAt;
-          applyData(result.data);
-          if (!background) {
-            searchInput.focus();
-            showLatest(true);
-          } else if (onLatestView) {
-            // 還在首頁才換上新資料；已經在看搜尋或抽點子結果就不打斷，新資料下次搜尋就會用到
-            showLatest(false);
-          }
-        })
-        .catch(function() {
-          if (seq !== loadSeq) return;
-          if (background) {
-            setDataNotice('資料庫暫時沒有回應，先顯示' + cacheLabel(shownSavedAt) + ' <button onclick="loadData(\'background\')">重新更新</button>', true);
-          } else {
-            statusEl.innerHTML =
-              '<div class="error"><div>資料庫暫時沒有回應，可能正在匯入或整理資料，請稍等一兩分鐘再試</div><button onclick="loadData(\'retry\')">重試</button></div>';
-            // 之前已經載入過資料（例如編輯後重新載入失敗）：搜尋不要一直鎖著
-            if (allData.length > 0) setSearchDisabled(false);
-          }
-        });
+          statusEl.innerHTML =
+            '<div class="loading"><div class="loading-spinner"></div><div>資料庫更新中，請稍候...</div></div>';
+          resultsEl.innerHTML = '';
+          setSearchDisabled(true);
+        }
+
+        fetchIdeas(preferFresh)
+          .then(function(result) {
+            if (seq !== loadSeq) return;
+            setDataNotice('');
+            // 畫面上的資料比拿到的還新（例如剛新增完、快照還沒更新），就保留畫面上的
+            if (background && result.savedAt < shownSavedAt) return;
+            writeDataCache(result.data, result.savedAt);
+            shownSavedAt = result.savedAt;
+            applyData(result.data);
+            if (!background) {
+              searchInput.focus();
+              showLatest(true);
+            } else if (onLatestView) {
+              // 還在首頁才換上新資料；已經在看搜尋或抽點子結果就不打斷，新資料下次搜尋就會用到
+              showLatest(false);
+            }
+          })
+          .catch(function() {
+            if (seq !== loadSeq) return;
+            if (background) {
+              setDataNotice('資料庫暫時沒有回應，先顯示' + cacheLabel(shownSavedAt) + ' <button onclick="loadData(\'background\')">重新更新</button>', true);
+            } else {
+              statusEl.innerHTML =
+                '<div class="error"><div>資料庫暫時沒有回應，可能正在匯入或整理資料，請稍等一兩分鐘再試</div><button onclick="loadData(\'retry\')">重試</button></div>';
+              // 之前已經載入過資料（例如編輯後重新載入失敗）：搜尋不要一直鎖著
+              if (allData.length > 0) setSearchDisabled(false);
+            }
+          });
+      }
     }
 
     function compareIdeaItems(a, b) {
@@ -2453,24 +2583,33 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       return { filtered: filtered, visible: visible };
     }
 
-    // 分類切換（全部／行銷案例／社群靈感）：最新點子、關鍵字搜尋、語意推薦、抽點子都只看選到的分類
-    function renderCategoryToggleHtml() {
-      // 類別已移到搜尋框下方的頁籤列，與 Dashboard /ideas 對齊。
-      return '';
-    }
+    // ===== 圖示工具列（對齊 Dashboard #548：漏斗、排序｜卡片／列表｜新增，組間一條短灰線；收藏是會員功能，公開頁不做） =====
+    var FILTER_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v2.172a2 2 0 0 1-.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48-4.928a2 2 0 0 1-.52-1.345v-2.227z"/></svg>';
 
     function renderViewToggleHtml() {
-      var cardActive = viewMode === 'card' ? ' active' : '';
-      var listActive = viewMode === 'list' ? ' active' : '';
-      var html = '<div class="view-toggle" role="tablist">';
-      html += '<button type="button" class="' + cardActive.trim() + '" onclick="setViewMode(\'card\')" aria-label="卡片檢視" title="卡片檢視">';
-      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
+      var html = '<div class="view-toggle" role="group" aria-label="檢視方式">';
+      html += '<button type="button" class="' + (viewMode === 'card' ? 'active' : '') + '" aria-pressed="' + (viewMode === 'card') + '" onclick="setViewMode(\'card\')" aria-label="卡片檢視" title="卡片檢視">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
       html += '</button>';
-      html += '<button type="button" class="' + listActive.trim() + '" onclick="setViewMode(\'list\')" aria-label="列表檢視" title="列表檢視">';
-      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>';
+      html += '<button type="button" class="' + (viewMode === 'list' ? 'active' : '') + '" aria-pressed="' + (viewMode === 'list') + '" onclick="setViewMode(\'list\')" aria-label="列表檢視" title="列表檢視">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>';
       html += '</button>';
       html += '</div>';
       return html;
+    }
+
+    // 類別漏斗（取代原本搜尋框下面的頁籤）：全部／社群靈感／行銷案例附則數；選了類別時漏斗亮萊姆＋小圓點，仍記在網址 ?cat=
+    function renderCategoryMenuHtml() {
+      var options = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例']];
+      var on = currentCategory !== 'all';
+      var html = '<div class="sort-wrap"><button type="button" class="toolbar-icon" data-tool-menu="ideaCategoryMenu" aria-label="篩選類別" title="篩選類別" aria-haspopup="menu" aria-expanded="false"' + (on ? ' data-active' : '') + '>';
+      html += FILTER_ICON_SVG + (on ? '<span class="tool-active-dot" aria-hidden="true"></span>' : '') + '</button>';
+      html += '<div id="ideaCategoryMenu" class="sort-menu" role="menu" aria-label="篩選類別" hidden>';
+      options.forEach(function(opt) {
+        var checked = currentCategory === opt[0];
+        html += '<button type="button" role="menuitemradio" tabindex="-1" class="' + (checked ? 'active' : '') + '" aria-checked="' + checked + '" onclick="pickIdeaCategory(\'' + opt[0] + '\')"><span>' + opt[1] + '</span>' + (categoryCounts ? '<small>' + categoryCounts[opt[0]] + '</small>' : '') + '</button>';
+      });
+      return html + '</div></div>';
     }
 
     function renderSortMenuHtml() {
@@ -2480,11 +2619,11 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
         ['author-asc', '撰寫者 A→Z']
       ];
       var active = ideaSortField + '-' + ideaSortDir;
-      var html = '<div class="sort-wrap"><button type="button" class="toolbar-icon" onclick="toggleIdeaSortMenu(event)" aria-label="排序" title="排序" aria-haspopup="menu" aria-expanded="false">';
+      var html = '<div class="sort-wrap"><button type="button" class="toolbar-icon" data-tool-menu="ideaSortMenu" aria-label="排序" title="排序" aria-haspopup="menu" aria-expanded="false">';
       html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16"/><path d="M3 8l4-4 4 4"/><path d="M17 20V4"/><path d="M13 16l4 4 4-4"/></svg></button>';
-      html += '<div id="ideaSortMenu" class="sort-menu" role="menu" hidden>';
+      html += '<div id="ideaSortMenu" class="sort-menu" role="menu" aria-label="排序方式" hidden>';
       options.forEach(function(opt) {
-        html += '<button type="button" role="menuitemradio" class="' + (active === opt[0] ? 'active' : '') + '" aria-checked="' + (active === opt[0] ? 'true' : 'false') + '" onclick="setIdeaSort(\'' + opt[0].split('-')[0] + '\',\'' + opt[0].split('-')[1] + '\')">' + opt[1] + '</button>';
+        html += '<button type="button" role="menuitemradio" tabindex="-1" class="' + (active === opt[0] ? 'active' : '') + '" aria-checked="' + (active === opt[0] ? 'true' : 'false') + '" onclick="setIdeaSort(\'' + opt[0].split('-')[0] + '\',\'' + opt[0].split('-')[1] + '\')">' + opt[1] + '</button>';
       });
       return html + '</div></div>';
     }
@@ -2493,14 +2632,48 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       return '<button type="button" class="toolbar-icon" onclick="onAddClick()" aria-label="新增點子" title="新增點子"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>';
     }
 
-    function toggleIdeaSortMenu(e) {
-      if (e) e.stopPropagation();
-      var menu = document.getElementById('ideaSortMenu');
+    // 工具列右半邊：漏斗、排序｜卡片／列表｜新增
+    function renderToolIconsHtml() {
+      var sep = '<span class="tool-sep" role="separator" aria-orientation="vertical"></span>';
+      return '<div class="tool-icons">'
+        + '<div class="tool-group">' + renderCategoryMenuHtml() + renderSortMenuHtml() + '</div>' + sep
+        + '<div class="tool-group">' + renderViewToggleHtml() + '</div>' + sep
+        + '<div class="tool-group">' + renderAddIconHtml() + '</div>'
+        + '</div>';
+    }
+
+    // 工具列的選單（漏斗、排序）：開一個就關其他；預設靠右緣往左展開，會超出畫面左右 16px 就換邊
+    function closeToolMenus(except) {
+      document.querySelectorAll('.idea-toolbar .sort-menu').forEach(function(menu) {
+        if (menu === except || menu.hidden) return;
+        menu.hidden = true;
+        var trigger = menu.parentElement.querySelector('[data-tool-menu]');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      });
+    }
+    function toggleToolMenu(trigger) {
+      var menu = document.getElementById(trigger.getAttribute('data-tool-menu'));
       if (!menu) return;
-      var next = menu.hidden;
-      menu.hidden = !next;
-      var trigger = menu.parentElement && menu.parentElement.querySelector('button');
-      if (trigger) trigger.setAttribute('aria-expanded', next ? 'true' : 'false');
+      var open = menu.hidden;
+      closeToolMenus(menu);
+      menu.hidden = !open;
+      trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (!open) return;
+      menu.removeAttribute('data-align');
+      var r = menu.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+      if (r.left < 16 || r.right > vw - 16) menu.setAttribute('data-align', 'start');
+      var focus = menu.querySelector('[aria-checked="true"]') || menu.querySelector('button');
+      if (focus) focus.focus();
+    }
+    // 選完重畫工具列後，焦點回到同一顆圖示
+    function focusToolTrigger(id) {
+      var t = document.querySelector('[data-tool-menu="' + id + '"]');
+      if (t) t.focus();
+    }
+    function pickIdeaCategory(key) {
+      closeToolMenus(null);
+      setCategory(key);
+      focusToolTrigger('ideaCategoryMenu');
     }
 
     function setIdeaSort(field, dir) {
@@ -2512,78 +2685,179 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       listVisibleCount = LIST_PAGE_SIZE;
       if (latestSearchQuery) latestKeywordMatches = getKeywordMatches(latestSearchQuery);
       rerenderCurrentView();
+      focusToolTrigger('ideaSortMenu');
     }
 
     document.addEventListener('click', function(e) {
-      var menu = document.getElementById('ideaSortMenu');
-      if (!menu || menu.hidden) return;
-      if (!menu.parentElement.contains(e.target)) {
-        menu.hidden = true;
-        var trigger = menu.parentElement.querySelector('button');
-        if (trigger) trigger.setAttribute('aria-expanded', 'false');
-      }
+      var trigger = e.target && e.target.closest ? e.target.closest('[data-tool-menu]') : null;
+      if (trigger) { toggleToolMenu(trigger); return; }
+      if (!e.target || !e.target.closest || !e.target.closest('.sort-wrap')) closeToolMenus(null);
     });
+    // 選單鍵盤操作：↑↓／Home／End 移動，Esc 關掉並把焦點還給圖示，Tab 走開也會關
+    document.addEventListener('keydown', function(e) {
+      var openMenu = document.querySelector('.idea-toolbar .sort-menu:not([hidden])');
+      if (!openMenu) return;
+      if (e.key === 'Escape') {
+        closeToolMenus(null);
+        var trigger = openMenu.parentElement.querySelector('[data-tool-menu]');
+        if (trigger) trigger.focus();
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      if (!openMenu.contains(e.target)) return;
+      if (e.key === 'Tab') { closeToolMenus(null); return; }
+      if (['ArrowDown', 'ArrowUp', 'Home', 'End'].indexOf(e.key) < 0) return;
+      var items = [].slice.call(openMenu.querySelectorAll('button'));
+      var at = items.indexOf(document.activeElement);
+      var next = e.key === 'Home' ? 0 : e.key === 'End' ? items.length - 1
+        : e.key === 'ArrowDown' ? (at + 1) % items.length : (at <= 0 ? items.length - 1 : at - 1);
+      e.preventDefault();
+      if (items[next]) items[next].focus();
+    }, true);
 
+    // ===== 列表檢視（對齊 Dashboard 列表改版：日期｜分類｜Idea 摘要｜標籤，原始內容欄拿掉） =====
+    // 工具列左邊放「共 N 則（已篩選）」、標籤篩選框、篩選中的膠囊；右邊是圖示
     function renderListToolbar(filteredTotal) {
-      var html = '<div class="view-toolbar">';
+      var html = '<div class="idea-toolbar"><div class="toolbar-left list-filter-bar">';
       html += '<span class="result-count">共 ' + filteredTotal + ' 則' + (listTagFilter ? '（已篩選）' : '') + '</span>';
       html += '<div class="filter-box">';
-      html += '<span class="filter-icon">🔍</span>';
-      html += '<input class="filter-input" id="tagFilterInput" type="text" placeholder="篩選標籤... 例如：品牌" value="' + escapeHtml(listTagFilter) + '" oninput="onTagFilterInput(this.value)">';
+      html += '<span class="filter-icon" aria-hidden="true">🔍</span>';
+      html += '<input class="filter-input" id="tagFilterInput" type="text" placeholder="篩選標籤... 例如：品牌" aria-label="篩選標籤" enterkeyhint="search" value="' + escapeHtml(listTagFilter) + '" oninput="onTagFilterInput(this.value)">';
       html += '<button type="button" class="filter-clear ' + (listTagFilter ? 'show' : '') + '" onclick="clearTagFilter()" aria-label="清除篩選">✕</button>';
       html += '</div>';
       if (listTagFilter) {
         html += '<span class="active-filter show">標籤含「' + escapeHtml(listTagFilter) + '」<button type="button" onclick="clearTagFilter()" aria-label="移除篩選">✕</button></span>';
       }
-      html += '<div class="spacer"></div>';
-      html += renderSortMenuHtml();
-      html += renderAddIconHtml();
-      html += renderViewToggleHtml();
+      html += '</div>';
+      html += renderToolIconsHtml();
       html += '</div>';
       return html;
     }
 
-    function renderListThead() {
-      function arrow(field) {
-        if (listSortField !== field) return '';
-        return listSortDir === 'asc' ? '▲' : '▼';
+    // 三個可拖拉的欄寬（px）：預設、最窄、最寬；記在這台瀏覽器（同 Dashboard 的 ideas-list-col-widths）。摘要欄吃剩下的寬度
+    var LIST_COLS = {
+      date: { initial: 76, min: 72, max: 160, label: '日期' },
+      category: { initial: 84, min: 76, max: 180, label: '分類' },
+      tags: { initial: 232, min: 120, max: 600, label: '標籤' }
+    };
+    var LIST_COL_STEP = 24;
+    var LIST_COL_WIDTHS_KEY = 'ideas-list-col-widths';
+    function clampListCol(key, n) {
+      return Math.round(Math.min(LIST_COLS[key].max, Math.max(LIST_COLS[key].min, n)));
+    }
+    function readListColWidths() {
+      var out = { date: LIST_COLS.date.initial, category: LIST_COLS.category.initial, tags: LIST_COLS.tags.initial };
+      try {
+        var saved = JSON.parse(localStorage.getItem(LIST_COL_WIDTHS_KEY) || 'null');
+        if (saved && typeof saved === 'object') {
+          Object.keys(out).forEach(function(k) { if (Number(saved[k])) out[k] = clampListCol(k, Number(saved[k])); });
+        }
+      } catch (e) {}
+      return out;
+    }
+    function saveListColWidths() {
+      try { localStorage.setItem(LIST_COL_WIDTHS_KEY, JSON.stringify(listColWidths)); } catch (e) {}
+    }
+    var listColWidths = readListColWidths();
+    var listExpandedTags = {}; // 按了「+N」展開全部標籤的列（key＝getItemIdentity）
+
+    // 標籤欄放得下幾個就顯示幾個：不量 DOM，用字數估寬度（11px 字：全形字約 11px、其他約 6.5px；每個標籤前面多一個「#」與 6px 間距），
+    // 有放不下的要留「+N」的位置；至少顯示 1 個
+    function estimateTagWidth(text) {
+      var w = 6.5 + 6;
+      for (var i = 0; i < text.length; i++) w += /[⺀-鿿가-힯豈-﫿＀-￯]/.test(text.charAt(i)) ? 11 : 6.5;
+      return w;
+    }
+    function fitTagCount(tags, available) {
+      if (!tags.length) return 0;
+      var used = 0;
+      for (var i = 0; i < tags.length; i++) {
+        used += estimateTagWidth(tags[i]);
+        var rest = tags.length - i - 1;
+        var more = rest > 0 ? 6 + 6.5 * (String(rest).length + 1) : 0;
+        if (used + more > available) return Math.max(1, i);
       }
-      function thClass(field, baseClass) {
-        var classes = ['sortable'];
-        if (baseClass) classes.push(baseClass);
-        if (listSortField === field) classes.push(listSortDir === 'asc' ? 'sort-asc' : 'sort-desc');
-        return classes.join(' ');
+      return tags.length;
+    }
+    // 列表日期用短格式：2026-09-30 → 26/09/30（完整日期放在 title）；認不得就原樣顯示
+    function shortDate(date) {
+      var m = /^\d{2}(\d{2})[-/](\d{1,2})[-/](\d{1,2})/.exec(String(date || '').trim());
+      if (!m) return String(date || '');
+      return m[1] + '/' + ('0' + m[2]).slice(-2) + '/' + ('0' + m[3]).slice(-2);
+    }
+    function splitItemTags(item) {
+      return (item.tags || '').split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
+    }
+
+    function renderListThead() {
+      function sortButton(field, label) {
+        var on = listSortField === field;
+        return '<button type="button" class="sort-button"' + (on ? ' data-active' : '') + ' onclick="toggleListSort(\'' + field + '\')">' + label
+          + '<span class="sort-arrow" aria-hidden="true">' + (on ? (listSortDir === 'asc' ? '▲' : '▼') : '') + '</span></button>';
+      }
+      function ariaSort(field) {
+        return ' aria-sort="' + (listSortField === field ? (listSortDir === 'asc' ? 'ascending' : 'descending') : 'none') + '"';
+      }
+      function resize(key, edge) {
+        var name = '拖拉調整' + LIST_COLS[key].label + '欄寬';
+        return '<span class="col-resize" data-col="' + key + '" data-edge="' + edge + '" role="separator" aria-orientation="vertical" aria-label="' + name + '" title="' + name + '"'
+          + ' aria-valuemin="' + LIST_COLS[key].min + '" aria-valuemax="' + LIST_COLS[key].max + '" aria-valuenow="' + listColWidths[key] + '" tabindex="0"></span>';
       }
       var html = '<thead><tr>';
-      html += '<th class="' + thClass('date', 'col-date') + '" onclick="toggleListSort(\'date\')">原文日期<span class="sort-arrow">' + arrow('date') + '</span></th>';
-      html += '<th class="col-source">原始內容</th>';
-      html += '<th class="' + thClass('summary', '') + '" onclick="toggleListSort(\'summary\')">Idea 摘要<span class="sort-arrow">' + arrow('summary') + '</span></th>';
-      html += '<th class="col-tags">標籤</th>';
+      html += '<th class="col-date" style="width:' + listColWidths.date + 'px"' + ariaSort('date') + '>' + sortButton('date', '日期') + resize('date', 'end') + '</th>';
+      html += '<th class="col-category" style="width:' + listColWidths.category + 'px">分類' + resize('category', 'end') + '</th>';
+      html += '<th' + ariaSort('summary') + '>' + sortButton('summary', 'Idea 摘要') + '</th>';
+      html += '<th class="col-tags" style="width:' + listColWidths.tags + 'px">' + resize('tags', 'start') + '標籤</th>';
       html += '</tr></thead>';
       return html;
     }
 
-    function renderListRow(item, realIndex) {
-      var tags = (item.tags || '').split(/[,、，]+/).map(function(t) { return t.trim(); }).filter(Boolean);
+    // 標籤格：灰色小字 #標籤（點了用它篩選）；放不下的收成「+N」，點了展開那一列、最後有「收合」；篩選標籤時全列
+    function renderListTagsHtml(item) {
+      var tags = splitItemTags(item);
+      var key = getItemIdentity(item);
       var filterLower = listTagFilter ? listTagFilter.toLowerCase() : '';
-      // 篩選中時顯示全部 tag（使用者正在挑），無篩選時截到 LIST_MAX_VISIBLE_TAGS 並用「+N」chip 顯示溢出
-      var LIST_MAX_VISIBLE_TAGS = 8;
-      var visibleTags = (filterLower || tags.length <= LIST_MAX_VISIBLE_TAGS) ? tags : tags.slice(0, LIST_MAX_VISIBLE_TAGS);
-      var overflow = (filterLower) ? 0 : Math.max(0, tags.length - LIST_MAX_VISIBLE_TAGS);
-      var tagsHtml = visibleTags.map(function(t) {
-        var matchClass = (filterLower && t.toLowerCase().indexOf(filterLower) !== -1) ? ' match' : '';
-        return '<span class="tag-chip clickable' + matchClass + '" data-tag="' + escapeHtml(t) + '">' + escapeHtml(t) + '</span>';
+      var fit = fitTagCount(tags, listColWidths.tags - 32);
+      var expanded = !filterLower && !!listExpandedTags[key] && tags.length > fit;
+      var showAll = !!filterLower || expanded || tags.length <= fit;
+      var shown = showAll ? tags : tags.slice(0, fit);
+      var overflow = showAll ? 0 : tags.length - fit;
+      var html = shown.map(function(t) {
+        var match = filterLower && t.toLowerCase().indexOf(filterLower) !== -1 ? ' match' : '';
+        return '<button type="button" class="tag-link' + match + '" data-tag="' + escapeHtml(t) + '" aria-label="用標籤「' + escapeHtml(t) + '」篩選">#' + escapeHtml(t) + '</button>';
       }).join('');
       if (overflow > 0) {
-        tagsHtml += '<span class="tag-chip tag-chip-more" title="還有 ' + overflow + ' 個標籤，點列開啟詳細頁可看全部">+' + overflow + '</span>';
+        html += '<button type="button" class="tag-link" data-tags-more="' + escapeHtml(key) + '" aria-label="展開其餘 ' + overflow + ' 個標籤" title="還有 ' + overflow + ' 個標籤">+' + overflow + '</button>';
       }
-      var html = '<tr onclick="onListRowClick(event, ' + realIndex + ')">';
-      html += '<td class="col-date">' + escapeHtml(item.date || '') + '</td>';
-      html += '<td class="col-source"><div class="clamp-2">' + escapeHtml(item.content || '') + '</div></td>';
-      html += '<td><div class="clamp-2 col-summary">' + renderCategoryBadge(item) + escapeHtml(item.summary || '') + '</div></td>';
-      html += '<td class="col-tags">' + tagsHtml + '</td>';
+      if (expanded) {
+        html += '<button type="button" class="tag-link tag-less" data-tags-less="' + escapeHtml(key) + '" aria-label="收合標籤">收合</button>';
+      }
+      return { html: html, collapsed: overflow > 0 };
+    }
+
+    function renderListRow(item, realIndex) {
+      var tagCell = renderListTagsHtml(item);
+      var html = '<tr data-row-index="' + realIndex + '" onclick="onListRowClick(event, ' + realIndex + ')">';
+      html += '<td class="col-date" title="' + escapeHtml(item.date || '') + '">' + escapeHtml(shortDate(item.date)) + '</td>';
+      html += '<td class="col-category">' + renderCategoryBadge(item) + '</td>';
+      html += '<td><div class="col-summary">' + escapeHtml(item.summary || '（沒有內容）') + '</div></td>';
+      html += '<td class="col-tags"' + (tagCell.collapsed ? ' data-collapsed' : '') + '>' + tagCell.html + '</td>';
       html += '</tr>';
       return html;
+    }
+
+    // 只重畫標籤格（拖拉標籤欄寬、展開／收合時），不重畫整個列表，拖拉中的欄線才不會被換掉
+    function refreshListTagCells(onlyRow) {
+      var rows = onlyRow ? [onlyRow] : document.querySelectorAll('.list-table tr[data-row-index]');
+      [].forEach.call(rows, function(tr) {
+        var item = currentResults[Number(tr.getAttribute('data-row-index'))];
+        var cell = tr.querySelector('td.col-tags');
+        if (!item || !cell) return;
+        var r = renderListTagsHtml(item);
+        cell.innerHTML = r.html;
+        if (r.collapsed) cell.setAttribute('data-collapsed', ''); else cell.removeAttribute('data-collapsed');
+      });
     }
 
     function renderListView(items) {
@@ -2622,7 +2896,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
 
     // ========== List view 互動 ==========
     function onListRowClick(e, realIndex) {
-      if (e.target && e.target.classList && e.target.classList.contains('tag-chip')) return;
+      if (e.target && e.target.closest && e.target.closest('.tag-link')) return;
       openModal(realIndex);
     }
     function toggleListSort(field) {
@@ -2643,17 +2917,67 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       listVisibleCount = LIST_PAGE_SIZE;
       rerenderCurrentView();
     }
-    // 標籤 chip 點擊用；邏輯跟篩選框輸入一樣
+    // 標籤點擊用；邏輯跟篩選框輸入一樣
     function applyTagFilter(text) {
       onTagFilterInput(text);
     }
-    // 列表的標籤 chip：用 data-tag 存值、統一在這裡處理點擊（不在 HTML 裡組 onclick 字串）
+    // 列表的標籤、「+N」、「收合」：用 data 屬性存值、統一在這裡處理點擊（不在 HTML 裡組 onclick 字串），也不會順便打開詳情
     document.addEventListener('click', function(e) {
-      var chip = e.target && e.target.closest ? e.target.closest('.tag-chip.clickable[data-tag]') : null;
-      if (!chip) return;
+      var el = e.target && e.target.closest ? e.target.closest('.list-table .tag-link') : null;
+      if (!el) return;
       e.stopPropagation();
-      applyTagFilter(chip.getAttribute('data-tag'));
+      var tr = el.closest('tr');
+      if (el.hasAttribute('data-tags-more') || el.hasAttribute('data-tags-less')) {
+        var more = el.hasAttribute('data-tags-more');
+        var key = el.getAttribute(more ? 'data-tags-more' : 'data-tags-less');
+        if (more) listExpandedTags[key] = true; else delete listExpandedTags[key];
+        refreshListTagCells(tr);
+        var next = tr && tr.querySelector(more ? '[data-tags-less]' : '[data-tags-more]');
+        if (next) next.focus();
+        return;
+      }
+      applyTagFilter(el.getAttribute('data-tag'));
     }, true);
+    // 欄線：拖拉或聚焦後按 ←→ 調整欄寬。日期、分類的欄線在欄的右緣（往右拉＝變寬）；標籤的在左緣（往左拉＝變寬，摘要變窄）
+    var listColDrag = null;
+    function setListColWidth(handle, key, width) {
+      listColWidths[key] = width;
+      handle.parentElement.style.width = width + 'px';
+      handle.setAttribute('aria-valuenow', width);
+      if (key === 'tags') refreshListTagCells();
+    }
+    document.addEventListener('pointerdown', function(e) {
+      var handle = e.target && e.target.closest ? e.target.closest('.col-resize[data-col]') : null;
+      if (!handle) return;
+      e.preventDefault();
+      var key = handle.getAttribute('data-col');
+      listColDrag = { key: key, sign: handle.getAttribute('data-edge') === 'start' ? -1 : 1, x: e.clientX, w: listColWidths[key], handle: handle };
+      handle.classList.add('dragging');
+      try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    document.addEventListener('pointermove', function(e) {
+      var d = listColDrag;
+      if (!d) return;
+      var width = clampListCol(d.key, d.w + d.sign * (e.clientX - d.x));
+      if (width !== listColWidths[d.key]) setListColWidth(d.handle, d.key, width);
+    });
+    function endListColDrag() {
+      if (!listColDrag) return;
+      listColDrag.handle.classList.remove('dragging');
+      listColDrag = null;
+      saveListColWidths();
+    }
+    document.addEventListener('pointerup', endListColDrag);
+    document.addEventListener('pointercancel', endListColDrag);
+    document.addEventListener('keydown', function(e) {
+      var handle = e.target && e.target.closest ? e.target.closest('.col-resize[data-col]') : null;
+      if (!handle || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+      e.preventDefault();
+      var key = handle.getAttribute('data-col');
+      var sign = handle.getAttribute('data-edge') === 'start' ? -1 : 1;
+      setListColWidth(handle, key, clampListCol(key, listColWidths[key] + (e.key === 'ArrowRight' ? 1 : -1) * sign * LIST_COL_STEP));
+      saveListColWidths();
+    });
     function clearTagFilter() {
       listTagFilter = '';
       listVisibleCount = LIST_PAGE_SIZE;
@@ -2755,7 +3079,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       var visibleItems = visibleEntries.map(function(entry) { return entry.item; });
       currentResults = [];
       statusEl.innerHTML = '';
-      var html = renderViewToggleToolbar(visibleItems.length, latestEntries.length);
+      var html = renderViewToggleToolbar(visibleItems.length + ' / ' + latestEntries.length);
       html += renderResultSection({
         items: visibleItems
       });
@@ -2765,12 +3089,10 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       resultsEl.innerHTML = html;
     }
 
-    // 卡片模式下，顯示數與排序／新增／檢視圖示共用 Dashboard 同款單行工具列。
-    function renderViewToggleToolbar(visibleCount, totalCount) {
-      return '<div class="view-toolbar home-card-toolbar"><span class="result-count">' + visibleCount + ' / ' + totalCount + '</span><div class="spacer"></div>'
-        + renderSortMenuHtml()
-        + renderAddIconHtml()
-        + renderViewToggleHtml()
+    // 卡片模式的工具列：左邊顯示數（最新「N / 總數」、搜尋「共 N 則」），右邊同一組圖示
+    function renderViewToggleToolbar(countLabel) {
+      return '<div class="idea-toolbar"><div class="toolbar-left"><span class="result-count">' + escapeHtml(countLabel) + '</span></div>'
+        + renderToolIconsHtml()
         + '</div>';
     }
 
@@ -2821,7 +3143,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       }
 
       // ===== Card mode (既有行為，外加 toolbar) =====
-      var html = renderViewToggleToolbar();
+      var html = renderViewToggleToolbar('共 ' + keywordMatches.length + ' 則');
       if (keywordMatches.length > 0) {
         html += renderResultSection({
           title: '關鍵字比對結果',
@@ -3256,6 +3578,17 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     var CANNES_LEVEL_LABELS = ['全場大獎', '鈦獅', '金獅', '銀獅', '銅獅'];
     var CANNES_SORTS = [['level', '等級高→低'], ['year', '年份新→舊'], ['brand', '品牌 A→Z'], ['title', '作品名 A→Z']];
     var cannesIdeaIndex = null, cannesIdeaSource = null, cannesReturnFromIdea = false;
+    // 篩選浮層（對齊 Dashboard T-125／cannes-library-speed）：子類別欄沒搜尋時最多 30 種，全部作品裡只有 1～2 件的收進最後一列「其他」（網址 sub=_other）；
+    // 很窄（≤520px，兩欄上下疊）時每欄先列「全部」＋前 5 個，下面「＋ 更多（N）」展開
+    var CANNES_OTHER_SUB = '_other', CANNES_RARE_MAX = 2, CANNES_SUB_ROW_LIMIT = 30, CANNES_NARROW_ROWS = 5;
+    var CANNES_NARROW_QUERY = '(max-width: 520px)';
+    // 子類別欄固定排在最前面的（同 Dashboard lib/ideas/cannes/pinned.ts）：英文 key 或中文名對到就算這一組
+    var CANNES_PINNED_SUBS = [
+      { pattern: /^breakthrough on a budget$/ },
+      { pattern: /^real-time response$/ },
+      { pattern: /influencer|creator/, zh: /網紅|創作者/ }
+    ];
+    var cannesMoreCats = false, cannesMoreSubs = false, cannesMatchedCount = null, cannesPopNarrow = null, cannesGroupCache = null;
 
     /** 坎城狀態放在 hash 的 query，與首頁 ?cat= 分開，重新整理或分享仍保留條件。 */
     function readCannesQuery() {
@@ -3292,6 +3625,84 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       return found ? found.label : name;
     }
     function cannesSubLabel(name) { return cannesState.subLabels[cannesSubKey(name)] || name; }
+    /** 子類別在固定清單的第幾組（任一個英文 key 或中文名對到）；不在清單裡回 -1。 */
+    function cannesPinnedRank(keys, label) {
+      for (var i = 0; i < CANNES_PINNED_SUBS.length; i++) {
+        var pin = CANNES_PINNED_SUBS[i];
+        if (keys.some(function(k) { return pin.pattern.test(k); }) || (pin.zh && pin.zh.test(label))) return i;
+      }
+      return -1;
+    }
+    /**
+     * 照中文合併（Dashboard T-125）：中文名相同的類別、子類別算同一列（坎城每年改名，試算表填同一個中文就合在一起）。
+     * 類別群組代號用群組裡排最前面的英文類別（網址 cat= 跟舊網址一樣是英文）；子類別群組代號是中文名（去空白、小寫），舊網址的英文 key 照樣換得到。
+     */
+    function cannesGroups() {
+      if (cannesGroupCache && cannesGroupCache.state === cannesState) return cannesGroupCache;
+      var cat = {}, catLabel = {}, catMembers = {}, byLabel = {}, sub = {};
+      (cannesState.categories || []).forEach(function(c) {
+        var g = byLabel[c.label] || (byLabel[c.label] = c.key);
+        cat[c.key] = g;
+        if (!catMembers[g]) { catLabel[g] = c.label; catMembers[g] = []; }
+        catMembers[g].push(c.key);
+      });
+      Object.keys(cannesState.subLabels || {}).forEach(function(k) {
+        var label = cannesState.subLabels[k], g = cannesSubKey(label);
+        if (!sub[g]) sub[g] = { label: label, members: [] };
+        sub[g].members.push(k);
+      });
+      Object.keys(sub).forEach(function(g) {
+        sub[g].terms = [sub[g].label.toLowerCase()].concat(sub[g].members).join('\n');
+        sub[g].rank = cannesPinnedRank(sub[g].members.concat(g), sub[g].label);
+      });
+      cannesGroupCache = { state: cannesState, cat: cat, catLabel: catLabel, catMembers: catMembers, byLabel: byLabel, sub: sub, awards: typeof WeakMap !== 'undefined' ? new WeakMap() : null };
+      return cannesGroupCache;
+    }
+    /** 網址或資料裡的類別（英文、或 Dashboard 網址的中文名）→ 群組代號。 */
+    function cannesCatGroup(name) { var g = cannesGroups(); return g.cat[name] || g.byLabel[name] || name; }
+    function cannesSubGroup(raw) {
+      var key = cannesSubKey(raw), label = (cannesState.subLabels || {})[key];
+      return label ? cannesSubKey(label) : key;
+    }
+    function cannesCatCondition(value) { return value ? cannesCatGroup(value) : ''; }
+    function cannesSubCondition(value) { return !value || value === CANNES_OTHER_SUB ? (value || '') : cannesSubGroup(value); }
+    function cannesCatGroupLabel(g) { return cannesGroups().catLabel[g] || cannesCategoryLabel(g); }
+    function cannesSubGroupLabel(g) {
+      if (g === CANNES_OTHER_SUB) return '其他';
+      var info = cannesGroups().sub[g];
+      return info ? info.label : cannesSubLabel(g);
+    }
+    /** 一座獎的類別群組與子類別群組（同一份資料只算一次）。 */
+    function cannesAwardGroups(a) {
+      var groups = cannesGroups(), hit = groups.awards && groups.awards.get(a);
+      if (hit) return hit;
+      hit = { cat: a.category ? cannesCatGroup(a.category) : '', sub: String(a.subcategory || '').trim() ? cannesSubGroup(a.subcategory) : '' };
+      if (groups.awards) groups.awards.set(a, hit);
+      return hit;
+    }
+    /** 這座獎符不符合類別／子類別群組條件（空字串＝不限；兩個條件要先換成群組代號）。 */
+    function cannesAwardMatches(a, cat, sub) {
+      var g = cannesAwardGroups(a);
+      if (cat && g.cat !== cat) return false;
+      if (!sub) return true;
+      if (!g.sub) return false;
+      return sub === CANNES_OTHER_SUB ? !!(cannesState.rare && cannesState.rare[g.sub]) : g.sub === sub;
+    }
+    /** 全部作品裡各群組的件數：決定哪些子類別算「其他」（1～2 件、不是固定置頂的），以及資料裡有哪些類別與子類別。 */
+    function cannesGroupCounts(list) {
+      var cats = {}, subs = {}, rare = {}, info = cannesGroups().sub;
+      list.forEach(function(w) {
+        var cs = {}, ss = {};
+        w.awards.forEach(function(a) { var g = cannesAwardGroups(a); if (g.cat) cs[g.cat] = true; if (g.sub) ss[g.sub] = true; });
+        Object.keys(cs).forEach(function(k) { cats[k] = (cats[k] || 0) + 1; });
+        Object.keys(ss).forEach(function(k) { subs[k] = (subs[k] || 0) + 1; });
+      });
+      Object.keys(subs).forEach(function(g) {
+        var rank = info[g] ? info[g].rank : cannesPinnedRank([g], g);
+        if (subs[g] <= CANNES_RARE_MAX && rank < 0) rare[g] = true;
+      });
+      return { cats: cats, subs: subs, rare: rare };
+    }
     function findIdeaForCannes(item) {
       if (cannesIdeaSource !== allData) {
         cannesIdeaSource = allData; cannesIdeaIndex = {};
@@ -3300,53 +3711,77 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       return item && cannesIdeaIndex ? cannesIdeaIndex[item.ideaUid] || null : null;
     }
     /** 發布資料皆為既有公開 CSV；選填中文表失效時保留作品與英文標籤。 */
+    var CANNES_CACHE_KEY = 'cannes-tables-v1';
+    /**
+     * 先顯示上次存的四張表（IndexedDB），背景再抓新的；內容沒變就不重畫。
+     * 沒有快取時照舊等網路；有快取但網路失敗，留著舊資料並提示。
+     */
     function loadCannesData() {
       if (cannesLoaded || cannesLoading) { renderCannesPage(); return cannesLoading; }
       cannesState.status = 'loading'; renderCannesPage();
-      function read(gid) { return fetchWithTimeout(cannesCsvUrl(gid), 30000).then(function(r) { if (!r.ok) throw Error('讀取失敗'); return r.text(); }).then(csvObjects); }
-      cannesLoading = Promise.all([read(CANNES_GIDS.works), read(CANNES_GIDS.awards),
-        read(CANNES_GIDS.categories).catch(function() { return []; }), read(CANNES_GIDS.subcategories).catch(function() { return []; })])
-        .then(function(tables) {
-          if (!tables[0].some(function(w) { return w.ltwm_id; }) || !tables[1].some(function(a) { return a.ltwm_id; })) throw Error('資料不完整');
-          var byId = {}, categories = {}, subLabels = { 'breakthrough on a budget': '小預算突破' };
-          tables[2].forEach(function(c) { if (c.category) categories[c.category] = { key: c.category, label: c.zh || c.category, order: Number(c.order) || 9999 }; });
-          tables[3].forEach(function(s) { if (s.subcategory) subLabels[cannesSubKey(s.subcategory)] = s.zh || s.subcategory; });
-          tables[1].forEach(function(a) {
-            if (!a.ltwm_id || CANNES_LEVELS.indexOf(a.level) < 0) return;
-            (byId[a.ltwm_id] || (byId[a.ltwm_id] = [])).push(a);
-            if (a.category && !categories[a.category]) categories[a.category] = { key: a.category, label: a.category, order: 9999 };
-            var key = cannesSubKey(a.subcategory);
-            if (key && !subLabels[key]) subLabels[key] = a.subcategory;
-          });
-          var list = tables[0].filter(function(w) { return /^ltwm-\d+$/.test(w.ltwm_id); }).map(function(w) {
-            var awards = byId[w.ltwm_id] || [];
-            awards.sort(function(a, b) { return CANNES_LEVELS.indexOf(a.level) - CANNES_LEVELS.indexOf(b.level) ||
-              ((categories[a.category] || {}).order || 9999) - ((categories[b.category] || {}).order || 9999) || a.subcategory.localeCompare(b.subcategory); });
-            return { id: w.ltwm_id, year: Number(w.year), title: w.title, brand: w.brand, agency: w.agency,
-              ideaUid: w.idea_uid, imageUrl: w.image_url, caseFilmUrl: w.case_film_url, awards: awards };
-          });
-          var yearCounts = {};
-          list.forEach(function(w) { yearCounts[w.year] = (yearCounts[w.year] || 0) + 1; });
-          cannesState = { status: 'ready', items: list, subLabels: subLabels,
-            categories: Object.keys(categories).map(function(k) { return categories[k]; }).sort(function(a, b) { return a.order - b.order || a.key.localeCompare(b.key); }),
-            stats: { total: list.length, awards: list.reduce(function(n, w) { return n + w.awards.length; }, 0), years: Object.keys(yearCounts).map(Number).sort(function(a, b) { return b - a; }), yearCounts: yearCounts } };
-          cannesLoaded = true;
-          document.getElementById('cannesNotice').innerHTML = '';
-          document.getElementById('cannesEntry').innerHTML = '🦁 坎城圖書館 <span class="idea-tab-count">' + list.length.toLocaleString('en-US') + '</span> 件 →';
-          renderCannesPage();
-          if (cannesQuery.id) openCannesModal(cannesQuery.id);
-        }).catch(function() {
-          cannesState.status = 'error';
-          document.getElementById('cannesNotice').innerHTML = '<div class="data-notice warn">坎城圖書館暫時連不上，稍後再試。 <button onclick="retryCannesData()">再試一次</button></div>';
-          renderCannesPage();
-        }).finally(function() { cannesLoading = null; });
+      var shownSignature = '', cachedAt = 0;
+      function read(gid) { return fetchWithTimeout(cannesCsvUrl(gid), 30000).then(function(r) { if (!r.ok) throw Error('讀取失敗'); return r.text(); }); }
+      function optional(gid) { return read(gid).catch(function() { return ''; }); }
+      cannesLoading = cacheGet(CANNES_CACHE_KEY).then(function(cached) {
+        if (cached && cached.texts && cached.texts.length === 4) {
+          try { applyCannesTables(cached.texts.map(csvObjects)); shownSignature = cached.signature; cachedAt = cached.savedAt; } catch (e) {}
+        }
+        return Promise.all([read(CANNES_GIDS.works), read(CANNES_GIDS.awards), optional(CANNES_GIDS.categories), optional(CANNES_GIDS.subcategories)]);
+      }).then(function(texts) {
+        var signature = texts.map(function(t) { return t.length + ':' + t.slice(-200); }).join('|');
+        if (cannesLoaded && signature === shownSignature) return;
+        applyCannesTables(texts.map(csvObjects));
+        cacheSet(CANNES_CACHE_KEY, { savedAt: Date.now(), signature: signature, texts: texts });
+      }).catch(function() {
+        if (cannesLoaded) {
+          document.getElementById('cannesNotice').innerHTML = '<div class="data-notice warn">坎城圖書館暫時連不上，先顯示' + cacheLabel(cachedAt) + '。 <button onclick="retryCannesData()">再試一次</button></div>';
+          return;
+        }
+        cannesState.status = 'error';
+        document.getElementById('cannesNotice').innerHTML = '<div class="data-notice warn">坎城圖書館暫時連不上，稍後再試。 <button onclick="retryCannesData()">再試一次</button></div>';
+        renderCannesPage();
+      }).finally(function() { cannesLoading = null; });
       return cannesLoading;
+    }
+    function applyCannesTables(tables) {
+      if (!tables[0].some(function(w) { return w.ltwm_id; }) || !tables[1].some(function(a) { return a.ltwm_id; })) throw Error('資料不完整');
+      var byId = {}, categories = {}, subLabels = { 'breakthrough on a budget': '小預算突破' };
+      tables[2].forEach(function(c) { if (c.category) categories[c.category] = { key: c.category, label: c.zh || c.category, order: Number(c.order) || 9999 }; });
+      tables[3].forEach(function(s) { if (s.subcategory) subLabels[cannesSubKey(s.subcategory)] = s.zh || s.subcategory; });
+      tables[1].forEach(function(a) {
+        if (!a.ltwm_id || CANNES_LEVELS.indexOf(a.level) < 0) return;
+        (byId[a.ltwm_id] || (byId[a.ltwm_id] = [])).push(a);
+        if (a.category && !categories[a.category]) categories[a.category] = { key: a.category, label: a.category, order: 9999 };
+        var key = cannesSubKey(a.subcategory);
+        if (key && !subLabels[key]) subLabels[key] = a.subcategory;
+      });
+      var list = tables[0].filter(function(w) { return /^ltwm-\d+$/.test(w.ltwm_id); }).map(function(w) {
+        var awards = byId[w.ltwm_id] || [];
+        awards.sort(function(a, b) { return CANNES_LEVELS.indexOf(a.level) - CANNES_LEVELS.indexOf(b.level) ||
+          ((categories[a.category] || {}).order || 9999) - ((categories[b.category] || {}).order || 9999) || a.subcategory.localeCompare(b.subcategory); });
+        return { id: w.ltwm_id, year: Number(w.year), title: w.title, brand: w.brand, agency: w.agency,
+          ideaUid: w.idea_uid, imageUrl: w.image_url, caseFilmUrl: w.case_film_url, awards: awards };
+      });
+      var yearCounts = {};
+      list.forEach(function(w) { yearCounts[w.year] = (yearCounts[w.year] || 0) + 1; });
+      cannesState = { status: 'ready', items: list, subLabels: subLabels,
+        categories: Object.keys(categories).map(function(k) { return categories[k]; }).sort(function(a, b) { return a.order - b.order || a.key.localeCompare(b.key); }),
+        stats: { total: list.length, awards: list.reduce(function(n, w) { return n + w.awards.length; }, 0), years: Object.keys(yearCounts).map(Number).sort(function(a, b) { return b - a; }), yearCounts: yearCounts } };
+      var counts = cannesGroupCounts(list);
+      cannesState.catCounts = counts.cats; cannesState.subCounts = counts.subs; cannesState.rare = counts.rare;
+      cannesQuery.category = cannesCatCondition(cannesQuery.category);
+      cannesQuery.sub = cannesSubCondition(cannesQuery.sub);
+      cannesLoaded = true;
+      document.getElementById('cannesNotice').innerHTML = '';
+      renderCannesPage();
+      if (cannesQuery.id && !cannesModalItem) openCannesModal(cannesQuery.id);
     }
     function retryCannesData() { cannesLoaded = false; cannesLoading = null; return loadCannesData(); }
     function cannesMatches(item, query) {
       if (query.years.length && query.years.indexOf(item.year) < 0) return false;
       if (query.levels.length && !item.awards.some(function(a) { return query.levels.indexOf(CANNES_LEVEL_KEYS[CANNES_LEVELS.indexOf(a.level)]) >= 0; })) return false;
-      if ((query.category || query.sub) && !item.awards.some(function(a) { return (!query.category || a.category === query.category) && (!query.sub || cannesSubKey(a.subcategory) === query.sub); })) return false;
+      var cat = cannesCatCondition(query.category), sub = cannesSubCondition(query.sub);
+      if ((cat || sub) && !item.awards.some(function(a) { return cannesAwardMatches(a, cat, sub); })) return false;
       var idea = findIdeaForCannes(item);
       var hay = [item.title, item.brand, item.agency, idea ? idea.summary : ''].concat(item.awards.map(function(a) {
         return a.category + ' ' + cannesCategoryLabel(a.category) + ' ' + a.subcategory + ' ' + cannesSubLabel(a.subcategory);
@@ -3397,58 +3832,134 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       var count = Number(!!q.category) + Number(!!q.sub);
       var html = '<div class="cl-chipRows"><div class="cl-frow" role="group" aria-label="年份"><span class="cl-flabel">年份</span>' + years + '</div><div class="cl-frow" role="group" aria-label="等級"><span class="cl-flabel">等級</span>' + levels + '</div></div>';
       html += '<div class="cl-toolRow" id="cannesToolRow"><div class="cl-searchBox"><input id="cannesSearch" class="cl-search" type="search" aria-label="搜尋坎城作品" placeholder="🔍 搜作品名、品牌、代理商、一句話創意…" value="' + escapeHtml(q.q) + '"><button class="cl-iconButton cl-searchClose" data-cannes-action="close-search" aria-label="收起搜尋">' + cannesIcon('close') + '</button></div>';
-      html += '<button class="cl-iconButton cl-searchToggle" data-cannes-action="open-search" aria-label="搜尋" aria-expanded="false">' + cannesIcon('search') + '</button><div class="cl-toolIcons">';
-      html += '<div class="cl-filterWrap"><button class="cl-iconButton" id="cannesFilterButton" data-cannes-action="filter-menu" aria-label="篩選" title="篩選" aria-haspopup="dialog" aria-expanded="' + (cannesMenu === 'filter') + '"' + (count ? ' data-active' : '') + '>' + cannesIcon('filter') + (count ? '<span class="cl-badge">' + count + '</span>' : '') + '</button><div id="cannesFilterPop" class="cl-filterPop" role="dialog" aria-label="類別與子類別篩選"' + (cannesMenu !== 'filter' ? ' hidden' : '') + '></div></div>';
-      html += '<div class="cl-menuWrap"><button class="cl-iconButton" id="cannesSortButton" data-cannes-action="sort-menu" aria-label="排序" title="排序" aria-haspopup="menu" aria-expanded="' + (cannesMenu === 'sort') + '">' + cannesIcon('sort') + '</button><div class="cl-menu" data-align="end" role="menu" aria-label="排序方式"' + (cannesMenu !== 'sort' ? ' hidden' : '') + '>';
-      html += CANNES_SORTS.map(function(s) { return '<button class="cl-menuItem" role="menuitemradio" aria-checked="' + (q.sort === s[0]) + '" data-cannes-action="sort" data-value="' + s[0] + '">' + s[1] + '</button>'; }).join('') + '</div></div>';
-      html += '<div class="view-toggle" role="group" aria-label="檢視方式">' + ['card', 'list'].map(function(v) { var label = v === 'card' ? '卡片檢視' : '列表檢視'; return '<button type="button" class="' + (q.view === v ? 'active' : '') + '" data-cannes-action="view" data-value="' + v + '" aria-pressed="' + (q.view === v) + '" title="' + label + '" aria-label="' + label + '">' + cannesIcon(v) + '</button>'; }).join('') + '</div></div></div>';
+      html += '<button class="cl-iconButton cl-searchToggle" data-cannes-action="open-search" aria-label="搜尋" aria-expanded="false">' + cannesIcon('search') + '</button><div class="cl-toolIcons"><div class="cl-toolGroup">';
+      html += '<div class="cl-filterWrap"><button class="cl-iconButton" id="cannesFilterButton" data-cannes-action="filter-menu" aria-label="篩選類別與子類別" title="篩選" aria-haspopup="dialog" aria-expanded="' + (cannesMenu === 'filter') + '"' + (count ? ' data-active' : '') + '>' + cannesIcon('filter') + (count ? '<span class="cl-badge" aria-hidden="true">' + count + '</span>' : '') + '</button><div id="cannesFilterPop" class="cl-filterPop" role="dialog" aria-label="篩選類別與子類別"' + (cannesMenu !== 'filter' ? ' hidden' : '') + '></div></div>';
+      var sortLabel = (CANNES_SORTS.filter(function(s) { return s[0] === q.sort; })[0] || CANNES_SORTS[0])[1];
+      html += '<div class="cl-menuWrap"><button class="cl-iconButton" id="cannesSortButton" data-cannes-action="sort-menu" aria-label="排序：' + sortLabel + '" title="排序" aria-haspopup="menu" aria-expanded="' + (cannesMenu === 'sort') + '">' + cannesIcon('sort') + '</button><div class="cl-menu" data-align="end" role="menu" aria-label="排序"' + (cannesMenu !== 'sort' ? ' hidden' : '') + '>';
+      html += CANNES_SORTS.map(function(s) { return '<button class="cl-menuItem" role="menuitemradio" aria-checked="' + (q.sort === s[0]) + '" data-cannes-action="sort" data-value="' + s[0] + '">' + s[1] + '</button>'; }).join('') + '</div></div></div>';
+      html += '<span class="cl-toolSep" role="separator" aria-orientation="vertical"></span><span class="cl-viewSlot"><div class="view-toggle" role="group" aria-label="檢視方式">' + ['card', 'list'].map(function(v) { var label = v === 'card' ? '卡片檢視' : '列表檢視'; return '<button type="button" class="' + (q.view === v ? 'active' : '') + '" data-cannes-action="view" data-value="' + v + '" aria-pressed="' + (q.view === v) + '" title="' + label + '" aria-label="' + label + '">' + cannesIcon(v) + '</button>'; }).join('') + '</div></span></div></div>';
       return html;
     }
-    /** 雙欄件數互相依篩選計算，類別與子類別必須來自同一座獎。 */
+    /** 雙欄件數互相依篩選計算，類別與子類別必須來自同一座獎；兩欄都照中文合併後的群組算。other＝「其他」（少件數子類別）的件數。 */
     function cannesScopedFacets() {
-      var q = cannesQuery, cats = {}, subs = {}, totalCats = 0, totalSubs = 0;
+      var q = cannesQuery, cats = {}, subs = {}, totalCats = 0, totalSubs = 0, other = 0;
+      var cat = cannesCatCondition(q.category), sub = cannesSubCondition(q.sub), rare = cannesState.rare || {};
       var baseQ = Object.assign({}, q, { category: '', sub: '' });
       cannesState.items.filter(function(w) { return cannesMatches(w, baseQ); }).forEach(function(w) {
-        var cs = {}, ss = {};
-        if (!q.sub || w.awards.some(function(a) { return cannesSubKey(a.subcategory) === q.sub; })) totalCats++;
-        if (!q.category || w.awards.some(function(a) { return a.category === q.category; })) totalSubs++;
+        var cs = {}, ss = {}, isRare = false;
+        if (!sub || w.awards.some(function(a) { return cannesAwardMatches(a, '', sub); })) totalCats++;
+        if (!cat || w.awards.some(function(a) { return cannesAwardMatches(a, cat, ''); })) totalSubs++;
         w.awards.forEach(function(a) {
-          if (!q.sub || cannesSubKey(a.subcategory) === q.sub) cs[a.category] = true;
-          if ((!q.category || a.category === q.category) && a.subcategory) ss[cannesSubKey(a.subcategory)] = true;
+          var g = cannesAwardGroups(a);
+          if (g.cat && cannesAwardMatches(a, '', sub)) cs[g.cat] = true;
+          if (g.sub && cannesAwardMatches(a, cat, '')) { ss[g.sub] = true; if (rare[g.sub]) isRare = true; }
         });
         Object.keys(cs).forEach(function(k) { cats[k] = (cats[k] || 0) + 1; });
         Object.keys(ss).forEach(function(k) { subs[k] = (subs[k] || 0) + 1; });
+        if (isRare) other++;
       });
-      subs['breakthrough on a budget'] = subs['breakthrough on a budget'] || 0;
-      if (q.sub) subs[q.sub] = subs[q.sub] || 0;
-      return { categories: cats, subs: subs, totalCats: totalCats, totalSubs: totalSubs };
+      return { categories: cats, subs: subs, totalCats: totalCats, totalSubs: totalSubs, other: other };
     }
-    function cannesFilterOption(key, value, label, count, active) {
-      return '<button class="cl-menuItem" role="menuitemradio" aria-checked="' + active + '" data-cannes-action="' + key + '" data-value="' + escapeHtml(value) + '"' + (!count && !active ? ' disabled' : '') + ' title="' + escapeHtml(value || '全部') + '"><span>' + escapeHtml(label) + '</span><small>' + count.toLocaleString('en-US') + '</small></button>';
+    /** 類別欄：資料裡有的類別群組（照官方類別序），件數多的在前（同件數照類別序）；英文全名放在滑過去的提示。 */
+    function cannesCategoryRows(f) {
+      var groups = cannesGroups(), seen = {}, rows = [];
+      (cannesState.categories || []).forEach(function(c, order) {
+        var key = groups.cat[c.key];
+        if (seen[key]) return;
+        seen[key] = true;
+        if (cannesState.catCounts && !cannesState.catCounts[key]) return;
+        rows.push({ key: key, label: groups.catLabel[key], count: f.categories[key] || 0, order: order, title: groups.catMembers[key].join('／') });
+      });
+      return rows.sort(function(a, b) { return b.count - a.count || a.order - b.order; });
     }
+    /**
+     * 子類別欄：固定置頂的（小預算突破、即時回應、網紅／創作者）照固定順序排最前面、資料裡有就一定列（0 件也列、停用），其餘件數多的在前。
+     * 沒搜尋時：置頂的＋其餘不是少件數、件數 > 0 的，合計最多 30 列，選中的不在裡面就接在最後；other＝要不要列「其他」。
+     * 有搜尋字：所有群組裡中文名或任一個英文寫法含搜尋字的，不限列數、不列「其他」。
+     */
+    function cannesSubRows(f, needle, sub) {
+      var groups = cannesGroups().sub, present = cannesState.subCounts, rare = cannesState.rare || {}, keys = {};
+      Object.keys(f.subs).forEach(function(k) { keys[k] = true; });
+      Object.keys(groups).forEach(function(g) { if (groups[g].rank >= 0 && (!present || present[g])) keys[g] = true; });
+      if (sub && sub !== CANNES_OTHER_SUB) keys[sub] = true;
+      var all = Object.keys(keys).map(function(k) {
+        var info = groups[k], rank = info ? info.rank : cannesPinnedRank([k], k);
+        return { key: k, label: info ? info.label : k, count: f.subs[k] || 0, terms: info ? info.terms : k, pinned: rank >= 0, rank: rank < 0 ? Infinity : rank, rare: !!rare[k] };
+      }).sort(function(a, b) { return (a.rank - b.rank) || b.count - a.count || a.label.localeCompare(b.label, 'zh-Hant'); });
+      if (needle) return { rows: all.filter(function(o) { return o.terms.indexOf(needle) >= 0; }), other: false };
+      var pinned = all.filter(function(o) { return o.pinned; });
+      var rows = pinned.concat(all.filter(function(o) { return !o.pinned && !o.rare && o.count > 0; })).slice(0, Math.max(CANNES_SUB_ROW_LIMIT, pinned.length));
+      if (sub && sub !== CANNES_OTHER_SUB && !rows.some(function(o) { return o.key === sub; })) {
+        var hit = all.filter(function(o) { return o.key === sub; })[0];
+        if (hit) rows.push(hit);
+      }
+      return { rows: rows, other: f.other > 0 || sub === CANNES_OTHER_SUB };
+    }
+    /** extra：額外的屬性字串（內容要先跳脫）；沒給就用名稱當滑過去的提示。 */
+    function cannesFilterOption(key, value, label, count, active, extra) {
+      return '<button class="cl-menuItem" role="menuitemradio" aria-checked="' + active + '" data-cannes-action="' + key + '" data-value="' + escapeHtml(value) + '"' + (!count && !active ? ' disabled' : '') + (extra || ' title="' + escapeHtml(label) + '"') + '><span>' + escapeHtml(label) + '</span><small>' + count.toLocaleString('en-US') + '</small></button>';
+    }
+    function cannesMoreRow(key, expanded, hidden) {
+      return '<button type="button" class="cl-moreRow" data-cannes-action="filter-more" data-key="' + key + '" aria-expanded="' + expanded + '">' + (expanded ? '－ 收合' : '＋ 更多（' + hidden.toLocaleString('en-US') + '）') + '</button>';
+    }
+    function cannesIsNarrow() { return !!(window.matchMedia && window.matchMedia(CANNES_NARROW_QUERY).matches); }
+    /**
+     * 篩選浮層：左「類別」、右「子類別」（搜尋框＋全部＋固定置頂的，其餘照件數），單選、點了馬上套用、浮層不關。
+     * 底部固定一條：左「清除」（有類別或子類別條件才出現）、右萊姆膠囊「完成・N 件」（N＝目前結果件數）。
+     */
     function renderCannesFilterPop() {
       var el = document.getElementById('cannesFilterPop');
       if (!el || cannesMenu !== 'filter') return;
-      var f = cannesScopedFacets();
-      var cats = cannesFilterOption('category', '', '全部', f.totalCats, !cannesQuery.category);
-      cats += cannesState.categories.map(function(c) { return cannesFilterOption('category', c.key, c.label, f.categories[c.key] || 0, cannesQuery.category === c.key); }).join('');
-      var keys = Object.keys(f.subs).sort(function(a, b) { return Number(b === 'breakthrough on a budget') - Number(a === 'breakthrough on a budget') || f.subs[b] - f.subs[a] || cannesSubLabel(a).localeCompare(cannesSubLabel(b), 'zh-Hant'); });
-      var query = cannesSubSearch.toLowerCase();
-      var subs = cannesFilterOption('sub', '', '全部', f.totalSubs, !cannesQuery.sub);
-      subs += keys.filter(function(k) { return !query || (k + ' ' + cannesSubLabel(k)).toLowerCase().indexOf(query) >= 0; }).map(function(k) { return cannesFilterOption('sub', k, cannesSubLabel(k), f.subs[k], cannesQuery.sub === k); }).join('');
-      el.innerHTML = '<div class="cl-filterCols"><section class="cl-filterCol"><h3 class="cl-filterHead">類別</h3><div class="cl-filterList" role="menu" aria-label="類別">' + cats + '</div></section><section class="cl-filterCol"><h3 class="cl-filterHead">子類別</h3><input class="cl-subSearch" id="cannesSubSearch" type="search" aria-label="搜尋子類別" placeholder="搜尋子類別…" value="' + escapeHtml(cannesSubSearch) + '"><div class="cl-filterList" role="menu" aria-label="子類別">' + subs + '</div></section></div><div class="cl-filterFoot"><button class="cl-moreButton" data-cannes-action="done-filter">完成</button></div>';
-      var btn = document.getElementById('cannesFilterButton'), b = btn.getBoundingClientRect();
-      var wrap = btn.parentElement.getBoundingClientRect(), width = el.offsetWidth;
+      var f = cannesScopedFacets(), cat = cannesCatCondition(cannesQuery.category), sub = cannesSubCondition(cannesQuery.sub);
+      var needle = cannesSubSearch.trim().toLowerCase(), narrow = cannesIsNarrow();
+      var catRows = cannesCategoryRows(f), subInfo = cannesSubRows(f, needle, sub), subRows = subInfo.rows;
+      var catAt = catRows.map(function(c) { return c.key; }).indexOf(cat), subAt = subRows.map(function(o) { return o.key; }).indexOf(sub);
+      // 選中的在前 5 個之外、或子類別正在搜尋、或選了「其他」時自動展開
+      var catsExpanded = !narrow || cannesMoreCats || catAt >= CANNES_NARROW_ROWS;
+      var subsExpanded = !narrow || cannesMoreSubs || needle !== '' || sub === CANNES_OTHER_SUB || subAt >= CANNES_NARROW_ROWS;
+      var hiddenSubs = subRows.length + (subInfo.other ? 1 : 0) - CANNES_NARROW_ROWS;
+      cannesPopNarrow = narrow;
+      var cats = cannesFilterOption('category', '', '全部', f.totalCats, !cat);
+      cats += (catsExpanded ? catRows : catRows.slice(0, CANNES_NARROW_ROWS)).map(function(c) {
+        return cannesFilterOption('category', c.key, c.label, c.count, cat === c.key, ' title="' + escapeHtml(c.title) + '"');
+      }).join('');
+      var subs = needle ? '' : cannesFilterOption('sub', '', '全部', f.totalSubs, !sub);
+      subs += (subsExpanded ? subRows : subRows.slice(0, CANNES_NARROW_ROWS)).map(function(o) {
+        return cannesFilterOption('sub', o.key, o.label, o.count, sub === o.key, (o.pinned ? ' data-pinned' : '') + ' title="' + escapeHtml(o.label) + '"');
+      }).join('');
+      if (subInfo.other && subsExpanded) subs += cannesFilterOption('sub', CANNES_OTHER_SUB, '其他', f.other, sub === CANNES_OTHER_SUB, ' data-other title="只有 1～2 件作品的子類別"');
+      if (!subRows.length) subs += '<p class="cl-subEmpty">沒有符合的子類別</p>';
+      // 因為選中的在前 5 個之外而自動展開時不給收合
+      var catMore = narrow && catRows.length > CANNES_NARROW_ROWS && (cannesMoreCats || !catsExpanded) ? cannesMoreRow('cat', catsExpanded, catRows.length - CANNES_NARROW_ROWS) : '';
+      var subMore = narrow && !needle && hiddenSubs > 0 && (cannesMoreSubs || !subsExpanded) ? cannesMoreRow('sub', subsExpanded, hiddenSubs) : '';
+      var n = cannesMatchedCount, active = (cat ? 1 : 0) + (sub ? 1 : 0);
+      var foot = '<div class="cl-filterFoot">' + (active ? '<button type="button" class="cl-linkButton" data-cannes-action="clear-filter" aria-label="清除類別與子類別">清除</button>' : '')
+        + '<button type="button" class="cl-doneButton" data-cannes-action="done-filter" aria-label="' + (n === null ? '完成篩選' : '完成篩選，' + n.toLocaleString('en-US') + ' 件') + '">' + (n === null ? '完成' : '完成・' + n.toLocaleString('en-US') + ' 件') + '</button></div>';
+      el.innerHTML = '<div class="cl-filterCols"><section class="cl-filterCol" data-filter-col="category"><h3 class="cl-filterHead">類別</h3><div class="cl-filterList" role="menu" aria-label="類別"' + (narrow && catsExpanded ? ' data-expanded' : '') + '>' + cats + '</div>' + catMore + '</section>'
+        + '<section class="cl-filterCol" data-filter-col="sub"><h3 class="cl-filterHead">子類別</h3><input class="cl-subSearch" id="cannesSubSearch" type="search" aria-label="搜尋子類別" placeholder="找子類別…" value="' + escapeHtml(cannesSubSearch) + '"><div class="cl-filterList" role="menu" aria-label="子類別"' + (narrow && subsExpanded ? ' data-expanded' : '') + '>' + subs + '</div>' + subMore + '</section></div>' + foot;
+      placeCannesFilterPop();
+    }
+    /** 浮層放在漏斗正下方置中；會超出畫面就往內推，左右各留 16px，小三角指著漏斗中間。 */
+    function placeCannesFilterPop() {
+      var el = document.getElementById('cannesFilterPop'), btn = document.getElementById('cannesFilterButton');
+      if (!el || !btn || el.hidden) return;
+      var b = btn.getBoundingClientRect(), wrap = btn.parentElement.getBoundingClientRect(), width = el.offsetWidth;
       var left = Math.max(16, Math.min(b.left + b.width / 2 - width / 2, document.documentElement.clientWidth - width - 16));
       el.style.left = (left - wrap.left) + 'px'; el.style.setProperty('--caret-x', (b.left + b.width / 2 - left) + 'px');
     }
+    // 視窗變寬變窄：跨過 520px 才重畫（手機打字跳出鍵盤也會觸發 resize，重畫會把搜尋框的焦點弄丟），其餘只重新定位（離線測試沒有 window）
+    if (typeof window !== 'undefined') window.addEventListener('resize', function() {
+      if (cannesMenu !== 'filter') return;
+      if (cannesIsNarrow() !== cannesPopNarrow) renderCannesFilterPop(); else placeCannesFilterPop();
+    });
     function renderCannesResults() {
       var matched = cannesFilteredItems(), shown = matched.slice(0, cannesQuery.limit);
       var q = cannesQuery;
+      cannesMatchedCount = matched.length;
       var chips = q.years.map(function(y) { return { key: 'year', val: y, label: y }; })
         .concat(q.levels.map(function(l) { return { key: 'level', val: l, label: CANNES_LEVEL_LABELS[CANNES_LEVEL_KEYS.indexOf(l)] }; }));
-      if (q.category) chips.push({ key: 'category', label: cannesCategoryLabel(q.category) });
-      if (q.sub) chips.push({ key: 'sub', label: cannesSubLabel(q.sub) });
+      if (q.category) chips.push({ key: 'category', label: cannesCatGroupLabel(cannesCatCondition(q.category)) });
+      if (q.sub) chips.push({ key: 'sub', label: cannesSubGroupLabel(cannesSubCondition(q.sub)) });
       if (q.q) chips.push({ key: 'q', label: '「' + q.q + '」' });
       document.getElementById('cannesActive').innerHTML = '<span>符合 <b>' + matched.length.toLocaleString('en-US') + '</b> 件</span>' + (chips.length ? '<span>・</span>' : '') +
         chips.map(function(c) { return '<span class="cl-activeChip">' + escapeHtml(c.label) + '<button class="cl-chipX" data-cannes-action="remove" data-key="' + c.key + '" data-value="' + escapeHtml(c.val || '') + '" aria-label="拿掉條件 ' + escapeHtml(c.label) + '">✕</button></span>'; }).join('') + (chips.length ? '<button class="cl-clear" data-cannes-action="clear">清除全部</button>' : '');
@@ -3461,9 +3972,14 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
         return;
       }
       var st = cannesState.stats;
+      if (cannesMenu !== 'filter') { cannesMoreCats = false; cannesMoreSubs = false; }
+      // 浮層開著時整排重畫（點了類別或子類別馬上套用），清單捲到哪要留著
+      var scrollers = '#cannesFilterPop .cl-filterList, #cannesFilterPop .cl-filterCols';
+      var keepScroll = [].map.call(document.querySelectorAll(scrollers), function(n) { return n.scrollTop; });
       document.getElementById('cannesStats').innerHTML = '<ul class="cl-stats"><li><span>年份</span><b>' + st.years[st.years.length - 1] + '–' + st.years[0] + '</b></li><li><span>作品</span><b>' + st.total.toLocaleString('en-US') + ' 件</b></li><li><span>獎項</span><b>' + st.awards.toLocaleString('en-US') + ' 座</b></li><li><span>已收進靈感倉庫</span><b>' + cannesState.items.filter(function(w) { return !!findIdeaForCannes(w); }).length.toLocaleString('en-US') + ' 件</b></li></ul>';
       document.getElementById('cannesFilters').innerHTML = cannesFiltersHtml();
       renderCannesResults(); renderCannesFilterPop();
+      [].forEach.call(document.querySelectorAll(scrollers), function(n, i) { if (keepScroll[i]) n.scrollTop = keepScroll[i]; });
     }
     function cannesPill(a, count) {
       var i = CANNES_LEVELS.indexOf(a.level), cat = cannesCategoryLabel(a.category);
@@ -3542,7 +4058,21 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       if (action === 'filter-menu' || action === 'sort-menu' || action === 'done-filter') {
         cannesMenu = action === 'done-filter' ? '' : cannesMenu === action.split('-')[0] ? '' : action.split('-')[0];
         if (cannesMenu !== 'filter') cannesSubSearch = '';
-        renderCannesPage(); return;
+        renderCannesPage();
+        if (action === 'done-filter') document.getElementById('cannesFilterButton').focus();
+        return;
+      }
+      if (action === 'clear-filter') {
+        cannesQuery.category = ''; cannesQuery.sub = ''; cannesQuery.limit = 20;
+        renderCannesPage(); writeCannesQuery();
+        var done = document.querySelector('#cannesFilterPop .cl-doneButton'); if (done) done.focus();
+        return;
+      }
+      if (action === 'filter-more') {
+        if (key === 'cat') cannesMoreCats = !cannesMoreCats; else cannesMoreSubs = !cannesMoreSubs;
+        renderCannesFilterPop();
+        var more = document.querySelector('#cannesFilterPop .cl-moreRow[data-key="' + key + '"]'); if (more) more.focus();
+        return;
       }
       if (action === 'open-search' || action === 'close-search') {
         var row = document.getElementById('cannesToolRow');
@@ -3554,7 +4084,13 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       else if (action === 'level') cannesToggle('levels', value);
       else if (action === 'all-year') cannesUpdate('years', []);
       else if (action === 'all-level') cannesUpdate('levels', []);
-      else if (action === 'category' || action === 'sub') cannesUpdate(action, cannesQuery[action] === value ? '' : value);
+      else if (action === 'category' || action === 'sub') {
+        cannesUpdate(action, cannesQuery[action] === value ? '' : value);
+        [].some.call(document.querySelectorAll('#cannesFilterPop [data-cannes-action="' + action + '"]'), function(n) {
+          if (n.getAttribute('data-value') !== value) return false;
+          n.focus(); return true;
+        });
+      }
       else if (action === 'sort') { cannesMenu = ''; cannesUpdate('sort', value); }
       else if (action === 'view') { try { localStorage.setItem('cannes-view-mode', value); } catch (err) {} cannesUpdate('view', value); }
       else if (action === 'clear') cannesClearFilters();
@@ -3586,6 +4122,11 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && cannesMenu) { var target = cannesMenu === 'filter' ? 'cannesFilterButton' : 'cannesSortButton'; cannesMenu = ''; renderCannesPage(); document.getElementById(target).focus(); e.preventDefault(); }
       if (e.key === 'Escape' && e.target.id === 'cannesSearch') document.getElementById('cannesToolRow').removeAttribute('data-search-open');
+      if (e.key === 'ArrowDown' && e.target.id === 'cannesSubSearch') {
+        var first = document.querySelector('#cannesFilterPop [data-filter-col="sub"] .cl-filterList button:not(:disabled)');
+        if (first) { e.preventDefault(); first.focus(); }
+        return;
+      }
       var menu = e.target.closest('#cannesFilterPop [role="menu"], .cl-menu');
       if (!menu || ['ArrowDown','ArrowUp','Home','End'].indexOf(e.key) < 0) return;
       var buttons = Array.from(menu.querySelectorAll('button:not(:disabled)'));
