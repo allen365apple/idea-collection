@@ -320,6 +320,11 @@
       border: 1px solid currentColor; border-radius: 6px; background: transparent; color: inherit;
     }
     .data-notice .loading-spinner { width: 12px; height: 12px; margin: 0; border-width: 2px; }
+    .cl-signIn { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 48px 16px; text-align: center; color: #7f7f78; }
+    .cl-signIn p { margin: 0; }
+    #cannesFilters:empty { display: none; }
+    .cl-account { margin-left: auto; font-size: 0.75rem; color: #9a9a92; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .cl-account button { padding: 0; border: 0; background: none; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
 
     .empty-state { text-align: center; padding: 40px 0; color: #999; font-size: 0.9rem; }
     .section-heading { font-size: 0.85rem; color: #999; margin-bottom: 16px; }
@@ -2054,7 +2059,8 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
           </div><p>依年份、獎項、類別找得獎案例</p>
         </div>
       </header>
-      <nav class="cl-crumb" aria-label="麵包屑"><a href="#" onclick="switchPage('search');return false;">靈感倉庫</a><span aria-hidden="true">›</span><span aria-current="page">坎城圖書館</span></nav>
+      <nav class="cl-crumb" aria-label="麵包屑"><a href="#" onclick="switchPage('search');return false;">靈感倉庫</a><span aria-hidden="true">›</span><span aria-current="page">坎城圖書館</span><span id="cannesAccount" class="cl-account"></span></nav>
+      <div id="cannesAuth"></div>
       <div id="cannesNotice"></div>
       <div id="cannesFilters" class="cl-filters" aria-label="篩選"></div>
       <div id="cannesActive" class="cl-active"></div>
@@ -2070,6 +2076,10 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       <div class="about-section">
         <h3>靈感來源</h3>
         <p>靈感來自團隊日常分享、公開網站，以及 Instagram、Threads、YouTube 等社群與影音內容，還有坎城等國際創意獎案例。</p>
+      </div>
+      <div class="about-section" id="privacy">
+        <h3>隱私權政策</h3>
+        <p>坎城圖書館使用 Google 登入確認身分。網頁只讀取你的 Google 帳號 email，用來比對是否有權限查看，並記在你自己的瀏覽器裡，下次不用重新登入；按「登出」就會清除。我們不會把 email 傳到任何伺服器、不保存其他 Google 資料，也不用於廣告或分享給第三方。</p>
       </div>
     </div>
   </div>
@@ -2095,7 +2105,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       document.getElementById('page-' + pageName).classList.add('active');
       document.querySelector('.nav-tab[data-page="' + pageName + '"]').classList.add('active');
       window.scrollTo(0, 0);
-      if (pageName === 'cannes' && typeof SNAPSHOT_CSV_URL !== 'undefined') loadCannesData();
+      if (pageName === 'cannes' && typeof SNAPSHOT_CSV_URL !== 'undefined') openCannesPage();
       if (updateHash !== false) {
         history.replaceState(null, '', pageName === 'search' ? '#' : '#' + pageName);
         if (pageName === 'cannes' && typeof cannesQuery !== 'undefined') writeCannesQuery();
@@ -3711,6 +3721,68 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       return item && cannesIdeaIndex ? cannesIdeaIndex[item.ideaUid] || null : null;
     }
     /** 發布資料皆為既有公開 CSV；選填中文表失效時保留作品與英文標籤。 */
+    // ===== 坎城頁 Google 登入（只擋畫面：坎城 CSV 仍是公開發布，知道網址的人還是拿得到）=====
+    // 名單是小寫 email 的 SHA-256，明文只在本機 work/cannes-allowed-emails.txt；換名單要重算後改這裡
+    var CANNES_GOOGLE_CLIENT_ID = '349976017652-qu9vqdb2ve6ilen022l697s1updns1oj.apps.googleusercontent.com';
+    var CANNES_ALLOWED_HASHES = [
+      'd1114a22fa6e7297267bfd5ac19ec684d349083f8c2660c660a3c89e2bcf9423',
+      '312ab76b7af854f361c963d64293c37aef2a6c0ec9784732f66107f6d1300fab',
+      'e3c87b1f84be42d005ddf7e6500949efae06a67d3efb92eaf90dcb6034b47855',
+      'b931cafa250ad3b691556299dcbe6add4b991a2363b8735b324a5c0ee1e4ae6f'
+    ];
+    var CANNES_EMAIL_KEY = 'cannes-email';
+    function cannesSha256(text) {
+      return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function(buf) {
+        return [].map.call(new Uint8Array(buf), function(b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+      });
+    }
+    function cannesSignedInEmail() { try { return localStorage.getItem(CANNES_EMAIL_KEY) || ''; } catch (e) { return ''; } }
+    /** 進坎城頁：記得的 email 在名單上就載資料，否則顯示 Google 登入鈕，不讀任何坎城資料。 */
+    function openCannesPage() {
+      var email = cannesSignedInEmail();
+      if (!email) { showCannesSignIn(''); return; }
+      cannesSha256(email).then(function(hash) {
+        if (CANNES_ALLOWED_HASHES.indexOf(hash) < 0) { showCannesSignIn(email); return; }
+        document.getElementById('cannesAuth').innerHTML = '';
+        document.getElementById('cannesAccount').innerHTML = escapeHtml(email) + ' · <button type="button" onclick="cannesSignOut()">登出</button>';
+        loadCannesData();
+      });
+    }
+    /** deniedEmail 有值＝登入了但不在名單。 */
+    function showCannesSignIn(deniedEmail) {
+      document.getElementById('cannesResults').innerHTML = '';
+      document.getElementById('cannesAuth').innerHTML = '<div class="cl-signIn">' + (deniedEmail
+        ? '<p>這個帳號沒有權限：' + escapeHtml(deniedEmail) + '</p><p>請換一個帳號登入。</p>'
+        : '<p>坎城圖書館要用 Google 登入才能看。</p>') + '<div id="cannesGoogleButton"></div></div>';
+      if (!CANNES_GOOGLE_CLIENT_ID) { document.getElementById('cannesGoogleButton').textContent = '（登入還沒設定好）'; return; }
+      function render() {
+        google.accounts.id.initialize({ client_id: CANNES_GOOGLE_CLIENT_ID, callback: onCannesCredential });
+        google.accounts.id.renderButton(document.getElementById('cannesGoogleButton'), { theme: 'outline', size: 'large', text: 'signin_with', locale: 'zh-TW' });
+      }
+      if (window.google && google.accounts) { render(); return; }
+      var s = document.createElement('script');
+      s.src = 'https://accounts.google.com/gsi/client'; s.async = true; s.onload = render;
+      s.onerror = function() { document.getElementById('cannesGoogleButton').innerHTML = 'Google 登入載入失敗 <button onclick="openCannesPage()">重試</button>'; };
+      document.head.appendChild(s);
+    }
+    function onCannesCredential(response) {
+      var payload = {};
+      try { payload = JSON.parse(decodeURIComponent(escape(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); } catch (e) {}
+      var email = String(payload.email || '').toLowerCase();
+      if (!email || payload.email_verified !== true) { showCannesSignIn(email || '（讀不到 email）'); return; }
+      cannesSha256(email).then(function(hash) {
+        if (CANNES_ALLOWED_HASHES.indexOf(hash) < 0) { showCannesSignIn(email); return; }
+        try { localStorage.setItem(CANNES_EMAIL_KEY, email); } catch (e) {}
+        openCannesPage();
+      });
+    }
+    /** 登出：忘掉 email、清掉坎城快取，重新整理回登入畫面。 */
+    function cannesSignOut() {
+      try { localStorage.removeItem(CANNES_EMAIL_KEY); } catch (e) {}
+      if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+      cacheSet(CANNES_CACHE_KEY, null).then(function() { location.reload(); });
+    }
+
     var CANNES_CACHE_KEY = 'cannes-tables-v1';
     /**
      * 先顯示上次存的四張表（IndexedDB），背景再抓新的；內容沒變就不重畫。
@@ -4240,7 +4312,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
 
     searchBtn.addEventListener('click', doSearch);
     searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
-    if (window.location.hash.split('?')[0] === '#cannes') loadCannesData();
+    if (window.location.hash.split('?')[0] === '#cannes') openCannesPage();
     loadData(true);
   </script>
 
