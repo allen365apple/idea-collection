@@ -4085,16 +4085,18 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       var head = '<div class="cl-headline"><p class="cl-titleLine"><button class="cl-itemTitle" data-cannes-action="open" data-id="' + item.id + '">' + escapeHtml(item.title) + '</button>' + (!card ? ' <span class="cl-rowYear">' + item.year + '</span>' : '') + '</p><p class="cl-ideaLine' + (!idea ? ' cl-pending' : '') + '">' + escapeHtml(idea ? idea.summary : '（一句話創意整理中）') + '</p></div>';
       return '<li class="' + (card ? 'cl-card' : 'cl-row') + '" data-cannes-action="open" data-id="' + item.id + '">' + (card ? '<div class="cl-cardMedia">' + thumb + '<span class="cl-cardYear">' + item.year + '</span></div>' : thumb) + '<div class="' + (card ? 'cl-cardBody' : 'cl-rowBody') + '">' + head + cannesPills(item) + '</div></li>';
     }
-    /** 詳情內容沿用 Dashboard 的背景／洞察／點子分段與可展開的執行、來源。 */
+    /** 詳情內容沿用 Dashboard 的分段（背景／洞察／策略／點子／爭議）與可展開的執行、來源。 */
     function cannesIdeaBody(idea) {
       if (!idea) return '<p class="cl-muted">一句話創意與完整內容載入中…</p>';
       var text = String(idea.content || ''), srcAt = text.search(/(?:^|\n)\s*資料來源[：:]/);
       var sources = srcAt < 0 ? '' : text.slice(srcAt).replace(/^\s*資料來源[：:]\s*/, '');
       text = srcAt < 0 ? text : text.slice(0, srcAt);
-      var matches = Array.from(text.matchAll(/【(背景|洞察|點子|執行)】[ \t]*\n?/g)), execution = '', sections = '';
+      // 撰寫規則的小標：背景、洞察、策略、點子、執行、爭議；【得獎】行在獎項清單已列，不重複顯示
+      var matches = Array.from(text.matchAll(/【(背景|洞察|策略|點子|執行|爭議|得獎)】[ \t]*\n?/g)), execution = '', sections = '';
       function section(title, body) { return '<section class="cl-sec"><h4>' + escapeHtml(title) + '</h4><p>' + escapeHtml(body.trim()) + '</p></section>'; }
       matches.forEach(function(m, i) {
         var body = text.slice(m.index + m[0].length, i + 1 < matches.length ? matches[i + 1].index : text.length);
+        if (m[1] === '得獎') return;
         if (m[1] === '執行') execution = section(m[1], body); else sections += section(m[1], body);
       });
       if (!matches.length) sections = section('內容', text);
