@@ -3722,15 +3722,28 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     }
     /** 發布資料皆為既有公開 CSV；選填中文表失效時保留作品與英文標籤。 */
     // ===== 坎城頁 Google 登入（只擋畫面：坎城 CSV 仍是公開發布，知道網址的人還是拿得到）=====
-    // 名單是小寫 email 的 SHA-256，明文只在本機 work/cannes-allowed-emails.txt；換名單要重算後改這裡
-    var CANNES_GOOGLE_CLIENT_ID = '349976017652-qu9vqdb2ve6ilen022l697s1updns1oj.apps.googleusercontent.com';
-    var CANNES_ALLOWED_HASHES = [
-      'd1114a22fa6e7297267bfd5ac19ec684d349083f8c2660c660a3c89e2bcf9423',
-      '312ab76b7af854f361c963d64293c37aef2a6c0ec9784732f66107f6d1300fab',
-      'e3c87b1f84be42d005ddf7e6500949efae06a67d3efb92eaf90dcb6034b47855',
-      'b931cafa250ad3b691556299dcbe6add4b991a2363b8735b324a5c0ee1e4ae6f',
-      '400e08614cc20849edca70de983aa5c0e441ac5d0219348aca1cac61d49c53d9'
-    ];
+    // 名單在獨立試算表「坎城圖書館登入名單」：柏文改「名單」分頁，Apps Script（cannes-login.gs.js）自動把小寫 email 的 SHA-256
+    // 寫進「雜湊」分頁；只有雜湊分頁發佈成 CSV，網頁讀它比對（Google 發佈快取約 5 分鐘，改名單後稍等才生效）
+    var CANNES_ALLOWED_HASHES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjoA9LtPBM4BtFFJT2haq7RYRuN1OgSQNaMaOCZ35VdIhMXsZ-leRqFhrKlcesrlE_5P-JSxNb22VU/pub?gid=1612363854&single=true&output=csv';
+    var cannesAllowedHashesPromise = null;
+    function cannesAllowedHashes() {
+      if (!cannesAllowedHashesPromise) {
+        // 加時間參數：Google 回 max-age=300，不加的話瀏覽器會沿用 5 分鐘前的名單
+        cannesAllowedHashesPromise = fetchWithTimeout(CANNES_ALLOWED_HASHES_CSV_URL + '&t=' + Date.now(), 15000)
+          .then(function(r) { if (!r.ok) throw Error('名單讀取失敗'); return r.text(); })
+          .then(function(text) { return text.match(/[0-9a-f]{64}/g) || []; });
+        cannesAllowedHashesPromise.catch(function() { cannesAllowedHashesPromise = null; });
+      }
+      return cannesAllowedHashesPromise;
+    }
+    /** email 在名單上嗎（名單讀不到時 reject）。 */
+    function cannesIsAllowed(email) {
+      return Promise.all([cannesSha256(email), cannesAllowedHashes()]).then(function(r) { return r[1].indexOf(r[0]) >= 0; });
+    }
+    function showCannesListError() {
+      document.getElementById('cannesResults').innerHTML = '';
+      document.getElementById('cannesAuth').innerHTML = '<div class="data-notice warn">登入名單暫時讀不到，稍後再試。 <button onclick="openCannesPage()">再試一次</button></div>';
+    }
     var CANNES_EMAIL_KEY = 'cannes-email';
     function cannesSha256(text) {
       return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function(buf) {
@@ -3742,12 +3755,12 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     function openCannesPage() {
       var email = cannesSignedInEmail();
       if (!email) { showCannesSignIn(''); return; }
-      cannesSha256(email).then(function(hash) {
-        if (CANNES_ALLOWED_HASHES.indexOf(hash) < 0) { showCannesSignIn(email); return; }
+      cannesIsAllowed(email).then(function(ok) {
+        if (!ok) { showCannesSignIn(email); return; }
         document.getElementById('cannesAuth').innerHTML = '';
         document.getElementById('cannesAccount').innerHTML = escapeHtml(email) + ' · <button type="button" onclick="cannesSignOut()">登出</button>';
         loadCannesData();
-      });
+      }, showCannesListError);
     }
     /** deniedEmail 有值＝登入了但不在名單。 */
     function showCannesSignIn(deniedEmail) {
@@ -3771,11 +3784,11 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       try { payload = JSON.parse(decodeURIComponent(escape(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); } catch (e) {}
       var email = String(payload.email || '').toLowerCase();
       if (!email || payload.email_verified !== true) { showCannesSignIn(email || '（讀不到 email）'); return; }
-      cannesSha256(email).then(function(hash) {
-        if (CANNES_ALLOWED_HASHES.indexOf(hash) < 0) { showCannesSignIn(email); return; }
+      cannesIsAllowed(email).then(function(ok) {
+        if (!ok) { showCannesSignIn(email); return; }
         try { localStorage.setItem(CANNES_EMAIL_KEY, email); } catch (e) {}
         openCannesPage();
-      });
+      }, showCannesListError);
     }
     /** 登出：忘掉 email、清掉坎城快取，重新整理回登入畫面。 */
     function cannesSignOut() {
