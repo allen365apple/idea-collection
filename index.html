@@ -3842,15 +3842,32 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
         if (key && !subLabels[key]) subLabels[key] = a.subcategory;
       });
       var list = tables[0].filter(function(w) { return /^ltwm-\d+$/.test(w.ltwm_id); }).map(function(w) {
-        var awards = byId[w.ltwm_id] || [];
-        awards.sort(function(a, b) { return CANNES_LEVELS.indexOf(a.level) - CANNES_LEVELS.indexOf(b.level) ||
+        var awards = (byId[w.ltwm_id] || []).slice();
+        return { id: w.ltwm_id, year: Number(w.year), years: [Number(w.year)], title: w.title, brand: w.brand, agency: w.agency,
+          ideaUid: w.idea_uid, imageUrl: w.image_url, caseFilmUrl: w.case_film_url, sameAs: String(w.same_as || '').trim(), awards: awards };
+      });
+      // 2026-11-08：同一件作品（same_as，含跨年回鍋）合成一張卡：獎項併進保留那筆、年份都算，舊編號開詳情會轉到保留那筆
+      var byWork = {}, aliases = {};
+      list.forEach(function(w) { byWork[w.id] = w; });
+      function cannesRoot(w) { var seen = {}; while (w.sameAs && byWork[w.sameAs] && !seen[w.id]) { seen[w.id] = true; w = byWork[w.sameAs]; } return w; }
+      list = list.filter(function(w) {
+        var r = cannesRoot(w);
+        if (r === w) return true;
+        r.awards = r.awards.concat(w.awards); aliases[w.id] = r.id;
+        w.years.forEach(function(y) { if (r.years.indexOf(y) < 0) r.years.push(y); });
+        if (!r.ideaUid && w.ideaUid) r.ideaUid = w.ideaUid;
+        if (!r.imageUrl && w.imageUrl) r.imageUrl = w.imageUrl;
+        if (!r.caseFilmUrl && w.caseFilmUrl) r.caseFilmUrl = w.caseFilmUrl;
+        return false;
+      });
+      list.forEach(function(w) {
+        w.years.sort(function(a, b) { return b - a; });
+        w.awards.sort(function(a, b) { return CANNES_LEVELS.indexOf(a.level) - CANNES_LEVELS.indexOf(b.level) ||
           ((categories[a.category] || {}).order || 9999) - ((categories[b.category] || {}).order || 9999) || a.subcategory.localeCompare(b.subcategory); });
-        return { id: w.ltwm_id, year: Number(w.year), title: w.title, brand: w.brand, agency: w.agency,
-          ideaUid: w.idea_uid, imageUrl: w.image_url, caseFilmUrl: w.case_film_url, awards: awards };
       });
       var yearCounts = {};
-      list.forEach(function(w) { yearCounts[w.year] = (yearCounts[w.year] || 0) + 1; });
-      cannesState = { status: 'ready', items: list, subLabels: subLabels,
+      list.forEach(function(w) { w.years.forEach(function(y) { yearCounts[y] = (yearCounts[y] || 0) + 1; }); });
+      cannesState = { status: 'ready', items: list, aliases: aliases, subLabels: subLabels,
         categories: Object.keys(categories).map(function(k) { return categories[k]; }).sort(function(a, b) { return a.order - b.order || a.key.localeCompare(b.key); }),
         stats: { total: list.length, awards: list.reduce(function(n, w) { return n + w.awards.length; }, 0), years: Object.keys(yearCounts).map(Number).sort(function(a, b) { return b - a; }), yearCounts: yearCounts } };
       var counts = cannesGroupCounts(list);
@@ -3864,7 +3881,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     }
     function retryCannesData() { cannesLoaded = false; cannesLoading = null; return loadCannesData(); }
     function cannesMatches(item, query) {
-      if (query.years.length && query.years.indexOf(item.year) < 0) return false;
+      if (query.years.length && !item.years.some(function(y) { return query.years.indexOf(y) >= 0; })) return false;
       if (query.levels.length && !item.awards.some(function(a) { return query.levels.indexOf(CANNES_LEVEL_KEYS[CANNES_LEVELS.indexOf(a.level)]) >= 0; })) return false;
       var cat = cannesCatCondition(query.category), sub = cannesSubCondition(query.sub);
       if ((cat || sub) && !item.awards.some(function(a) { return cannesAwardMatches(a, cat, sub); })) return false;
@@ -3881,8 +3898,8 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       return items.sort(function(a, b) {
         if (cannesQuery.sort === 'title') return title(a, b);
         if (cannesQuery.sort === 'brand') return Number(!a.brand) - Number(!b.brand) || a.brand.localeCompare(b.brand, 'en') || title(a, b);
-        if (cannesQuery.sort === 'year') return b.year - a.year || rank(a) - rank(b) || title(a, b);
-        return rank(a) - rank(b) || b.year - a.year || title(a, b);
+        if (cannesQuery.sort === 'year') return b.years[0] - a.years[0] || rank(a) - rank(b) || b.awards.length - a.awards.length || title(a, b);
+        return rank(a) - rank(b) || b.awards.length - a.awards.length || b.years[0] - a.years[0] || title(a, b);
       });
     }
     function cannesUpdate(key, value) {
@@ -4082,8 +4099,8 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     function cannesItemHtml(item) {
       var card = cannesQuery.view === 'card', idea = findIdeaForCannes(item), image = safeUrl(item.imageUrl);
       var thumb = '<span class="' + (card ? 'cl-cardThumb' : 'cl-thumb') + '" aria-hidden="true">' + (image ? '<img src="' + escapeHtml(image) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '') + '</span>';
-      var head = '<div class="cl-headline"><p class="cl-titleLine"><button class="cl-itemTitle" data-cannes-action="open" data-id="' + item.id + '">' + escapeHtml(item.title) + '</button>' + (!card ? ' <span class="cl-rowYear">' + item.year + '</span>' : '') + '</p><p class="cl-ideaLine' + (!idea ? ' cl-pending' : '') + '">' + escapeHtml(idea ? idea.summary : '（一句話創意整理中）') + '</p></div>';
-      return '<li class="' + (card ? 'cl-card' : 'cl-row') + '" data-cannes-action="open" data-id="' + item.id + '">' + (card ? '<div class="cl-cardMedia">' + thumb + '<span class="cl-cardYear">' + item.year + '</span></div>' : thumb) + '<div class="' + (card ? 'cl-cardBody' : 'cl-rowBody') + '">' + head + cannesPills(item) + '</div></li>';
+      var head = '<div class="cl-headline"><p class="cl-titleLine"><button class="cl-itemTitle" data-cannes-action="open" data-id="' + item.id + '">' + escapeHtml(item.title) + '</button>' + (!card ? ' <span class="cl-rowYear">' + item.years.join('／') + '</span>' : '') + '</p><p class="cl-ideaLine' + (!idea ? ' cl-pending' : '') + '">' + escapeHtml(idea ? idea.summary : '（一句話創意整理中）') + '</p></div>';
+      return '<li class="' + (card ? 'cl-card' : 'cl-row') + '" data-cannes-action="open" data-id="' + item.id + '">' + (card ? '<div class="cl-cardMedia">' + thumb + '<span class="cl-cardYear">' + item.years.join('／') + '</span></div>' : thumb) + '<div class="' + (card ? 'cl-cardBody' : 'cl-rowBody') + '">' + head + cannesPills(item) + '</div></li>';
     }
     /** 詳情內容沿用 Dashboard 的分段（背景／洞察／策略／點子／爭議）與可展開的執行、來源。 */
     function cannesIdeaBody(idea) {
@@ -4106,6 +4123,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       return html + '<p class="cl-tags">' + tags.slice(0, 12).map(function(t) { return '#' + escapeHtml(t); }).join(' ') + (tags.length > 12 ? ' +' + (tags.length - 12) : '') + '</p>';
     }
     function openCannesModal(id) {
+      id = (cannesState.aliases || {})[id] || id;
       var item = cannesState.items.filter(function(w) { return w.id === id; })[0];
       if (!item) return;
       cannesModalItem = item; cannesQuery.id = id; writeCannesQuery(); currentModalItem = null;
@@ -4113,10 +4131,10 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       var html = '<div class="cl-detail"><div class="cl-media"><span class="cl-detailThumb">' + (image ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" referrerpolicy="no-referrer">' : '') + '</span><div class="cl-mediaButtons">';
       if (film) html += '<a class="cl-bigButton cl-primary" href="' + escapeHtml(film) + '" target="_blank" rel="noopener noreferrer">▶ 看 Case film</a>';
       html += '<button class="cl-bigButton" data-cannes-action="idea"' + (!idea ? ' disabled' : '') + '>在靈感倉庫看這則 ↗</button></div><dl class="cl-kv">' +
-        [['品牌', item.brand], ['代理商', item.agency], ['年份', item.year], ['編號', item.id]].map(function(p) { return '<dt>' + p[0] + '</dt><dd>' + escapeHtml(p[1] || '—') + '</dd>'; }).join('') + '</dl></div>';
+        [['品牌', item.brand], ['代理商', item.agency], ['年份', item.years.join('、')], ['編號', item.id]].map(function(p) { return '<dt>' + p[0] + '</dt><dd>' + escapeHtml(p[1] || '—') + '</dd>'; }).join('') + '</dl></div>';
       html += '<div class="cl-text"><h3 class="cl-detailTitle" id="cannesDetailTitle">' + escapeHtml(item.title) + '</h3><ul class="cl-awardList" aria-label="獎項">' + item.awards.map(function(a) {
         var cat = cannesCategoryLabel(a.category), sub = cannesSubLabel(a.subcategory);
-        return '<li title="' + escapeHtml(a.category + ' ・ ' + a.subcategory) + '">' + cannesPill(a, 1) + '<span class="cl-awardCat">' + escapeHtml(cat) + (sub && sub !== cat && cannesSubKey(a.subcategory) !== cannesSubKey(a.category) ? '<span class="cl-awardSub">・' + escapeHtml(sub) + '</span>' : '') + '</span></li>';
+        return '<li title="' + escapeHtml(a.category + ' ・ ' + a.subcategory) + '">' + (item.years.length > 1 ? '<span class="cl-rowYear">' + escapeHtml(a.year) + '</span> ' : '') + cannesPill(a, 1) + '<span class="cl-awardCat">' + escapeHtml(cat) + (sub && sub !== cat && cannesSubKey(a.subcategory) !== cannesSubKey(a.category) ? '<span class="cl-awardSub">・' + escapeHtml(sub) + '</span>' : '') + '</span></li>';
       }).join('') + '</ul>' + cannesIdeaBody(idea) + '</div></div>';
       document.getElementById('modalBody').innerHTML = html;
       document.getElementById('modalContent').classList.add('cl-dialog');
