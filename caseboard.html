@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="zh-Hant">
 <!--
-最後更新：2026-11-12 01:20
+最後更新：2026-11-12 02:20
 誰幫忙的：Claude Code（Claude Opus 5.5）
-修改摘要：GitHub Pages 單檔版（資料內嵌、圖片讀原始網址）；年份改下拉、等級收進漏斗、工具列加說明提示、瀑布牆拿掉獎項；按鈕、徽章、選單、收藏星對齊 Dashboard 原始碼
+修改摘要：改名「Caseboard 視覺參考牆」；複製給 AI 改成先開視窗可改文字；手機版篩選列橫滑、漏斗改底部面板、詳情全螢幕
 -->
-<title>坎城 Case Board 牆</title>
+<title>Caseboard 視覺參考牆</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
@@ -149,7 +149,15 @@ dialog::backdrop{background:#1e211b66;backdrop-filter:blur(3px)}
 .ext{color:var(--sage-deep);font-weight:500;font-size:var(--fs-secondary)}
 @media (max-width:760px){.dbody{grid-template-columns:1fr}.row{grid-template-columns:1fr}.row>.lbl{padding-top:0}}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--lime);padding:8px 16px;border-radius:999px;font-size:var(--fs-secondary);font-weight:500}
-textarea.copybox{width:100%;height:220px;font:12px/1.5 ui-monospace,monospace;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px}
+textarea.copybox{width:100%;height:min(46vh,360px);font-family:var(--font-body);font-size:var(--fs-secondary);line-height:1.7;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;resize:vertical}
+textarea.copybox:focus{outline:none;border-color:var(--lime-deep)}
+.cpbody{padding:16px 20px 20px;display:grid;gap:12px}
+.cpnote{margin:0;font-size:var(--fs-secondary);color:var(--ink-2)}
+.cpthumbs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.cpthumbs .thumb{flex:none;height:56px;width:auto;border-radius:6px;background-color:var(--sage-3)}
+.cpmore{align-self:center;font-size:var(--fs-label);color:var(--ink-3);padding:0 6px}
+.cpbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cpcount{font-size:var(--fs-label);color:var(--ink-3);font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.card{transition:none}}
 
 /* Pinterest 式：圖為主、無外框、圓角圖、滑過才出現操作；JS 依最短欄排列，順序由左到右 */
@@ -197,18 +205,46 @@ textarea.copybox{width:100%;height:220px;font:12px/1.5 ui-monospace,monospace;bo
 .star[aria-pressed="true"]{opacity:1;color:var(--signal-amber);background:rgba(250,248,241,.92);border:0}
 .star:focus-visible{outline:2px solid var(--lime-deep);outline-offset:2px;opacity:1}
 .cap{padding:6px 2px 0}
+
+/* 手機：篩選列改成一行橫向滑動、色票文字不重疊、卡片上只留收藏星 */
+.swatches{row-gap:24px}
+@media (max-width:760px){
+  .wrap{gap:10px;padding-block:14px 40px}
+  .head p{display:none}
+  .filters{padding:12px;gap:8px}
+  .row{grid-template-columns:44px minmax(0,1fr);align-items:center}
+  .row>.lbl{padding-top:0}
+  .row .chips,.row .swatches{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-right:-12px;padding-right:12px}
+  .row .chips::-webkit-scrollbar,.row .swatches::-webkit-scrollbar{display:none}
+  .row .chip{flex:none}
+  .row .swatches{gap:10px;padding-bottom:16px}
+  .sw{flex:none;width:30px;height:30px}
+  .toolbar{flex-wrap:nowrap;gap:4px}
+  .toolbar .search{flex:1;min-width:0;width:auto}
+  .grid{gap:10px}.col{gap:14px}
+  .pop{position:fixed;left:12px;right:12px;top:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:auto;max-height:70vh}
+  #sortPop{left:auto;width:220px}
+  dialog{width:100vw;max-width:100vw;max-height:100dvh;height:100dvh;border-radius:0;margin:0}
+  .dhead{padding:10px 12px;gap:6px}
+  .dhead .ext{display:none}
+  .dbody{padding:12px;gap:16px}
+  .simgrid,.simhead{padding-left:12px;padding-right:12px}
+  .cpbody{padding:12px}
+  textarea.copybox{font-size:16px;height:40vh}
+}
+@media (hover:none){.find,.year{display:none}.ic .tip{display:none}.star{opacity:1}}
 </style>
 
 <div class="wrap">
-  <div class="crumb">靈感倉庫 › 坎城圖書館 › Case Board 牆</div>
-  <div class="head"><h1>Case Board 牆</h1><p id="total">載入中…</p></div>
+  <div class="crumb">靈感倉庫 › 坎城圖書館 › Caseboard 視覺參考牆</div>
+  <div class="head"><h1>Caseboard 視覺參考牆</h1><p id="total">載入中…</p></div>
 
   <section class="filters" aria-label="篩選">
     <div class="row"><span class="lbl">版型</span><div class="chips" id="fType"></div></div>
     <div class="row"><span class="lbl">主視覺</span><div class="chips" id="fVis"></div></div>
     <div class="row"><span class="lbl">顏色</span><div class="swatches" id="fCol"></div></div>
     <div class="toolbar">
-      <input class="search" type="search" id="q" placeholder="搜尋作品、品牌、代理商、點子" aria-label="搜尋">
+      <input class="search" type="search" id="q" placeholder="搜尋作品、品牌、點子" aria-label="搜尋">
       <span class="grow"></span>
       <div class="popwrap">
         <button class="ic" id="funBtn" aria-expanded="false" aria-label="篩選：年份、等級、方向、視覺標籤"><svg viewBox="0 0 24 24"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5z"/></svg><span class="n" id="funN" hidden></span><span class="tip">篩選：年份、等級、方向、視覺標籤</span></button>
@@ -426,6 +462,24 @@ function fallback(text){
   const d=$('dlg');d.innerHTML=`<div class="dhead"><b>請自己全選複製</b><span class="sp"></span><button class="button" id="dClose">關閉</button></div><div style="padding:20px"><textarea class="copybox" id="cb" readonly></textarea></div>`;
   if(!d.open)d.showModal();$('cb').value=text;$('cb').select();$('dClose').onclick=()=>d.close();
 }
+function openCopy(){
+  const d=$('dlg'),L=D.filter(o=>fav.has(o.id)),txt=aiPack();cur=-1;
+  d.innerHTML=`<div class="dhead"><b style="font-size:var(--fs-title)">複製給 AI 的參考包</b><span class="sp"></span><button class="button" id="dClose">關閉</button></div>
+  <div class="cpbody">
+    <p class="cpnote">下面是要貼給 AI 的文字：開頭是請 AI 做什麼，後面是你收藏的 ${L.length} 張 case board（名稱、版型、風格、圖片網址）。可以先改成你要的，再按複製。</p>
+    <div class="cpthumbs">${L.slice(0,12).map(o=>`<div class="thumb" style="${sprite(o)};background-image:${atlas(o)}" title="${esc(o.t)}"></div>`).join('')}${L.length>12?`<span class="cpmore">+${L.length-12}</span>`:''}</div>
+    <textarea class="copybox" id="cpText" aria-label="要複製的文字" spellcheck="false"></textarea>
+    <div class="cpbar"><span class="cpcount" id="cpCount"></span><span class="sp"></span><button class="button" id="cpReset">改回預設文字</button><button class="button primary" id="cpCopy">複製</button></div>
+  </div>`;
+  if(!d.open)d.showModal();
+  const ta=$('cpText');ta.value=txt;const upd=()=>$('cpCount').textContent=`${ta.value.length} 字`;upd();ta.oninput=upd;
+  $('dClose').onclick=()=>d.close();
+  $('cpReset').onclick=()=>{ta.value=aiPack();upd()};
+  $('cpCopy').onclick=()=>{const v=ta.value;
+    const ok=()=>{toast('已複製，貼給 AI 就好');$('cpCopy').textContent='已複製 ✓';setTimeout(()=>{if($('cpCopy'))$('cpCopy').textContent='複製'},1600)};
+    const fb=()=>{ta.focus();ta.select();toast('請按 ⌘C／Ctrl+C 複製選取的文字')};
+    if(navigator.clipboard?.writeText)navigator.clipboard.writeText(v).then(ok,fb);else fb()};
+}
 function aiPack(){
   const L=D.filter(o=>fav.has(o.id)),tys=[...new Set(L.map(o=>o.ty).filter(Boolean))],vs=[...new Set(L.map(o=>o.v).filter(Boolean))];
   return `我要做一張坎城風格的 case board（一張圖講完整個案子：案名、背景／洞察、點子、執行、成效）。請參考下面 ${L.length} 張得獎作品的 case board，學它們的版面結構、資訊層級、字級對比、配色與留白，不要照抄內容。\n\n`+
@@ -449,7 +503,7 @@ document.addEventListener('click',e=>{
   const sw=t.closest('.sw');if(sw){const k=sw.dataset.c;st.c.has(k)?st.c.delete(k):st.c.add(k);render();return}
   const rm=t.closest('[data-rm]');if(rm){const k=rm.dataset.rm;if(k==='q'){st.q='';$('q').value=''}else if(k==='fav')st.fav=false;else if(k==='mb'){st.mb=false;$('mb').checked=false}else st[k].delete(rm.dataset.v);render();return}
   if(t.id==='clearAll'){['ty','v','c','yr','lv','or','tag'].forEach(k=>st[k].clear());st.q='';$('q').value='';st.fav=false;st.mb=false;$('mb').checked=false;render();return}
-  if(t.id==='copyAi'){copy(aiPack(),'已複製，貼給 AI 就好');return}
+  if(t.id==='copyAi'){openCopy();return}
   const c=t.closest('.card');
   if(c){if($('simGrid')&&$('simGrid').contains(c))open(+c.dataset.i,{push:true});else open(+c.dataset.i);}
 });
