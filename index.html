@@ -2,7 +2,7 @@
 <!--
   最後更新：2026-11-18 台北時間
   誰幫忙的：Claude Code（Claude Opus 5.5）
-  修改摘要：補回 11/05 誤刪的坎城 Google 登入用戶端 ID，新訪客才看得到登入按鈕
+  修改摘要：坎城作品詳情視窗改成跟 Jebby Dashboard 一樣的排法（獎項移到左欄、Case film 疊在圖上、靈感倉庫鈕移到標題列）
 -->
 <html lang="zh-TW">
 <head>
@@ -1848,9 +1848,34 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
 
 
 .cl-dialog { width: min(980px, calc(100vw - 28px)); }
-.cl-detail { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 20px; min-width: 0; }
-.cl-media { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 14px; border-radius: var(--r-md); background: var(--ground-2); align-self: start; }
+/* 詳情版面照 Dashboard components/ideas/cannes/cannes.module.css（2026-11-18） */
+.cl-detail { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; min-width: 0; }
+.cl-media { display: flex; flex-direction: column; gap: 14px; min-width: 0; align-self: start; }
+.cl-mediaFrame { position: relative; }
 .cl-detailThumb { display: block; aspect-ratio: 16 / 9; border-radius: var(--r-sm); background: var(--sage-3); overflow: hidden; }
+.cl-filmButton {
+  position: absolute; left: 10px; bottom: 10px; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 14px;
+  border: 1px solid var(--lime-deep); border-radius: 999px; background: var(--lime); box-shadow: var(--shadow-sm); text-decoration: none; white-space: nowrap;
+  font-size: var(--fs-body); font-weight: var(--fw-medium); line-height: 1.55; color: var(--ink);
+}
+.cl-filmButton:hover { background: var(--lime-2); }
+.cl-filmButton:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.cl-facts { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.cl-factsAwards { display: flex; flex-direction: column; gap: 6px; }
+.cl-factsLabel { margin: 0; font-size: var(--fs-label); font-weight: var(--fw-bold); line-height: 1.55; letter-spacing: .06em; color: var(--sage-deep); }
+.cl-dialogHead { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0 56px 16px 0; }
+.cl-headButton {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
+  cursor: pointer; white-space: nowrap; font-size: var(--fs-secondary); font-weight: var(--fw-medium); line-height: 1.55; color: var(--ink-2);
+}
+.cl-headButton:hover:not(:disabled) { background: var(--sage-3); border-color: var(--sage-2); color: var(--ink); }
+.cl-headButton:disabled { opacity: .45; cursor: default; }
+.cl-headButton:focus-visible { outline: 2px solid var(--lime-deep); outline-offset: 2px; }
+.cl-phoneMeta { display: none; }
+.cl-phoneMetaLine { margin: 2px 0 8px; font-size: var(--fs-secondary); font-weight: var(--fw-regular); line-height: 1.55; color: var(--ink-3); }
+.cl-foldRow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.cl-foldRow > * { min-width: 0; }
+.cl-foldRow > .cl-fold[open] { flex-basis: 100%; }
 .cl-mediaButtons { display: flex; flex-direction: column; gap: 8px; }
 .cl-bigButton {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 4px 14px; border: 1px solid var(--line); border-radius: var(--r-sm);
@@ -1870,15 +1895,15 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
 .cl-kv dt { font-weight: var(--fw-regular); }
 .cl-kv dd { margin: 0; font-weight: var(--fw-medium); color: var(--ink-2); overflow-wrap: anywhere; }
 .cl-text { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.cl-detailTitle { margin: 0; font-size: var(--fs-title); font-weight: var(--fw-bold); line-height: 1.4; color: var(--ink); overflow-wrap: anywhere; }
+.cl-detailTitle { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-bold); line-height: 1.4; letter-spacing: .02em; color: var(--ink-2); overflow-wrap: anywhere; }
 
 .cl-awardList { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: center; gap: 6px 10px; }
 .cl-awardList li { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: center; }
 .cl-awardList .cl-award { justify-self: start; }
 .cl-awardCat { font-size: var(--fs-secondary); font-weight: var(--fw-regular); line-height: 1.55; color: var(--ink-2); }
 .cl-awardSub { color: var(--ink-3); }
-.cl-callout { margin: 0; padding: 10px 14px; border-left: 4px solid var(--lime-deep); border-radius: var(--r-sm); background: var(--lime-3); font-size: var(--fs-title); font-weight: var(--fw-medium); line-height: 1.6; color: var(--ink); }
-.cl-sec h4 { margin: 0 0 2px; font-size: var(--fs-label); font-weight: var(--fw-bold); line-height: 1.55; letter-spacing: .06em; color: var(--ink-3); }
+.cl-callout { margin: 0; padding: 14px 18px; border-left: 4px solid var(--lime-deep); border-radius: 0 var(--r-sm) var(--r-sm) 0; background: var(--lime-3); font-size: var(--fs-title); font-weight: var(--fw-bold); line-height: 1.7; color: var(--ink); }
+.cl-sec h4 { margin: 0 0 2px; font-size: var(--fs-label); font-weight: var(--fw-bold); line-height: 1.55; letter-spacing: .06em; color: var(--sage-deep); }
 .cl-sec p { margin: 0; white-space: pre-line; font-size: var(--fs-body); font-weight: var(--fw-regular); line-height: 1.7; color: var(--ink); }
 .cl-fold { display: flex; flex-direction: column; gap: 10px; }
 .cl-fold summary { cursor: pointer; list-style: none; font-size: var(--fs-secondary); font-weight: var(--fw-medium); line-height: 1.55; color: var(--sage-deep); text-decoration: underline; text-underline-offset: 3px; }
@@ -1896,7 +1921,12 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
 .cl-failure p { margin: 0; }
 
 @media (max-width: 760px) {
-  .cl-detail { grid-template-columns: minmax(0, 1fr); }
+  /* 手機：圖在最上面 → 右欄 → 品牌與完整獎項 */
+  .cl-detail { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .cl-media { display: contents; }
+  .cl-mediaFrame { order: -2; }
+  .cl-facts { order: 1; padding-top: 12px; border-top: 1px solid var(--line); }
+  .cl-phoneMeta { display: block; }
 }
 
 
@@ -1996,8 +2026,8 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     #cannesActive { margin-bottom:14px; }
     #page-cannes [hidden], .cl-menu[hidden], .cl-filterPop[hidden] { display:none !important; }
     .modal.cl-dialog { max-width:980px; width:min(980px,calc(100vw - 28px)); background:var(--surface); padding:24px; }
-    .modal.cl-dialog .modal-close { z-index:1; top:10px; right:10px; width:28px; height:28px; }
-    .cl-text { padding-top:10px; }
+    .modal.cl-dialog .modal-close { z-index:1; top:24px; right:24px; width:44px; height:44px; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--surface); }
+    @media(max-width:640px) { .modal.cl-dialog .modal-close { top:18px; right:18px; } }
     .toolbar-icon { border-radius:50%; }
     .cl-stripFigure { width:62px; height:62px; flex-shrink:0; border-radius:14px; overflow:hidden; background:var(--lime-3); }
     .cl-stripFigure img { display:block; width:100%; height:100%; object-fit:contain; }
@@ -4132,10 +4162,12 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
         if (m[1] === '執行') execution = section(m[1], body); else sections += section(m[1], body);
       });
       if (!matches.length) sections = section('內容', text);
+      // 排法照 Dashboard 的 CannesDetail：一句話創意 → 分段 → 標籤 → 分隔線下「展開執行與資料來源」
       var html = (idea.summary ? '<p class="cl-callout">' + escapeHtml(idea.summary) + '</p>' : '') + sections;
-      if (execution || sources) html += '<details class="cl-fold"><summary>展開執行與資料來源 ▾</summary>' + execution + (sources ? '<section class="cl-sec"><h4>資料來源</h4><p>' + parseSlackMarkdown(sources) + '</p></section>' : '') + '</details>';
       var tags = String(idea.tags || '').split(/[,，、]/).map(function(t) { return t.trim(); }).filter(Boolean);
-      return html + '<p class="cl-tags">' + tags.slice(0, 12).map(function(t) { return '#' + escapeHtml(t); }).join(' ') + (tags.length > 12 ? ' +' + (tags.length - 12) : '') + '</p>';
+      if (tags.length) html += '<p class="cl-tags">' + tags.slice(0, 12).map(function(t) { return '#' + escapeHtml(t); }).join(' ') + (tags.length > 12 ? ' +' + (tags.length - 12) : '') + '</p>';
+      if (execution || sources) html += '<div class="cl-foldRow"><details class="cl-fold"><summary>展開執行與資料來源 ▾</summary>' + execution + (sources ? '<section class="cl-sec"><h4>資料來源</h4><p>' + parseSlackMarkdown(sources) + '</p></section>' : '') + '</details></div>';
+      return html;
     }
     function openCannesModal(id) {
       id = (cannesState.aliases || {})[id] || id;
@@ -4143,14 +4175,20 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       if (!item) return;
       cannesModalItem = item; cannesQuery.id = id; writeCannesQuery(); currentModalItem = null;
       var image = safeUrl(item.imageUrl), film = safeUrl(item.caseFilmUrl), idea = findIdeaForCannes(item);
-      var html = '<div class="cl-detail"><div class="cl-media"><span class="cl-detailThumb">' + (image ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" referrerpolicy="no-referrer">' : '') + '</span><div class="cl-mediaButtons">';
-      if (film) html += '<a class="cl-bigButton cl-primary" href="' + escapeHtml(film) + '" target="_blank" rel="noopener noreferrer">▶ 看 Case film</a>';
-      html += '<button class="cl-bigButton" data-cannes-action="idea"' + (!idea ? ' disabled' : '') + '>在靈感倉庫看這則 ↗</button></div><dl class="cl-kv">' +
-        [['品牌', item.brand], ['代理商', item.agency], ['年份', item.years.join('、')], ['編號', item.id]].map(function(p) { return '<dt>' + p[0] + '</dt><dd>' + escapeHtml(p[1] || '—') + '</dd>'; }).join('') + '</dl></div>';
-      html += '<div class="cl-text"><h3 class="cl-detailTitle" id="cannesDetailTitle">' + escapeHtml(item.title) + '</h3><ul class="cl-awardList" aria-label="獎項">' + item.awards.map(function(a) {
+      // 2026-11-18：版面照 Dashboard 的 CannesDetail。標題列左邊「靈感倉庫 ↗」；左欄 圖（左下角 Case film）→ 品牌等 → 獎項；
+      // 右欄 作品名（小、灰）→ 一句話創意 → 分段。手機（≤760px）圖最上、右欄接著、品牌與獎項排最後，標題下多一行摘要與前幾顆膠囊。
+      var html = '<div class="cl-dialogHead"><button type="button" class="cl-headButton" data-cannes-action="idea"' + (!idea ? ' disabled' : '') + ' title="在靈感倉庫看這則">靈感倉庫 ↗</button></div>';
+      html += '<div class="cl-detail"><div class="cl-media"><div class="cl-mediaFrame"><span class="cl-detailThumb">' + (image ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" referrerpolicy="no-referrer">' : '') + '</span>';
+      if (film) html += '<a class="cl-filmButton" href="' + escapeHtml(film) + '" target="_blank" rel="noopener noreferrer">▶ 看 Case film</a>';
+      html += '</div><div class="cl-facts"><dl class="cl-kv">' +
+        [['品牌', item.brand], ['代理商', item.agency], ['年份', item.years.join('、')], ['編號', item.id]].map(function(p) { return '<dt>' + p[0] + '</dt><dd>' + escapeHtml(p[1] || '—') + '</dd>'; }).join('') + '</dl>';
+      if (item.awards.length) html += '<div class="cl-factsAwards"><h4 class="cl-factsLabel">獎項</h4><ul class="cl-awardList" aria-label="獎項">' + item.awards.map(function(a) {
         var cat = cannesCategoryLabel(a.category), sub = cannesSubLabel(a.subcategory);
         return '<li title="' + escapeHtml(a.category + ' ・ ' + a.subcategory) + '">' + (item.years.length > 1 ? '<span class="cl-rowYear">' + escapeHtml(a.year) + '</span> ' : '') + cannesPill(a, 1) + '<span class="cl-awardCat">' + escapeHtml(cat) + (sub && sub !== cat && cannesSubKey(a.subcategory) !== cannesSubKey(a.category) ? '<span class="cl-awardSub">・' + escapeHtml(sub) + '</span>' : '') + '</span></li>';
-      }).join('') + '</ul>' + cannesIdeaBody(idea) + '</div></div>';
+      }).join('') + '</ul></div>';
+      html += '</div></div><div class="cl-text"><div><h3 class="cl-detailTitle" id="cannesDetailTitle">' + escapeHtml(item.title) + '</h3>' +
+        '<div class="cl-phoneMeta" aria-hidden="true"><p class="cl-phoneMetaLine">' + escapeHtml([item.brand, item.agency, item.years.join('／')].filter(Boolean).join(' ・ ')) + '</p>' + cannesPills(item) + '</div></div>' +
+        cannesIdeaBody(idea) + '</div></div>';
       document.getElementById('modalBody').innerHTML = html;
       document.getElementById('modalContent').classList.add('cl-dialog');
       document.getElementById('modalContent').setAttribute('role', 'dialog');
