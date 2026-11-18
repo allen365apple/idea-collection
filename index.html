@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+  最後更新：2026-11-18 台北時間
+  誰幫忙的：Claude Code（Claude Opus 5.5）
+  修改摘要：補回 11/05 誤刪的坎城 Google 登入用戶端 ID，新訪客才看得到登入按鈕
+-->
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
@@ -3733,6 +3738,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     // ===== 坎城頁 Google 登入（只擋畫面：坎城 CSV 仍是公開發布，知道網址的人還是拿得到）=====
     // 名單在獨立試算表「坎城圖書館登入名單」：柏文改「名單」分頁，Apps Script（cannes-login.gs.js）自動把小寫 email 的 SHA-256
     // 寫進「雜湊」分頁；只有雜湊分頁發佈成 CSV，網頁讀它比對（Google 發佈快取約 5 分鐘，改名單後稍等才生效）
+    var CANNES_GOOGLE_CLIENT_ID = '349976017652-qu9vqdb2ve6ilen022l697s1updns1oj.apps.googleusercontent.com';
     var CANNES_ALLOWED_HASHES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjoA9LtPBM4BtFFJT2haq7RYRuN1OgSQNaMaOCZ35VdIhMXsZ-leRqFhrKlcesrlE_5P-JSxNb22VU/pub?gid=1612363854&single=true&output=csv';
     var cannesAllowedHashesPromise = null;
     function cannesAllowedHashes() {
