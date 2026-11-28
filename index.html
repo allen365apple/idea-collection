@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!--
-  最後更新：2026-11-18 台北時間
-  誰幫忙的：Claude Code（Claude Opus 5.5）
-  修改摘要：坎城作品詳情視窗改成跟 Jebby Dashboard 一樣的排法（獎項移到左欄、Case film 疊在圖上、靈感倉庫鈕移到標題列）
+  最後更新：2026-11-28 14:39 台北時間
+  誰幫忙的：T3 Code／Codex
+  修改摘要：公開首頁加入短影音分類、10 個子分類篩選及抽點子選項
 -->
 <html lang="zh-TW">
 <head>
@@ -139,6 +139,19 @@
     }
     .cat-badge-marketing { background: #fdf8f0; color: #8a6a32; border-color: #ead9b8; }
     .cat-badge-social { background: #f1f7f1; color: #4f7553; border-color: #cfe1d0; }
+    .cat-badge-short-video { background: #f3f0fc; color: #5b4399; border-color: #d9cef5; }
+    .subcat-bar {
+      display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px;
+    }
+    .subcat-pill {
+      font-family: inherit; font-size: 0.78rem; font-weight: 500;
+      padding: 5px 12px; border-radius: 999px; cursor: pointer;
+      background: #f3f1eb; color: #555; border: 1px solid transparent;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .subcat-pill:hover { background: #e8e5dc; color: #222; }
+    .subcat-pill.active { background: #5b4399; color: #fff; border-color: #5b4399; }
+    .subcat-pill small { opacity: 0.72; margin-left: 4px; font-size: 0.72rem; }
     .card .cat-badge, .random-card .cat-badge { margin-bottom: 8px; }
     .col-summary .cat-badge { margin-right: 6px; }
     .cat-heading-label { font-size: 0.8rem; font-weight: 500; color: #999; }
@@ -2190,12 +2203,14 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     var latestSemanticPayload = null;
     var currentViewKind = 'latest'; // 'latest' | 'search' | 'random'：切換分類時知道要重畫哪個畫面
 
-    // ===== 分類（行銷案例／社群靈感）=====
-    // 記在網址 query（?cat=marketing / ?cat=social），不動 #about、#cannes 的 hash 分頁
-    var CATEGORY_KEYS = { all: '', marketing: '行銷案例', social: '社群靈感' };
-    var CATEGORY_BADGE_CLASS = { '行銷案例': 'cat-badge-marketing', '社群靈感': 'cat-badge-social' };
+    // ===== 分類（行銷案例／社群靈感／短影音）與短影音子分類 =====
+    // 記在網址 query（?cat=marketing / ?cat=social / ?cat=short_video&sub=...），不動 #about、#cannes 的 hash 分頁
+    var CATEGORY_KEYS = { all: '', marketing: '行銷案例', social: '社群靈感', short_video: '短影音' };
+    var CATEGORY_BADGE_CLASS = { '行銷案例': 'cat-badge-marketing', '社群靈感': 'cat-badge-social', '短影音': 'cat-badge-short-video' };
+    var SHORT_VIDEO_SUBCATEGORIES = ['爆紅格式', '奇招手段', '情境短劇', '互動擴散', '視覺巧思', '音樂節奏', '街頭互動', '生活洞察', '創意製作物', '高質感'];
     var categoryIndex = {}; // 語意推薦結果若沒帶 category（後端還沒更新），用這個從已載入的資料補
     var currentCategory = readCategoryFromUrl();
+    var currentShortVideoSub = readShortVideoSubFromUrl();
 
     function readCategoryFromUrl() {
       try {
@@ -2204,17 +2219,25 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
         return (v && v !== 'all' && CATEGORY_KEYS.hasOwnProperty(v)) ? v : 'all';
       } catch (e) { return 'all'; }
     }
-    function writeCategoryToUrl(key) {
+    function readShortVideoSubFromUrl() {
+      try {
+        var m = /[?&]sub=([^&#]*)/.exec(window.location.search);
+        var v = m ? decodeURIComponent(m[1]) : '';
+        return SHORT_VIDEO_SUBCATEGORIES.indexOf(v) !== -1 ? v : '';
+      } catch (e) { return ''; }
+    }
+    function writeCategoryToUrl(key, sub) {
       try {
         var params = window.location.search.replace(/^\?/, '').split('&').filter(function(p) {
-          return p && p.indexOf('cat=') !== 0;
+          return p && p.indexOf('cat=') !== 0 && p.indexOf('sub=') !== 0;
         });
         if (key !== 'all') params.push('cat=' + key);
+        if (key === 'short_video' && sub) params.push('sub=' + encodeURIComponent(sub));
         var url = window.location.pathname + (params.length ? '?' + params.join('&') : '') + window.location.hash;
         history.replaceState(null, '', url);
       } catch (e) {}
     }
-    // 只認合法的兩個值；舊快照沒有 category 或空白 → ''（只會出現在「全部」）
+    // 只認合法的三個值；舊快照沒有 category 或空白 → ''（只會出現在「全部」）
     function getItemCategory(item) {
       if (!item) return '';
       var c = item.category;
@@ -2224,9 +2247,17 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       c = String(c).replace(/^\s+|\s+$/g, '');
       return CATEGORY_BADGE_CLASS.hasOwnProperty(c) ? c : '';
     }
+    function getItemSubcategories(item) {
+      if (!item || !item.subcategory) return [];
+      return String(item.subcategory).split(/[,，、;；]+/).map(function(s) { return s.trim(); }).filter(Boolean);
+    }
     function matchesCurrentCategory(item) {
       var want = CATEGORY_KEYS[currentCategory];
-      return !want || getItemCategory(item) === want;
+      if (want && getItemCategory(item) !== want) return false;
+      if (currentCategory === 'short_video' && currentShortVideoSub) {
+        return getItemSubcategories(item).indexOf(currentShortVideoSub) !== -1;
+      }
+      return true;
     }
     function renderCategoryBadge(item) {
       var c = getItemCategory(item);
@@ -2235,18 +2266,54 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     }
     function categoryHeadingLabel() {
       var name = CATEGORY_KEYS[currentCategory];
-      return name ? ' <span class="cat-heading-label">· 只看' + escapeHtml(name) + '</span>' : '';
+      if (!name) return '';
+      var label = (currentCategory === 'short_video' && currentShortVideoSub) ? (name + ' / ' + currentShortVideoSub) : name;
+      return ' <span class="cat-heading-label">· 只看' + escapeHtml(label) + '</span>';
     }
     var categoryCounts = null; // 各分類則數，顯示在分類切換按鈕的提示文字
     function updateCategoryCounts() {
-      var counts = { all: allData.length, marketing: 0, social: 0 };
+      var counts = { all: allData.length, marketing: 0, social: 0, short_video: 0 };
       for (var i = 0; i < allData.length; i++) {
         var c = getItemCategory(allData[i]);
         if (c === CATEGORY_KEYS.marketing) counts.marketing++;
         else if (c === CATEGORY_KEYS.social) counts.social++;
+        else if (c === CATEGORY_KEYS.short_video) counts.short_video++;
       }
       categoryCounts = counts;
       renderCategorySwitch();
+    }
+    function renderShortVideoSubBarHtml() {
+      if (currentCategory !== 'short_video') return '';
+      var counts = {};
+      var total = 0;
+      for (var i = 0; i < allData.length; i++) {
+        if (getItemCategory(allData[i]) !== CATEGORY_KEYS.short_video) continue;
+        total++;
+        var subs = getItemSubcategories(allData[i]);
+        for (var j = 0; j < subs.length; j++) counts[subs[j]] = (counts[subs[j]] || 0) + 1;
+      }
+      var html = '<div class="subcat-bar" role="group" aria-label="短影音子分類">';
+      html += '<button type="button" class="subcat-pill' + (!currentShortVideoSub ? ' active' : '') + '" onclick="setShortVideoSub(\'\')">全部<small>' + total + '</small></button>';
+      SHORT_VIDEO_SUBCATEGORIES.forEach(function(sub) {
+        var n = counts[sub] || 0;
+        var active = currentShortVideoSub === sub ? ' active' : '';
+        html += '<button type="button" class="subcat-pill' + active + '" onclick="setShortVideoSub(\'' + sub + '\')">' + escapeHtml(sub) + '<small>' + n + '</small></button>';
+      });
+      return html + '</div>';
+    }
+    function setShortVideoSub(sub) {
+      var next = SHORT_VIDEO_SUBCATEGORIES.indexOf(sub) !== -1 ? sub : '';
+      if (next === currentShortVideoSub) return;
+      currentShortVideoSub = next;
+      writeCategoryToUrl(currentCategory, currentShortVideoSub);
+      if (allData.length === 0) return;
+      listVisibleCount = LIST_PAGE_SIZE;
+      if (currentViewKind === 'search' && latestSearchQuery) {
+        latestKeywordMatches = getKeywordMatches(latestSearchQuery);
+        rerenderCurrentView();
+      } else {
+        showLatest(true);
+      }
     }
     // 類別選擇在工具列的漏斗（renderCategoryMenuHtml，跟著工具列重畫）；這裡只同步抽點子的類別下拉上的則數
     function renderCategorySwitch() {
@@ -2264,7 +2331,8 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       if (!CATEGORY_KEYS.hasOwnProperty(key)) key = 'all';
       if (key === currentCategory) return;
       currentCategory = key;
-      writeCategoryToUrl(key);
+      if (key !== 'short_video') currentShortVideoSub = '';
+      writeCategoryToUrl(key, currentShortVideoSub);
       renderCategorySwitch();
       if (allData.length === 0) return; // 資料還沒載入，載入後自然會套用
       listVisibleCount = LIST_PAGE_SIZE;
@@ -2643,9 +2711,9 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
       return html;
     }
 
-    // 類別漏斗（取代原本搜尋框下面的頁籤）：全部／社群靈感／行銷案例附則數；選了類別時漏斗亮萊姆＋小圓點，仍記在網址 ?cat=
+    // 類別漏斗（取代原本搜尋框下面的頁籤）：全部／社群靈感／行銷案例／短影音附則數；選了類別時漏斗亮萊姆＋小圓點，仍記在網址 ?cat=
     function renderCategoryMenuHtml() {
-      var options = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例']];
+      var options = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例'], ['short_video', '短影音']];
       var on = currentCategory !== 'all';
       var html = '<div class="sort-wrap"><button type="button" class="toolbar-icon" data-tool-menu="ideaCategoryMenu" aria-label="篩選類別" title="篩選類別" aria-haspopup="menu" aria-expanded="false"' + (on ? ' data-active' : '') + '>';
       html += FILTER_ICON_SVG + (on ? '<span class="tool-active-dot" aria-hidden="true"></span>' : '') + '</button>';
@@ -3138,7 +3206,8 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     function renderViewToggleToolbar(countLabel) {
       return '<div class="idea-toolbar"><div class="toolbar-left"><span class="result-count">' + escapeHtml(countLabel) + '</span></div>'
         + renderToolIconsHtml()
-        + '</div>';
+        + '</div>'
+        + renderShortVideoSubBarHtml();
     }
 
     function loadMoreLatest() {
@@ -3533,7 +3602,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
     // ===== 抽點子 =====
     var randomCategory = 'all';
     function renderRandomCategoryChips(active) {
-      var items = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例']];
+      var items = [['all', '全部'], ['social', '社群靈感'], ['marketing', '行銷案例'], ['short_video', '短影音']];
       var html = '<label class="cat-select-wrap random-cat">類別<select class="cat-select" aria-label="抽點子的類別" onchange="setRandomCategory(this.value)">';
       items.forEach(function(it) {
         var count = categoryCounts ? '（' + categoryCounts[it[0]] + '）' : '';
@@ -4440,6 +4509,7 @@ p.cl-muted { margin: 0; font-size: var(--fs-body); font-weight: var(--fw-regular
           <option value="">未分類</option>
           <option value="行銷案例">行銷案例</option>
           <option value="社群靈感">社群靈感</option>
+          <option value="短影音">短影音</option>
         </select>
         <div class="write-modal-hint">只改分類不會讓 AI 重新產生摘要與標籤</div>
       </div>
